@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Project Index</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #333;
+            line-height: 1.6;
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .card {
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        h2 {
+            margin-top: 0;
+            color: #3498db;
+        }
+        ul {
+            padding-left: 20px;
+        }
+        li {
+            margin-bottom: 8px;
+        }
+        a {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .tag {
+            display: inline-block;
+            background-color: #e1f5fe;
+            color: #0288d1;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            margin-left: 8px;
+        }
+        .tag.new {
+            background-color: #e8f5e9;
+            color: #388e3c;
+        }
+    </style>
+</head>
+<body>
+    <h1>Dashboard Project Navigation</h1>
+    
+    <div class="card">
+        <h2>Versiones del Dashboard</h2>
+        <ul>
+            <li><a href="dist/dashboard_enhanced.html">Dashboard Enhanced</a> <span class="tag">Recomendado</span></li>
+            <li><a href="dist/dashboard.html">Dashboard Original</a> <span class="tag">Referencia</span></li>
+        </ul>
+    </div>
+    
+    <div class="card">
+        <h2>Código Fuente</h2>
+        <ul>
+            <li><a href="src/">Directorio de Código Fuente</a> <span class="tag new">Nuevo</span></li>
+            <li><a href="src/modules/">Módulos JavaScript</a></li>
+            <li><a href="src/styles/">Hojas de Estilo</a></li>
+            <li><a href="dist/">Versión Compilada</a> <span class="tag new">Nuevo</span></li>
+        </ul>
+    </div>
+    
+    <div class="card">
+        <h2>Documentación</h2>
+        <ul>
+            <li><a href="docs/guides/QUICKSTART.md">Guía de Inicio Rápido</a></li>
+            <li><a href="README.md">README Principal</a></li>
+            <li><a href="docs/development/refactoring/REFACTORING.md">Guía de Refactorización</a> <span class="tag new">Nuevo</span></li>
+            <li><a href="docs/DOCUMENTATION_STRUCTURE.md">Estructura de Documentación</a> <span class="tag new">Nuevo</span></li>
+            <li><a href="docs/technical/">Documentación Técnica</a></li>
+        </ul>
+    </div>
+    
+    <div class="card">
+        <h2>Pruebas</h2>
+        <ul>
+            <li><a href="tests/unit/">Pruebas Unitarias</a></li>
+            <li><a href="tests/integration/">Pruebas de Integración</a></li>
+            <li><a href="docs/technical/testing/TESTING.md">Guía de Testing</a></li>
+        </ul>
+    </div>
+    
+    <div class="card">
+        <h2>Herramientas</h2>
+        <ul>
+            <li><a href="scripts/build/build.py">Script de Construcción (Python)</a></li>
+            <li><a href="scripts/build/validate_structure.py">Script de Validación (Python)</a> <span class="tag new">Nuevo</span></li>
+        </ul>
+    </div>
+    
+    <footer style="text-align:center; margin-top: 40px; font-size: 0.9em; color: #7f8c8d;">
+        Organizado según los estándares de clase y calidad mundial — Última actualización: 18 de octubre de 2025
+    </footer>
+</body>
+</html>

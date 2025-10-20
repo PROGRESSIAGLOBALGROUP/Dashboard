@@ -1,0 +1,62 @@
+  importConfig() {
+    const fileInput = document.querySelector('#importAdminJSON');
+    if (!fileInput || !fileInput.files.length) {
+      alert('❌ Please select a configuration file');
+      return;
+    }
+    
+    const file = fileInput.files[0];
+    const reader = new FileReader();
+    
+    reader.onload = (e) => {
+      try {
+        const imported = JSON.parse(e.target.result);
+        
+        // Validate that it has the expected schema
+        if (!imported.buses || !Array.isArray(imported.buses)) {
+          throw new Error('Invalid configuration file: missing buses array');
+        }
+        
+        // Import core configuration
+        Dashboard.StorageManager.saveConfig({
+          buses: imported.buses || [],
+          apps: imported.apps || [],
+          waves: imported.waves || []
+        });
+        
+        // Import whitelabel configuration if present
+        if (imported.whitelabel) {
+          if (imported.whitelabel.mainTitle) localStorage.setItem('wl_mainTitle', imported.whitelabel.mainTitle);
+          if (imported.whitelabel.subtitle) localStorage.setItem('wl_subtitle', imported.whitelabel.subtitle);
+          if (imported.whitelabel.leftLogo) localStorage.setItem('wl_leftLogo', imported.whitelabel.leftLogo);
+          if (imported.whitelabel.rightLogo) localStorage.setItem('wl_rightLogo', imported.whitelabel.rightLogo);
+          console.log('✅ Whitelabel configuration imported');
+        }
+        
+        // Import formula configuration if present
+        if (imported.formulaConfig && Object.keys(imported.formulaConfig).length > 0) {
+          // Only import if it has the required structure
+          if (imported.formulaConfig.progressMethod || imported.formulaConfig.weights || imported.formulaConfig.criticalityMultipliers) {
+            localStorage.setItem('dashboard_formula_config', JSON.stringify(imported.formulaConfig));
+            console.log('✅ Formula configuration imported');
+          }
+        }
+        
+        // Reload UI
+        if (Dashboard.UIController && Dashboard.UIController.apply) {
+          Dashboard.UIController.apply();
+        }
+        
+        // Clear file input
+        fileInput.value = '';
+        
+        alert('✅ Configuration imported successfully!');
+        console.log('✅ All configurations imported and applied');
+      } catch (err) {
+        console.error('Import error:', err);
+        alert('❌ Error importing configuration: ' + err.message);
+      }
+    };
+    
+    reader.readAsText(file);
+  },

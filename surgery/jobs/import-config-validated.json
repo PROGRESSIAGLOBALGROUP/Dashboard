@@ -1,0 +1,12 @@
+{
+  "file": "dist/dashboard_enhanced.html",
+  "description": "Enhance import config with validation, schema checking, and data integrity verification",
+  "operation": "replace",
+  "selector": {
+    "type": "regex",
+    "pattern": "importConfig\\(event\\) \\{[\\s\\S]*?reader\\.readAsText\\(file\\);\\s*\\},"
+  },
+  "fragment_file": "surgery/fragments/import-config-validated.js",
+  "enable_rollback": true,
+  "enable_testing": true
+}

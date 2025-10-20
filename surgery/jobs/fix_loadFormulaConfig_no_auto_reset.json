@@ -1,0 +1,22 @@
+{
+  "name": "Fix loadFormulaConfig - No auto-reset on tab switch",
+  "description": "Corrige loadFormulaConfig para que NO llame automáticamente a resetFormulaConfig cuando no hay configuración guardada. Solo muestra formulario vacío. El reset solo debe ocurrir cuando el usuario hace clic en 'Reset to Defaults'.",
+  "file": "dist/dashboard_enhanced.html",
+  "mode": "marker-based",
+  "markers": {
+    "start": "  loadFormulaConfig() {",
+    "end": "  },\n  \n  initializeEmptyFormulaForm"
+  },
+  "new_fragment_path": "surgery/patches/fix_loadFormulaConfig.txt",
+  "post_cmd": "echo '✅ loadFormulaConfig fixed - no auto-reset'",
+  "enable_rollback": true,
+  "enable_testing": false,
+  "metadata": {
+    "severity": "high",
+    "affected_feature": "Calculation Formulas Tab Load Behavior",
+    "root_cause": "loadFormulaConfig calls resetFormulaConfig automatically when no saved config exists",
+    "solution": "Introduce initializeEmptyFormulaForm() method that loads empty form without resetting",
+    "date_created": "2025-10-20",
+    "version": "1.0"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "name": "Enhance exportConfig - Include formula settings",
+  "description": "Mejorar exportConfig para incluir la configuración de fórmulas (dashboard_formula_config) en el archivo JSON exportado. Esto permite que la configuración de fórmulas sea portable junto con datos del proyecto.",
+  "file": "dist/dashboard_enhanced.html",
+  "mode": "marker-based",
+  "markers": {
+    "start": "  exportConfig() {",
+    "end": "    console.log('✅ Configuration exported successfully with formula settings');\n  },"
+  },
+  "new_fragment_path": "surgery/patches/fix_exportConfig.txt",
+  "post_cmd": "echo '✅ exportConfig enhanced with formula settings'",
+  "enable_rollback": true,
+  "enable_testing": false,
+  "metadata": {
+    "severity": "medium",
+    "affected_feature": "Configuration Export/Import",
+    "root_cause": "exportConfig does not include formula configuration",
+    "solution": "Add formulaConfig from localStorage to exported JSON with metadata flags",
+    "date_created": "2025-10-20",
+    "version": "1.0"
+  }
+}

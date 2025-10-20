@@ -1,0 +1,103 @@
+{
+  "id": "implement_app_reassignment_audit",
+  "description": "Feature: Allow apps to be reassigned between Business Units with full audit trail tracking",
+  "changes": [
+    {
+      "section": "StorageManager",
+      "items": [
+        {
+          "method": "reassignApp(appId, newBuId)",
+          "purpose": "Move an application from one BU to another",
+          "logic": [
+            "Find app by ID",
+            "Validate target BU exists",
+            "Create audit entry with timestamp, old/new BU, app status",
+            "Update app.buId to new BU",
+            "Push to auditTrail array",
+            "Save config"
+          ]
+        },
+        {
+          "method": "getAuditTrail()",
+          "purpose": "Retrieve all reassignment history"
+        },
+        {
+          "method": "clearAuditTrail()",
+          "purpose": "Reset audit trail (available in Settings)"
+        }
+      ]
+    },
+    {
+      "section": "AdminController",
+      "items": [
+        {
+          "method": "openReassignModal(appId)",
+          "purpose": "Display modal with available BUs to reassign to",
+          "renders": "List of other BUs with app count for each"
+        },
+        {
+          "method": "confirmReassign(appId, newBuId)",
+          "purpose": "Execute reassignment and refresh UI"
+        },
+        {
+          "method": "showAuditTrail()",
+          "purpose": "Display audit trail in nested modal with:",
+          "displays": [
+            "Timestamp of each reassignment",
+            "App name and status",
+            "From/To Business Units",
+            "Clear Audit Trail button"
+          ]
+        }
+      ]
+    },
+    {
+      "section": "UI Changes",
+      "items": [
+        {
+          "location": "Applications Management table",
+          "change": "Added 'Reassign' button next to Delete button",
+          "onclick": "Dashboard.AdminController.openReassignModal(appId)"
+        },
+        {
+          "location": "Settings tab",
+          "change": "Added 'View Audit Trail' button",
+          "onclick": "Dashboard.AdminController.showAuditTrail()"
+        }
+      ]
+    },
+    {
+      "section": "Data Structure",
+      "change": "Added config.auditTrail array",
+      "schema": {
+        "timestamp": "ISO string of when reassignment happened",
+        "action": "'APP_REASSIGNED'",
+        "appId": "app ID",
+        "appName": "app name",
+        "fromBuId": "source BU ID",
+        "fromBuName": "source BU name",
+        "toBuId": "target BU ID",
+        "toBuName": "target BU name",
+        "status": "app status at time of reassignment",
+        "progress": "app progress at time of reassignment"
+      }
+    }
+  ],
+  "user_workflow": [
+    "User views Applications tab",
+    "Clicks 'Reassign' on an app row",
+    "Modal opens showing available BUs with app counts",
+    "User clicks target BU",
+    "App is reassigned, progress recalculated",
+    "Audit entry is created automatically",
+    "User can view Audit Trail in Settings anytime"
+  ],
+  "traceability_benefits": [
+    "Full history of all app movements between BUs",
+    "Timestamps on all changes",
+    "Clear before/after state captured",
+    "Can review who moved what app when"
+  ],
+  "enable_rollback": true,
+  "enable_testing": false
+}

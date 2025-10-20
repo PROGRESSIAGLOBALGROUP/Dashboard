@@ -1,0 +1,22 @@
+{
+  "name": "Enhance importConfig - Support formula configuration",
+  "description": "Mejorar importConfig para que pueda importar la configuración de fórmulas desde archivos JSON que incluyan formulaConfig. Valida estructura y solo importa si es válida.",
+  "file": "dist/dashboard_enhanced.html",
+  "mode": "marker-based",
+  "markers": {
+    "start": "    // Import config from JSON file",
+    "end": "    reader.readAsText(file);\n  },"
+  },
+  "new_fragment_path": "surgery/patches/fix_importConfig.txt",
+  "post_cmd": "echo '✅ importConfig enhanced with formula support'",
+  "enable_rollback": true,
+  "enable_testing": false,
+  "metadata": {
+    "severity": "medium",
+    "affected_feature": "Configuration Import",
+    "root_cause": "importConfig does not handle formula configuration",
+    "solution": "Add logic to import formulaConfig if present and valid in imported JSON",
+    "date_created": "2025-10-20",
+    "version": "1.0"
+  }
+}

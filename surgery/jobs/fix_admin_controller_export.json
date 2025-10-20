@@ -1,0 +1,22 @@
+{
+  "name": "Fix AdminController Export Pattern - Calculation Formulas Tab Error",
+  "description": "Corrige el patrón de exportación del AdminController que causa 'is not a function' error al usar window.Dashboard = window.Dashboard || {} como argumento. Reemplaza con asignación directa segura.",
+  "file": "dist/dashboard_enhanced.html",
+  "mode": "marker-based",
+  "markers": {
+    "start": "// Export module for namespace compatibility",
+    "end": "})(window.Dashboard = window.Dashboard || {});"
+  },
+  "new_fragment_path": "surgery/patches/admin_controller_export_fix.txt",
+  "post_cmd": "echo '✅ AdminController export pattern fixed'",
+  "enable_rollback": true,
+  "enable_testing": false,
+  "metadata": {
+    "severity": "critical",
+    "affected_feature": "Calculation Formulas Tab",
+    "root_cause": "window.Dashboard assignment as function argument causes undefined behavior",
+    "solution": "Direct assignment with null-safety check",
+    "date_created": "2025-10-20",
+    "version": "1.0"
+  }
+}

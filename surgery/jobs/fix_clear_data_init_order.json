@@ -1,0 +1,11 @@
+{
+  "id": "fix_clear_data_init_order",
+  "description": "Fix Clear All Data: Add missing StorageManager.init() call at startup to detect cleared flag",
+  "file": "dist/dashboard_enhanced.html",
+  "mode": "text-exact",
+  "target": "    // Initialize other modules in the correct order\n    Dashboard.AdminController.init();\n    Dashboard.UIController.init();",
+  "replacement": "    // Initialize StorageManager FIRST to detect cleared state\n    Dashboard.StorageManager.init();\n    \n    // Initialize other modules in the correct order\n    Dashboard.AdminController.init();\n    Dashboard.UIController.init();",
+  "enable_rollback": true,
+  "enable_testing": false,
+  "post_validate": "grep -c 'StorageManager.init()' dist/dashboard_enhanced.html"
+}

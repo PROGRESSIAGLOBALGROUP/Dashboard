@@ -1,0 +1,295 @@
+{
+  "metadata": {
+    "source_file": "C:\\PROYECTOS\\Dashboard\\tables.xlsx",
+    "creation_date": "2025-10-18 21:03:56",
+    "total_sheets": 3,
+    "sheet_names": [
+      "business_units_catalog",
+      "apps_catalog",
+      "waves_catalog"
+    ]
+  },
+  "data": {
+    "business_units_catalog": {
+      "records": [
+        {
+          "BU_ID": 1,
+          "BU_DOMAIN": "CORF",
+          "BU_NAME": "COMM",
+          "BU_FULLNAME": "Communications"
+        },
+        {
+          "BU_ID": 2,
+          "BU_DOMAIN": "CORF",
+          "BU_NAME": "HR",
+          "BU_FULLNAME": "Human Resources"
+        },
+        {
+          "BU_ID": 3,
+          "BU_DOMAIN": "CORF",
+          "BU_NAME": "PAY",
+          "BU_FULLNAME": "Payroll & Time Keeping"
+        },
+        {
+          "BU_ID": 4,
+          "BU_DOMAIN": "CORF",
+          "BU_NAME": "ACC",
+          "BU_FULLNAME": "Accounting"
+        },
+        {
+          "BU_ID": 5,
+          "BU_DOMAIN": "CORF",
+          "BU_NAME": "INV",
+          "BU_FULLNAME": "Invoicing"
+        },
+        {
+          "BU_ID": 6,
+          "BU_DOMAIN": "CORF",
+          "BU_NAME": "CUSTI1",
+          "BU_FULLNAME": "Customs I (CCCCCS)"
+        },
+        {
+          "BU_ID": 7,
+          "BU_DOMAIN": "CORF",
+          "BU_NAME": "CUSTI1",
+          "BU_FULLNAME": "Customs II (MX Applications)"
+        },
+        {
+          "BU_ID": 8,
+          "BU_DOMAIN": "P&S",
+          "BU_NAME": "P&S",
+          "BU_FULLNAME": "Parts & Services"
+        },
+        {
+          "BU_ID": 9,
+          "BU_DOMAIN": "P&S",
+          "BU_NAME": "PSC",
+          "BU_FULLNAME": "Purchase & Supply Chain"
+        },
+        {
+          "BU_ID": 10,
+          "BU_DOMAIN": "GDPA",
+          "BU_NAME": "CDA3",
+          "BU_FULLNAME": "Global Digital Platforms and Automation"
+        },
+        {
+          "BU_ID": 11,
+          "BU_DOMAIN": "SPP",
+          "BU_NAME": "SPP",
+          "BU_FULLNAME": "Standard Procedures & Performance"
+        },
+        {
+          "BU_ID": 12,
+          "BU_DOMAIN": "EDSC",
+          "BU_NAME": "EDSC",
+          "BU_FULLNAME": "Engineering"
+        }
+      ],
+      "record_count": 12,
+      "column_count": 4,
+      "columns": [
+        "BU_ID",
+        "BU_DOMAIN",
+        "BU_NAME",
+        "BU_FULLNAME"
+      ],
+      "statistics": {
+        "BU_ID": {
+          "min": 1,
+          "max": 12,
+          "avg": 6.5,
+          "null_count": 0
+        }
+      }
+    },
+    "apps_catalog": {
+      "records": [
+        {
+          "APP_ID": 1,
+          "BU_ID": 10,
+          "WAVE_ID": 1,
+          "APP_NAME": "XXX_APPLICATION_1_XXX",
+          "APP_PRIORITY_ORDER": null,
+          "APP_CRITICALITY": "High",
+          "APP_BUSINESS_IMPACT": "High",
+          "APP_COMPLETION_PROGRESS": 100.0,
+          "APP_STATUS": "Completed"
+        },
+        {
+          "APP_ID": 2,
+          "BU_ID": 10,
+          "WAVE_ID": 1,
+          "APP_NAME": "XXX_APPLICATION_2_XXX",
+          "APP_PRIORITY_ORDER": null,
+          "APP_CRITICALITY": "Medium",
+          "APP_BUSINESS_IMPACT": "Medium",
+          "APP_COMPLETION_PROGRESS": 100.0,
+          "APP_STATUS": "Completed"
+        },
+        {
+          "APP_ID": 3,
+          "BU_ID": 1,
+          "WAVE_ID": 1,
+          "APP_NAME": "XXX_APPLICATION_3_XXX",
+          "APP_PRIORITY_ORDER": null,
+          "APP_CRITICALITY": "Medium",
+          "APP_BUSINESS_IMPACT": "Medium",
+          "APP_COMPLETION_PROGRESS": 83.56,
+          "APP_STATUS": "WIP"
+        },
+        {
+          "APP_ID": 4,
+          "BU_ID": 10,
+          "WAVE_ID": 2,
+          "APP_NAME": "XXX_APPLICATION_4_XXX",
+          "APP_PRIORITY_ORDER": null,
+          "APP_CRITICALITY": "Medium",
+          "APP_BUSINESS_IMPACT": "Medium",
+          "APP_COMPLETION_PROGRESS": 0.0,
+          "APP_STATUS": "TBS"
+        },
+        {
+          "APP_ID": 5,
+          "BU_ID": 2,
+          "WAVE_ID": 2,
+          "APP_NAME": "XXX_APPLICATION_5_XXX",
+          "APP_PRIORITY_ORDER": null,
+          "APP_CRITICALITY": "Low",
+          "APP_BUSINESS_IMPACT": "Low",
+          "APP_COMPLETION_PROGRESS": 22.1,
+          "APP_STATUS": "WIP"
+        },
+        {
+          "APP_ID": 6,
+          "BU_ID": 10,
+          "WAVE_ID": 2,
+          "APP_NAME": "XXX_APPLICATION_6_XXX",
+          "APP_PRIORITY_ORDER": null,
+          "APP_CRITICALITY": "High",
+          "APP_BUSINESS_IMPACT": "Low",
+          "APP_COMPLETION_PROGRESS": 7.8,
+          "APP_STATUS": "Completed"
+        },
+        {
+          "APP_ID": 7,
+          "BU_ID": 3,
+          "WAVE_ID": 2,
+          "APP_NAME": "XXX_APPLICATION_7_XXX",
+          "APP_PRIORITY_ORDER": null,
+          "APP_CRITICALITY": "Low",
+          "APP_BUSINESS_IMPACT": "High",
+          "APP_COMPLETION_PROGRESS": 0.0,
+          "APP_STATUS": "TBS"
+        },
+        {
+          "APP_ID": 8,
+          "BU_ID": 3,
+          "WAVE_ID": 3,
+          "APP_NAME": "XXX_APPLICATION_8_XXX",
+          "APP_PRIORITY_ORDER": null,
+          "APP_CRITICALITY": "Medium",
+          "APP_BUSINESS_IMPACT": "High",
+          "APP_COMPLETION_PROGRESS": 53.3,
+          "APP_STATUS": "WIP"
+        },
+        {
+          "APP_ID": 9,
+          "BU_ID": 10,
+          "WAVE_ID": 3,
+          "APP_NAME": "XXX_APPLICATION_9_XXX",
+          "APP_PRIORITY_ORDER": null,
+          "APP_CRITICALITY": "High",
+          "APP_BUSINESS_IMPACT": "Low",
+          "APP_COMPLETION_PROGRESS": 0.0,
+          "APP_STATUS": "TBS"
+        },
+        {
+          "APP_ID": 10,
+          "BU_ID": 11,
+          "WAVE_ID": 3,
+          "APP_NAME": "XXX_APPLICATION_10_XXX",
+          "APP_PRIORITY_ORDER": null,
+          "APP_CRITICALITY": "High",
+          "APP_BUSINESS_IMPACT": "Medium",
+          "APP_COMPLETION_PROGRESS": 75.0,
+          "APP_STATUS": "WIP"
+        }
+      ],
+      "record_count": 10,
+      "column_count": 9,
+      "columns": [
+        "APP_ID",
+        "BU_ID",
+        "WAVE_ID",
+        "APP_NAME",
+        "APP_PRIORITY_ORDER",
+        "APP_CRITICALITY",
+        "APP_BUSINESS_IMPACT",
+        "APP_COMPLETION_PROGRESS",
+        "APP_STATUS"
+      ],
+      "statistics": {
+        "APP_ID": {
+          "min": 1,
+          "max": 10,
+          "avg": 5.5,
+          "null_count": 0
+        },
+        "BU_ID": {
+          "min": 1,
+          "max": 11,
+          "avg": 7.0,
+          "null_count": 0
+        },
+        "WAVE_ID": {
+          "min": 1,
+          "max": 3,
+          "avg": 2.0,
+          "null_count": 0
+        },
+        "APP_PRIORITY_ORDER": {
+          "min": null,
+          "max": null,
+          "avg": null,
+          "null_count": 10
+        },
+        "APP_COMPLETION_PROGRESS": {
+          "min": 0.0,
+          "max": 100.0,
+          "avg": 44.18,
+          "null_count": 0
+        }
+      }
+    },
+    "waves_catalog": {
+      "records": [
+        {
+          "WAVE_ID": 1,
+          "DESCRIPTION": "Wave 1"
+        },
+        {
+          "WAVE_ID": 2,
+          "DESCRIPTION": "Wave 2"
+        },
+        {
+          "WAVE_ID": 3,
+          "DESCRIPTION": "Wave 3"
+        }
+      ],
+      "record_count": 3,
+      "column_count": 2,
+      "columns": [
+        "WAVE_ID",
+        "DESCRIPTION"
+      ],
+      "statistics": {
+        "WAVE_ID": {
+          "min": 1,
+          "max": 3,
+          "avg": 2.0,
+          "null_count": 0
+        }
+      }
+    }
+  }
+}

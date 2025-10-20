@@ -1,0 +1,63 @@
+{
+  "title": "Whitelabel Dynamic Integration - H1/Subtitle + Export/Import",
+  "description": "Fix 3 issues: 1) H1 and subtitle must be dynamic from localStorage, updating on page load and when Whitelabel changes are saved. 2) exportConfig() must include whitelabel values. 3) importConfig() must restore whitelabel values. No mocks, no fallbacks.",
+  "file": "dist/dashboard_enhanced.html",
+  "patches": [
+    {
+      "id": "patch_1_h1_dynamic_loader",
+      "description": "Add function to load and apply whitelabel titles to H1 and subtitle dynamically",
+      "type": "insert_before",
+      "anchor": "const AdminController = {",
+      "content": "// Load whitelabel titles dynamically (H1 and subtitle)\nfunction applyWhitelabelTitles() {\n  const mainTitle = localStorage.getItem('wl_mainTitle') || 'PROGRESSIA · Discord Project · [ Project Type ]';\n  const subtitle = localStorage.getItem('wl_subtitle') || 'Advance by Business Unit';\n  \n  const h1 = document.querySelector('.h-title h1');\n  const small = document.querySelector('.h-title small');\n  \n  if (h1) h1.textContent = mainTitle;\n  if (small) small.textContent = subtitle;\n}\n\n"
+    },
+    {
+      "id": "patch_2_call_on_init",
+      "description": "Call applyWhitelabelTitles() when Dashboard initializes (in init method)",
+      "type": "edit",
+      "anchor": "AdminController.init()",
+      "search": "  init() {\n    this.setupEventListeners();\n    this.renderBUList();",
+      "replace": "  init() {\n    applyWhitelabelTitles();\n    this.setupEventListeners();\n    this.renderBUList();"
+    },
+    {
+      "id": "patch_3_update_on_whitelabel_save",
+      "description": "Update H1/subtitle when whitelabel config is saved",
+      "type": "edit",
+      "anchor": "saveWhitelabelConfig()",
+      "search": "    localStorage.setItem('wl_mainTitle', mainTitle);\n    localStorage.setItem('wl_subtitle', subtitle);\n    \n    alert('✅ Whitelabel configuration saved successfully!');",
+      "replace": "    localStorage.setItem('wl_mainTitle', mainTitle);\n    localStorage.setItem('wl_subtitle', subtitle);\n    \n    // Apply changes dynamically to H1 and subtitle\n    applyWhitelabelTitles();\n    \n    alert('✅ Whitelabel configuration saved successfully!');"
+    },
+    {
+      "id": "patch_4_export_whitelabel",
+      "description": "Include whitelabel config in exportConfig() JSON",
+      "type": "edit",
+      "anchor": "const enrichedConfig = {",
+      "search": "    const enrichedConfig = {\n      ...config,\n      buses: config.buses.map(bu => ({",
+      "replace": "    const enrichedConfig = {\n      ...config,\n      whitelabel: {\n        mainTitle: localStorage.getItem('wl_mainTitle') || 'PROGRESSIA · Discord Project · [ Project Type ]',\n        subtitle: localStorage.getItem('wl_subtitle') || 'Advance by Business Unit',\n        leftLogo: localStorage.getItem('wl_leftLogo') || null,\n        rightLogo: localStorage.getItem('wl_rightLogo') || null\n      },\n      buses: config.buses.map(bu => ({"
+    },
+    {
+      "id": "patch_5_import_whitelabel",
+      "description": "Extract and restore whitelabel config from imported JSON",
+      "type": "edit",
+      "anchor": "const cleanConfig = {",
+      "search": "        // Extract only the essential data (remove calculated fields)\n        const cleanConfig = {\n          buses: importedConfig.buses.map(bu => ({",
+      "replace": "        // Extract only the essential data (remove calculated fields)\n        // First, extract whitelabel config if present\n        if (importedConfig.whitelabel) {\n          localStorage.setItem('wl_mainTitle', importedConfig.whitelabel.mainTitle || 'PROGRESSIA · Discord Project · [ Project Type ]');\n          localStorage.setItem('wl_subtitle', importedConfig.whitelabel.subtitle || 'Advance by Business Unit');\n          if (importedConfig.whitelabel.leftLogo) localStorage.setItem('wl_leftLogo', importedConfig.whitelabel.leftLogo);\n          if (importedConfig.whitelabel.rightLogo) localStorage.setItem('wl_rightLogo', importedConfig.whitelabel.rightLogo);\n        }\n        \n        const cleanConfig = {\n          buses: importedConfig.buses.map(bu => ({"
+    }
+  ],
+  "testing": {
+    "steps": [
+      "1. Open dashboard - H1 should show 'PROGRESSIA · Discord Project · [ Project Type ]' (or saved value)",
+      "2. Open Admin > Whitelabel tab",
+      "3. Change main title to 'TEST TITLE' and subtitle to 'TEST SUBTITLE'",
+      "4. Click 'Save Whitelabel Config'",
+      "5. Verify H1 and subtitle update immediately on page without reload",
+      "6. Refresh page (F5)",
+      "7. Verify H1 and subtitle still show saved values",
+      "8. Export config",
+      "9. Verify exported JSON contains 'whitelabel' object with mainTitle, subtitle, leftLogo, rightLogo",
+      "10. Import config back",
+      "11. Verify H1, subtitle, and logos are restored correctly"
+    ],
+    "expected_outcome": "H1 and subtitle are dynamic and persist. Export/import preserves whitelabel config."
+  },
+  "rollback_info": "Revert to previous surgery if pages don't update or import fails"
+}

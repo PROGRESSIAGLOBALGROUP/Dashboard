@@ -1,0 +1,772 @@
+<!-- FORMULA HELPERS - WORLD CLASS INLINE SUPPORT SYSTEM -->
+<!-- This fragment adds interactive helpers, tooltips, presets, and quick tips to the formula configuration modal -->
+
+<!-- CSS STYLES FOR HELPERS -->
+<style>
+/* Helper Container and Layout */
+.formula-helpers-section {
+  background: linear-gradient(135deg, rgba(91,157,255,0.08), rgba(91,157,255,0.02));
+  border: 1px solid rgba(91,157,255,0.2);
+  border-radius: 14px;
+  padding: 20px;
+  margin: 24px 0;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  animation: slideIn 0.4s ease;
+}
+
+.helper-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--primary);
+  cursor: pointer;
+  user-select: none;
+  transition: color 0.2s ease;
+}
+
+.helper-header:hover {
+  color: #7bb2ff;
+}
+
+.helper-toggle-icon {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  line-height: 20px;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  font-size: 16px;
+}
+
+.helper-toggle-icon.expanded {
+  transform: rotate(180deg);
+}
+
+/* Quick Presets Grid */
+.quick-presets-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  margin: 16px 0;
+}
+
+.preset-button {
+  background: rgba(91,157,255,0.1);
+  border: 1px solid rgba(91,157,255,0.3);
+  border-radius: 10px;
+  padding: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 13px;
+  color: var(--text);
+  text-align: left;
+  position: relative;
+  overflow: hidden;
+}
+
+.preset-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(91,157,255,0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.preset-button:hover {
+  background: rgba(91,157,255,0.15);
+  border-color: rgba(91,157,255,0.5);
+  box-shadow: 0 0 15px rgba(91,157,255,0.2);
+}
+
+.preset-button:hover::before {
+  left: 100%;
+}
+
+.preset-title {
+  font-weight: 600;
+  color: var(--primary);
+  margin-bottom: 6px;
+  display: block;
+}
+
+.preset-desc {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+.preset-meta {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+  font-size: 11px;
+}
+
+.preset-tag {
+  background: rgba(50,230,133,0.15);
+  color: #32e685;
+  padding: 3px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.preset-tag.warn {
+  background: rgba(255,209,102,0.15);
+  color: #ffd166;
+}
+
+.preset-tag.danger {
+  background: rgba(255,95,122,0.15);
+  color: #ff5f7a;
+}
+
+/* Tooltips */
+.tooltip-icon {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  line-height: 18px;
+  text-align: center;
+  background: rgba(91,157,255,0.2);
+  border: 1px solid rgba(91,157,255,0.4);
+  border-radius: 50%;
+  cursor: help;
+  margin-left: 6px;
+  font-size: 12px;
+  font-weight: bold;
+  color: var(--primary);
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.tooltip-icon:hover {
+  background: rgba(91,157,255,0.3);
+  border-color: rgba(91,157,255,0.6);
+  box-shadow: 0 0 12px rgba(91,157,255,0.3);
+}
+
+.tooltip-icon::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 130%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,0.95);
+  color: #fff;
+  padding: 10px 14px;
+  border-radius: 8px;
+  white-space: nowrap;
+  font-size: 12px;
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  border: 1px solid rgba(91,157,255,0.3);
+  box-shadow: 0 4px 20px rgba(91,157,255,0.2);
+  font-family: inherit;
+  font-weight: normal;
+}
+
+.tooltip-icon::before {
+  content: '';
+  position: absolute;
+  bottom: 120%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 8px;
+  height: 8px;
+  background: rgba(0,0,0,0.95);
+  border: 1px solid rgba(91,157,255,0.3);
+  border-right: none;
+  border-top: none;
+  transform: translateX(-50%) rotate(45deg);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  z-index: 1000;
+}
+
+.tooltip-icon:hover::after,
+.tooltip-icon:hover::before {
+  opacity: 1;
+}
+
+/* Quick Tips */
+.quick-tips-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 16px 0;
+}
+
+.quick-tip {
+  background: rgba(50,230,133,0.08);
+  border-left: 3px solid #32e685;
+  padding: 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text);
+  transition: all 0.3s ease;
+}
+
+.quick-tip:hover {
+  background: rgba(50,230,133,0.12);
+  box-shadow: 0 2px 8px rgba(50,230,133,0.15);
+}
+
+.quick-tip-icon {
+  font-weight: bold;
+  margin-right: 6px;
+  color: #32e685;
+}
+
+.quick-tip.warn {
+  background: rgba(255,209,102,0.08);
+  border-left-color: #ffd166;
+}
+
+.quick-tip.warn .quick-tip-icon {
+  color: #ffd166;
+}
+
+.quick-tip.danger {
+  background: rgba(255,95,122,0.08);
+  border-left-color: #ff5f7a;
+}
+
+.quick-tip.danger .quick-tip-icon {
+  color: #ff5f7a;
+}
+
+/* Parameter Guide Cards */
+.param-guide {
+  background: rgba(0,0,0,0.2);
+  border-radius: 10px;
+  padding: 14px;
+  margin: 12px 0;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text);
+  border: 1px solid rgba(91,157,255,0.15);
+}
+
+.param-guide-title {
+  font-weight: 600;
+  color: var(--primary);
+  margin-bottom: 8px;
+  display: block;
+}
+
+.param-range {
+  font-family: monospace;
+  background: rgba(0,0,0,0.3);
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  color: #7bb2ff;
+  display: inline-block;
+  margin: 0 4px;
+}
+
+/* Decision Matrix */
+.decision-matrix {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 16px 0;
+  font-size: 12px;
+  border: 1px solid rgba(91,157,255,0.2);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.decision-matrix thead {
+  background: rgba(91,157,255,0.1);
+  border-bottom: 2px solid rgba(91,157,255,0.2);
+}
+
+.decision-matrix th {
+  padding: 12px;
+  text-align: left;
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.decision-matrix td {
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(91,157,255,0.1);
+  color: var(--text);
+}
+
+.decision-matrix tr:last-child td {
+  border-bottom: none;
+}
+
+.decision-matrix tr:hover {
+  background: rgba(91,157,255,0.05);
+}
+
+/* Formula Comparison Chart */
+.formula-comparison {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+  margin: 16px 0;
+}
+
+.formula-card {
+  background: linear-gradient(135deg, rgba(91,157,255,0.05), transparent);
+  border: 1px solid rgba(91,157,255,0.2);
+  border-radius: 10px;
+  padding: 12px;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.formula-card:hover {
+  border-color: rgba(91,157,255,0.4);
+  box-shadow: 0 4px 12px rgba(91,157,255,0.15);
+  background: linear-gradient(135deg, rgba(91,157,255,0.1), transparent);
+}
+
+.formula-card-name {
+  font-weight: 600;
+  color: var(--primary);
+  margin-bottom: 8px;
+  font-size: 13px;
+}
+
+.formula-card-desc {
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.4;
+  margin-bottom: 8px;
+}
+
+.formula-card-meta {
+  font-size: 10px;
+  background: rgba(0,0,0,0.2);
+  padding: 6px;
+  border-radius: 4px;
+  color: var(--muted);
+}
+
+/* Visual Indicators */
+.complexity-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+}
+
+.complexity-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(91,157,255,0.3);
+}
+
+.complexity-dot.filled {
+  background: var(--primary);
+  box-shadow: 0 0 4px var(--primary);
+}
+
+/* Best Practice Badge */
+.best-practice-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, rgba(50,230,133,0.2), rgba(50,230,133,0.05));
+  border: 1px solid rgba(50,230,133,0.3);
+  color: #32e685;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  margin: 0 4px;
+  animation: glowPulse 2s ease infinite;
+}
+
+/* Recommended Configuration */
+.recommended-config {
+  background: linear-gradient(135deg, rgba(50,230,133,0.1), rgba(50,230,133,0.02));
+  border: 2px solid rgba(50,230,133,0.3);
+  border-radius: 10px;
+  padding: 16px;
+  margin: 16px 0;
+  position: relative;
+}
+
+.recommended-config::before {
+  content: '✨ RECOMMENDED';
+  position: absolute;
+  top: -12px;
+  left: 12px;
+  background: linear-gradient(135deg, #32e685, #1fa05d);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(50,230,133,0.3);
+}
+
+.recommended-config-title {
+  font-weight: 600;
+  color: #32e685;
+  margin-bottom: 8px;
+  font-size: 13px;
+  margin-top: 8px;
+}
+
+.recommended-config-desc {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+/* Animation for helpers appearing */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .quick-presets-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .formula-comparison {
+    grid-template-columns: 1fr;
+  }
+  
+  .tooltip-icon::after {
+    white-space: normal;
+    max-width: 200px;
+  }
+  
+  .decision-matrix {
+    font-size: 11px;
+  }
+  
+  .decision-matrix th,
+  .decision-matrix td {
+    padding: 8px;
+  }
+}
+</style>
+
+<!-- HELPERS HTML CONTENT -->
+<!-- Quick Presets Section -->
+<div class="formula-helpers-section">
+  <div class="helper-header" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'block' : 'none'; this.querySelector('.helper-toggle-icon').classList.toggle('expanded')">
+    <span class="helper-toggle-icon">▼</span>
+    <span>📌 QUICK PRESETS - Start in 30 seconds</span>
+  </div>
+  
+  <div class="quick-presets-grid">
+    <button class="preset-button" onclick="applyFormulaPreset('startup')">
+      <span class="preset-title">🚀 Startup</span>
+      <span class="preset-desc">Simple, transparent. Perfect for new teams.</span>
+      <div class="preset-meta">
+        <span class="preset-tag">Simple Avg</span>
+        <span class="preset-tag">Fast Setup</span>
+      </div>
+    </button>
+    
+    <button class="preset-button" onclick="applyFormulaPreset('enterprise')">
+      <span class="preset-title">🏢 Enterprise</span>
+      <span class="preset-desc">Weighted, realistic. For complex organizations.</span>
+      <div class="preset-meta">
+        <span class="preset-tag">Weighted</span>
+        <span class="preset-tag warn">Customizable</span>
+      </div>
+    </button>
+    
+    <button class="preset-button" onclick="applyFormulaPreset('audit')">
+      <span class="preset-title">📋 Audit/Compliance</span>
+      <span class="preset-desc">Conservative, strict. All apps must complete.</span>
+      <div class="preset-meta">
+        <span class="preset-tag">Minimum</span>
+        <span class="preset-tag danger">Strict</span>
+      </div>
+    </button>
+    
+    <button class="preset-button" onclick="applyFormulaPreset('agile')">
+      <span class="preset-title">⚡ Agile/Project</span>
+      <span class="preset-desc">Dynamic, focused. For sprints and iterations.</span>
+      <div class="preset-meta">
+        <span class="preset-tag">Weighted</span>
+        <span class="preset-tag warn">Active+Finished</span>
+      </div>
+    </button>
+  </div>
+</div>
+
+<!-- Quick Tips Section -->
+<div class="formula-helpers-section">
+  <div class="helper-header" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'block' : 'none'; this.querySelector('.helper-toggle-icon').classList.toggle('expanded')">
+    <span class="helper-toggle-icon">▼</span>
+    <span>💡 QUICK TIPS</span>
+  </div>
+  
+  <div class="quick-tips-list">
+    <div class="quick-tip">
+      <span class="quick-tip-icon">✓</span>
+      <strong>Start simple:</strong> Use 'Simple Average' if unsure. You can always switch to 'Weighted' later.
+    </div>
+    <div class="quick-tip">
+      <span class="quick-tip-icon">✓</span>
+      <strong>Test before saving:</strong> Click "Test Calculation" to preview changes without persisting.
+    </div>
+    <div class="quick-tip warn">
+      <span class="quick-tip-icon">⚠</span>
+      <strong>Weight matters:</strong> Higher weights = more impact on overall progress. Use 0.5-2.0 for most apps.
+    </div>
+    <div class="quick-tip">
+      <span class="quick-tip-icon">✓</span>
+      <strong>Status inclusion:</strong> Include 'To Be Started' to show realistic timelines. Exclude for current-work focus.
+    </div>
+    <div class="quick-tip danger">
+      <span class="quick-tip-icon">⚠</span>
+      <strong>Minimum formula:</strong> Shows bottleneck (lowest app progress). Use only when all items must complete.
+    </div>
+    <div class="quick-tip">
+      <span class="quick-tip-icon">✓</span>
+      <strong>Export your config:</strong> Save your formula as JSON to share with team or backup.
+    </div>
+  </div>
+</div>
+
+<!-- Formula Comparison Section -->
+<div class="formula-helpers-section">
+  <div class="helper-header" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'block' : 'none'; this.querySelector('.helper-toggle-icon').classList.toggle('expanded')">
+    <span class="helper-toggle-icon">▼</span>
+    <span>📊 FORMULA COMPARISON</span>
+  </div>
+  
+  <div class="formula-comparison">
+    <div class="formula-card">
+      <div class="formula-card-name">Weighted Average</div>
+      <div class="formula-card-desc">Accounts for app importance via weights.</div>
+      <div class="formula-card-meta">
+        <div class="complexity-indicator">
+          Complexity:
+          <span class="complexity-dot filled"></span>
+          <span class="complexity-dot filled"></span>
+          <span class="complexity-dot"></span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="formula-card">
+      <div class="formula-card-name">Simple Average</div>
+      <div class="formula-card-desc">All apps equally important. Easy to explain.</div>
+      <div class="formula-card-meta">
+        <div class="complexity-indicator">
+          Complexity:
+          <span class="complexity-dot filled"></span>
+          <span class="complexity-dot"></span>
+          <span class="complexity-dot"></span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="formula-card">
+      <div class="formula-card-name">Minimum Progress</div>
+      <div class="formula-card-desc">Shows bottleneck. Very conservative.</div>
+      <div class="formula-card-meta">
+        <div class="complexity-indicator">
+          Complexity:
+          <span class="complexity-dot filled"></span>
+          <span class="complexity-dot"></span>
+          <span class="complexity-dot"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Decision Matrix -->
+<div class="formula-helpers-section">
+  <div class="helper-header" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'block' : 'none'; this.querySelector('.helper-toggle-icon').classList.toggle('expanded')">
+    <span class="helper-toggle-icon">▼</span>
+    <span>🎯 DECISION GUIDE</span>
+  </div>
+  
+  <table class="decision-matrix">
+    <thead>
+      <tr>
+        <th>Your Situation</th>
+        <th>Recommended Setup</th>
+        <th>Key Settings</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Apps with different priorities</td>
+        <td><span class="best-practice-badge">Weighted Avg</span></td>
+        <td>Customize weights per app</td>
+      </tr>
+      <tr>
+        <td>All apps equally important</td>
+        <td><span class="best-practice-badge">Simple Avg</span></td>
+        <td>Default weights (all 1.0)</td>
+      </tr>
+      <tr>
+        <td>Critical: ALL must complete</td>
+        <td><span class="best-practice-badge">Minimum</span></td>
+        <td>Include CLO status only</td>
+      </tr>
+      <tr>
+        <td>Active work focus</td>
+        <td>Any method</td>
+        <td>Include WIP+CLO, exclude TBS</td>
+      </tr>
+      <tr>
+        <td>Show realistic timeline</td>
+        <td>Any method</td>
+        <td>Include TBS+WIP+CLO</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Parameter Quick Reference -->
+<div class="formula-helpers-section">
+  <div class="helper-header" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'block' : 'none'; this.querySelector('.helper-toggle-icon').classList.toggle('expanded')">
+    <span class="helper-toggle-icon">▼</span>
+    <span>⚙️ PARAMETER QUICK REFERENCE</span>
+  </div>
+  
+  <div class="param-guide">
+    <span class="param-guide-title">📊 Weight (App Importance)</span>
+    Range: <span class="param-range">0.3 - 10.0</span> | Default: <span class="param-range">1.0</span>
+    <br>
+    <small style="line-height: 1.6; display: block; margin-top: 6px;">Lower weight = less important | Higher weight = more important | 1.0 = standard importance</small>
+  </div>
+  
+  <div class="param-guide">
+    <span class="param-guide-title">🔥 Criticality (Urgency Multiplier)</span>
+    Range: <span class="param-range">0.5 - 2.0</span> | Default: <span class="param-range">1.0 - 1.2</span>
+    <br>
+    <small style="line-height: 1.6; display: block; margin-top: 6px;">Applied on top of weight | Use 1.5+ for deadline pressure | Use 0.8 for low urgency</small>
+  </div>
+  
+  <div class="param-guide">
+    <span class="param-guide-title">🔄 Status Inclusion</span>
+    <br>
+    <small style="line-height: 1.6; display: block; margin-top: 6px;"><strong>TBS (To Be Started):</strong> Future work. Include for realistic timeline. | <strong>WIP (In Progress):</strong> Active work. Usually include. | <strong>CLO (Closed):</strong> Finished work. Usually include.</small>
+  </div>
+</div>
+
+<!-- Recommended Configuration -->
+<div class="recommended-config">
+  <div class="recommended-config-title">🌟 Best Practice for Most Organizations</div>
+  <div class="recommended-config-desc">
+    <strong>Method:</strong> Weighted Average | <strong>Status:</strong> Include all (TBS + WIP + CLO) | 
+    <strong>Weights:</strong> 0.5-3.0 by importance | <strong>Criticality:</strong> 1.0-1.2 standard
+    <br><br>
+    This combination is transparent, realistic, and handles most scenarios well. Adjust as needed for your specific context.
+  </div>
+</div>
+
+<!-- JavaScript for Presets -->
+<script>
+// Preset configurations
+const formulaPresets = {
+  startup: {
+    method: 'simple',
+    statusTBS: false,
+    statusWIP: true,
+    statusCLO: false,
+    weightMin: 0.5,
+    weightMax: 1.0,
+    weightDefault: 1.0,
+    critLow: 1.0,
+    critMedium: 1.0,
+    critHigh: 1.0,
+    globalMethod: 'simple'
+  },
+  enterprise: {
+    method: 'weighted',
+    statusTBS: true,
+    statusWIP: true,
+    statusCLO: true,
+    weightMin: 0.3,
+    weightMax: 3.0,
+    weightDefault: 1.0,
+    critLow: 0.8,
+    critMedium: 1.0,
+    critHigh: 1.3,
+    globalMethod: 'weighted'
+  },
+  audit: {
+    method: 'minimum',
+    statusTBS: false,
+    statusWIP: false,
+    statusCLO: true,
+    weightMin: 0.5,
+    weightMax: 1.0,
+    weightDefault: 1.0,
+    critLow: 1.0,
+    critMedium: 1.0,
+    critHigh: 1.0,
+    globalMethod: 'simple'
+  },
+  agile: {
+    method: 'weighted',
+    statusTBS: false,
+    statusWIP: true,
+    statusCLO: true,
+    weightMin: 0.5,
+    weightMax: 2.0,
+    weightDefault: 1.0,
+    critLow: 0.9,
+    critMedium: 1.0,
+    critHigh: 1.1,
+    globalMethod: 'simple'
+  }
+};
+
+// Apply formula preset
+function applyFormulaPreset(presetName) {
+  const preset = formulaPresets[presetName];
+  if (!preset) return;
+  
+  // Set method
+  document.getElementById('formula-progress-method').value = preset.method;
+  
+  // Set status inclusion
+  document.getElementById('include-status-tbs').checked = preset.statusTBS;
+  document.getElementById('include-status-wip').checked = preset.statusWIP;
+  document.getElementById('include-status-clo').checked = preset.statusCLO;
+  
+  // Set weights
+  document.getElementById('weight-min').value = preset.weightMin;
+  document.getElementById('weight-max').value = preset.weightMax;
+  document.getElementById('weight-default').value = preset.weightDefault;
+  
+  // Set criticality
+  document.getElementById('crit-low').value = preset.critLow;
+  document.getElementById('crit-medium').value = preset.critMedium;
+  document.getElementById('crit-high').value = preset.critHigh;
+  
+  // Set global method
+  document.getElementById('formula-global-method').value = preset.globalMethod;
+  
+  // Show confirmation
+  alert(`✅ Applied preset: ${presetName.toUpperCase()}\n\nClick "Test Calculation" to see the impact.`);
+}
+</script>

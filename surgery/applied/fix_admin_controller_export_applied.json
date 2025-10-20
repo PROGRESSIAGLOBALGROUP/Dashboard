@@ -1,0 +1,26 @@
+{
+  "timestamp": "2025-10-20T12:00:00Z",
+  "job_file": "surgery/jobs/fix_admin_controller_export.json",
+  "file": "dist/dashboard_enhanced.html",
+  "mode": "marker-based",
+  "changes_applied": 4,
+  "status": "SUCCESS",
+  "original_hash": "pre-applied",
+  "new_hash": "post-applied",
+  "modules_fixed": [
+    "AdminController",
+    "StorageManager", 
+    "ProgressCalculator/DATA",
+    "UIController"
+  ],
+  "description": "Reemplazó el patrón defectuoso de exportación (function(app) { ... })(window.Dashboard = window.Dashboard || {}) con asignación directa segura: if (!window.Dashboard) window.Dashboard = {}; window.Dashboard.ModuleName = ModuleName;",
+  "root_cause_analysis": {
+    "issue": "(intermediate value)(intermediate value)... is not a function",
+    "cause": "window.Dashboard = window.Dashboard || {} usada como argumento de función causa comportamiento indefinido cuando es null o undefined",
+    "solution": "Asignación directa con null-safety check"
+  },
+  "testing": {
+    "status": "MANUAL_REQUIRED",
+    "notes": "Verificar que Calculation Formulas tab funciona sin errores JavaScript"
+  }
+}

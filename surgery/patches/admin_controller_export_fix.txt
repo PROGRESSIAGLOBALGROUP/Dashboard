@@ -1,0 +1,3 @@
+// Export module for namespace compatibility
+if (!window.Dashboard) window.Dashboard = {};
+window.Dashboard.AdminController = AdminController;

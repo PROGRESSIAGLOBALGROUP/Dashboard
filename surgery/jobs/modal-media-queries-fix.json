@@ -1,0 +1,12 @@
+{
+  "file": "dist/dashboard_enhanced.html",
+  "description": "Update media queries for consistent modal width across screen sizes",
+  "operation": "replace",
+  "selector": {
+    "type": "regex",
+    "pattern": "@media \\(min-width: 1800px\\) \\{[\\s\\S]*?\\}"
+  },
+  "fragment_file": "surgery/fragments/modal-media-queries-fix.css",
+  "enable_rollback": true,
+  "enable_testing": true
+}

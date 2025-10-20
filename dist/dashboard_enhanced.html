@@ -1,0 +1,4850 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dashboard · Avance por Área (Ultra)</title>
+  
+  
+  
+<style>
+/* Admin Panel Styles */
+.modal-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.9);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
+  backdrop-filter:blur(10px);
+  animation:fadeIn 0.3s ease;
+  box-sizing:border-box;
+  width:100vw;
+  height:100vh;
+}
+.modal-overlay.active{display:flex}
+.modal-content{
+  background:linear-gradient(135deg,rgba(91,157,255,0.05),transparent),var(--panel);
+  border:1px solid var(--ring);
+  box-shadow:0 20px 70px rgba(0,0,0,0.7), 0 0 0 1px rgba(91,157,255,0.1) inset;
+  border-radius:calc(var(--radius) * 1.2);
+  box-sizing:border-box !important;
+  max-width:none !important;
+  width:90vw !important;
+  min-width:320px;
+  height:auto;
+  min-height:400px;
+  max-height:90vh;
+  overflow:hidden;
+  position:relative;
+  animation:slideInUp .5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display:flex;
+  flex-direction:column;
+  margin:0;
+}
+@media (max-width: 1024px) {
+  .modal-content{
+    width:95vw !important;
+    max-height:92vh;
+    min-height:350px;
+  }
+}
+@media (max-width: 768px) {
+  .modal-content{
+    width:98vw !important;
+    max-height:95vh;
+    min-height:300px;
+    border-radius:var(--radius);
+  }
+}
+.nested-modal{position:fixed;top:0;left:0;width:100%;height:100%;background-color:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;z-index:1000;opacity:0;pointer-events:none;transition:opacity 0.3s;backdrop-filter:blur(8px)}
+.nested-modal.active{opacity:1;pointer-events:auto}
+.nested-modal-content{
+  background:linear-gradient(135deg,rgba(91,157,255,0.05),transparent),var(--panel);
+  border:1px solid var(--ring);
+  border-radius:var(--radius);
+  box-shadow:0 25px 80px rgba(0,0,0,0.8), 0 0 0 1px rgba(91,157,255,0.15) inset;
+  width:600px;
+  max-width:92%;
+  max-height:90vh;
+  padding:24px;
+  position:relative;
+  animation:popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.5);
+}
+@media (min-width: 1800px) {
+  .modal-content{max-width:none;width:90vw}
+}
+@media (max-width: 1200px) {
+  .modal-content{width:92vw;max-width:none}
+}
+@media (max-width: 768px) {
+  .modal-content{width:98%;margin:0;border-radius:var(--radius)}
+  .modal-tabpanel.active{padding:20px 16px}
+  .modal-header{padding:18px 20px}
+}
+@keyframes popIn{from{opacity:0;transform:scale(0.8)}to{opacity:1;transform:scale(1)}}
+@keyframes fadeOutIn{0%{opacity:1}50%{opacity:0}100%{opacity:1}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes slideInUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideIn{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes glowPulse{0%{box-shadow:0 0 0 rgba(91,157,255,0)}50%{box-shadow:0 0 15px rgba(91,157,255,0.3)}100%{box-shadow:0 0 0 rgba(91,157,255,0)}}
+.modal-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:0;
+  padding:28px 32px;
+  background:linear-gradient(90deg,rgba(91,157,255,0.08),rgba(91,157,255,0.01));
+  position:sticky;
+  top:0;
+  z-index:10;
+  border-bottom:1px solid var(--ring);
+}
+.modal-header h2{
+  margin:0;
+  font-size:22px;
+  color:var(--text);
+  font-weight:700;
+  letter-spacing:0.5px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.modal-header h2::before{
+  /* Remove duplicate icon */
+  content:"";
+  display:none;
+}
+.modal-close{
+  appearance:none;
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.1);
+  color:var(--muted);
+  font-size:18px;
+  cursor:pointer;
+  padding:0;
+  width:36px;
+  height:36px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:12px;
+  transition:all 0.2s ease;
+}
+.modal-close:hover{
+  color:var(--text);
+  background:rgba(255,95,122,0.15);
+  transform:rotate(90deg);
+}
+.modal-tabs{
+  display:flex;
+  gap:0;
+  padding:0 32px;
+  margin-top:0;
+  border-bottom:1px solid var(--ring);
+  background:linear-gradient(180deg,var(--bg-2),rgba(20,30,60,0.2));
+  overflow-x:auto;
+  scrollbar-width:thin;
+  scrollbar-color:rgba(91,157,255,0.3) transparent;
+  position:sticky;
+  top:0;
+  z-index:100;
+  box-shadow:0 4px 12px rgba(0,0,0,0.3);
+  flex-shrink:0;
+  min-height:64px;
+  height:64px;
+}
+.modal-tabs::-webkit-scrollbar {
+  height: 4px;
+}
+.modal-tabs::-webkit-scrollbar-track {
+  background: transparent;
+}
+.modal-tabs::-webkit-scrollbar-thumb {
+  background: rgba(91,157,255,0.3);
+  border-radius: 2px;
+}
+.modal-tab{
+  appearance:none;
+  background:none;
+  border:none;
+  color:var(--muted);
+  padding:22px 20px;
+  cursor:pointer;
+  border-bottom:3px solid transparent;
+  font-size:14px;
+  font-weight:600;
+  transition:all .2s ease;
+  position:relative;
+  white-space:nowrap;
+  letter-spacing:0.3px;
+  flex-shrink:0;
+  min-width:max-content;
+}
+.modal-tab:hover{
+  color:var(--text);
+  background:rgba(91,157,255,0.08);
+  border-bottom-color:rgba(91,157,255,0.4);
+}
+.modal-tab.active{
+  color:var(--primary);
+  border-bottom-color:var(--primary);
+  background:rgba(91,157,255,0.08);
+}
+.modal-tab.active::after{
+  content:"";
+  position:absolute;
+  bottom:-3px;
+  left:0;
+  width:100%;
+  height:3px;
+  background:var(--primary);
+  box-shadow:0 0 12px 2px rgba(91,157,255,0.6);
+  animation:glowPulse 2s infinite;
+}
+@media (max-width: 768px) {
+  .modal-tabs{
+    padding:0 16px;
+    gap:0;
+  }
+  .modal-tab{
+    padding:18px 12px;
+    font-size:13px;
+  }
+}
+.modal-tabpanel{display:none;animation:fadeIn 0.4s ease}
+.modal-tabpanel.active{
+  display:block;
+  padding:32px;
+}
+@media (max-width: 1024px) {
+  .modal-tabpanel.active{
+    padding:24px;
+  }
+}
+@media (max-width: 768px) {
+  .modal-tabpanel.active{
+    padding:16px;
+  }
+}
+
+/* Tab Headers */
+.tab-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:24px;
+  margin-bottom:28px;
+  padding-bottom:20px;
+  border-bottom:1px solid var(--ring);
+}
+.tab-header h3{
+  margin:0 0 8px 0;
+  font-size:20px;
+  color:var(--text);
+  font-weight:700;
+}
+.tab-description{
+  margin:0;
+  font-size:13px;
+  color:var(--muted);
+  line-height:1.5;
+}
+@media (max-width: 768px) {
+  .tab-header{
+    flex-direction:column;
+    gap:16px;
+    margin-bottom:20px;
+    padding-bottom:16px;
+  }
+  .tab-header h3{
+    font-size:18px;
+  }
+  .tab-header button{
+    width:100%;
+  }
+}
+
+/* Filters Bar */
+.filters-bar{display:flex;gap:12px;margin-bottom:24px;padding:16px;background:var(--bg-2);border-radius:10px;border:1px solid var(--ring)}
+.filter-select{appearance:none;background:var(--bg);border:1px solid var(--ring);color:var(--text);padding:10px 12px;border-radius:8px;font-size:13px;cursor:pointer;transition:all 0.2s ease;min-width:200px}
+.filter-select:hover,.filter-select:focus{border-color:var(--primary);box-shadow:0 0 8px rgba(91,157,255,.2);outline:none}
+
+/* Settings Styles */
+.settings-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px}
+.settings-section{background:var(--bg-2);border:1px solid var(--ring);border-radius:10px;padding:20px;transition:all 0.2s ease}
+.formula-container{display:grid;grid-template-columns:repeat(auto-fit, minmax(300px, 1fr));gap:16px;padding:16px}
+.formula-section{background:var(--bg-2);border:1px solid var(--ring);border-radius:10px;padding:20px;transition:all 0.2s ease}
+.formula-section-title{margin-top:0;margin-bottom:16px;color:var(--primary);font-weight:500}
+.formula-label{font-family:monospace;background:rgba(0,0,0,0.2);padding:8px;border-radius:6px;display:block;margin-top:8px}
+.math-formula{color:var(--text)}
+.status-config{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+.status-badge{display:inline-block;padding:2px 8px;border-radius:4px;margin-right:8px;font-weight:500;font-size:0.85em}
+.status-badge.danger{background:var(--danger);color:white}
+.status-badge.warn{background:var(--warn);color:#000}
+.status-badge.ok{background:var(--ok);color:#000}
+.weight-config{display:grid;grid-template-columns:repeat(auto-fit, minmax(140px, 1fr));gap:16px}
+.formula-actions{grid-column:1/-1;display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+@media (max-width:768px){.formula-container{grid-template-columns:1fr}.weight-config{grid-template-columns:1fr}}
+.settings-section:hover{border-color:var(--primary);background:var(--bg)}
+.settings-section.danger{border-color:var(--danger);background:rgba(255,95,122,0.05)}
+.settings-section-title{margin:0 0 8px 0;font-size:15px;color:var(--text);font-weight:600}
+.settings-description{margin:0 0 16px 0;font-size:12px;color:var(--muted);line-height:1.5}
+
+/* Whitelabel Styles */
+.whitelabel-container{display:flex;flex-direction:column;gap:24px}
+.whitelabel-section{background:var(--bg-2);border:1px solid var(--ring);border-radius:10px;padding:24px;transition:all 0.2s ease}
+.whitelabel-section:hover{border-color:var(--primary)}
+.whitelabel-section-title{margin:0 0 16px 0;font-size:16px;color:var(--text);font-weight:600}
+.form-group{margin-bottom:16px;display:flex;flex-direction:column;gap:8px}
+.form-group label{font-size:13px;font-weight:500;color:var(--text)}
+.form-input{padding:10px 12px;border:1px solid var(--ring);border-radius:8px;background:var(--bg);color:var(--text);font-size:14px;transition:all 0.2s ease}
+.form-input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 2px rgba(91,157,255,0.1)}
+.form-help{font-size:11px;color:var(--muted);margin:0}
+.logo-upload-area{display:flex;flex-direction:column;gap:12px;align-items:center;padding:16px;border:2px dashed var(--ring);border-radius:8px;background:rgba(91,157,255,0.02);transition:all 0.2s ease}
+.logo-upload-area:hover{border-color:var(--primary);background:rgba(91,157,255,0.05)}
+.logo-preview{width:100%;height:100px;background:var(--bg);border:1px solid var(--ring);border-radius:6px;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative}
+.logo-preview img{max-width:100%;max-height:100%;object-fit:contain}
+.logo-placeholder{font-size:12px;color:var(--muted)}
+.whitelabel-preview{background:var(--bg);border:1px solid var(--ring);border-radius:8px;overflow:hidden;box-shadow:inset 0 0 20px rgba(0,0,0,0.2)}
+.preview-header{display:flex;align-items:center;justify-content:space-between;padding:24px;gap:20px;background:linear-gradient(135deg,rgba(91,157,255,0.08),rgba(91,157,255,0.01))}
+.preview-logo-left,.preview-logo-right{width:120px;height:60px;background:var(--bg-2);border:1px solid var(--ring);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:12px;color:var(--muted)}
+.preview-logo-left img,.preview-logo-right img{max-width:100%;max-height:100%;object-fit:contain}
+.preview-title{flex:1;text-align:center}
+.preview-title h2{margin:0 0 4px 0;font-size:20px;color:var(--text);font-weight:700}
+.preview-title p{margin:0;font-size:12px;color:var(--muted)}
+.btn-sm{padding:6px 12px;font-size:12px}
+
+/* Applications Table Container */
+.apps-table-container{
+  max-height:70vh;
+  overflow-y:auto;
+  overflow-x:hidden;
+  border:1px solid var(--ring);
+  border-radius:10px;
+  background:var(--bg);
+  box-shadow:inset 0 0 20px rgba(0,0,0,0.2);
+  scrollbar-width:thin;
+  scrollbar-color:rgba(91,157,255,0.3) rgba(0,0,0,0.1);
+}
+
+/* Modal Footer */
+.modal-footer{display:flex;gap:16px;justify-content:flex-end;padding:24px 32px;border-top:1px solid var(--ring);background:var(--bg-2);margin-top:auto;flex-shrink:0}
+@media (max-width: 768px) {
+  .modal-footer{padding:16px 20px;flex-direction:column;gap:10px}
+  .modal-footer button {width:100%}
+}
+
+/* Modal Scroll Container */
+.modal-scroll-container{
+  flex:1;
+  overflow-y:auto;
+  overflow-x:hidden;
+  scrollbar-width:thin;
+  scrollbar-color:rgba(91,157,255,0.3) rgba(0,0,0,0.1);
+  padding-bottom:20px;
+}
+.modal-scroll-container::-webkit-scrollbar {
+  width: 8px;
+}
+.modal-scroll-container::-webkit-scrollbar-track {
+  background: rgba(0,0,0,0.1);
+  border-radius: 4px;
+}
+.modal-scroll-container::-webkit-scrollbar-thumb {
+  background: rgba(91,157,255,0.3);
+  border-radius: 4px;
+}
+.modal-scroll-container::-webkit-scrollbar-thumb:hover {
+  background: rgba(91,157,255,0.5);
+}
+
+/* Applications Selector Section */
+.apps-selector-section{background:var(--glass);border:1px solid var(--ring);border-radius:10px;padding:20px;margin-bottom:24px}
+.bu-selector-premium{appearance:none;background:var(--bg-2);border:1px solid var(--ring);color:var(--text);padding:12px 14px;border-radius:8px;font-size:14px;width:100%;cursor:pointer;transition:all 0.2s ease;font-weight:600}
+.bu-selector-premium:hover,.bu-selector-premium:focus{border-color:var(--primary);background:var(--bg);box-shadow:0 0 12px rgba(91,157,255,.25);outline:none}
+
+/* Apps Editor Container */
+#appEditorContainer h3{font-size:18px;color:var(--text);font-weight:700;margin:0 0 16px 0;display:flex;align-items:center;gap:8px}
+#appEditorContainer h3:before{content:"📋";font-size:20px}
+
+/* Apps Editor Header */
+.apps-editor-header{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid var(--ring)}
+
+/* Apps Table Wrapper */
+.apps-table-wrapper{border:1px solid var(--ring);border-radius:10px;overflow:hidden}
+.cell-input{appearance:none;background:transparent;border:none;color:var(--text);padding:2px;font-size:12px;width:100%;font-family:inherit}
+.cell-input:focus{outline:none;background:var(--ring);border-radius:4px;padding:2px 4px}
+.cell-select{appearance:none;background:transparent;border:none;color:var(--text);padding:2px;font-size:12px;width:100%;cursor:pointer;font-family:inherit}
+.cell-select:focus{outline:none;background:var(--ring);border-radius:4px;padding:2px 4px}
+.progress-cell{position:relative}
+.progress-cell input{width:100%}
+.mini-progress{position:absolute;bottom:0;left:0;height:2px;border-radius:1px;opacity:0.6;transition:width 0.3s ease}
+.empty-row{background:var(--bg-2)!important}
+.bu-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
+@media (min-width: 1400px) {
+  .bu-list{grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px}
+}
+@media (max-width: 768px) {
+  .bu-list{grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+}
+.bu-card{padding:16px;border:1px solid var(--ring);border-radius:14px;background:linear-gradient(160deg, var(--glass), transparent), var(--bg-2);cursor:pointer;transition:all .3s cubic-bezier(0.17, 0.67, 0.83, 0.67);position:relative;margin-bottom:14px;box-shadow:0 2px 6px rgba(0,0,0,0.08);overflow:hidden;animation:fadeIn 0.5s ease-out}
+.bu-card::before{content:'';position:absolute;left:0;top:0;width:4px;height:100%;background:var(--primary);opacity:0;transition:opacity .2s ease}
+.bu-card:hover{background:linear-gradient(160deg, var(--glass), transparent), var(--bg);border-color:var(--primary);transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,0.12)}
+.bu-card.selected{border-color:var(--primary);background:linear-gradient(160deg, var(--glass), transparent), var(--ring)}
+.bu-card.selected::before{opacity:1}
+.bu-card-name{font-weight:700;margin-bottom:6px;font-size:16px;display:flex;align-items:center;gap:6px}
+.bu-card-meta{font-size:12px;color:var(--muted);margin-bottom:4px;display:flex;align-items:center;gap:4px}
+.bu-card-meta:last-child{margin-top:8px;padding-top:8px;border-top:1px dashed var(--ring)}
+.bu-card-actions{position:absolute;top:12px;right:12px;display:flex;gap:6px;z-index:5;opacity:0.6;transition:opacity 0.2s, transform 0.2s}
+.bu-card:hover .bu-card-actions{opacity:1;transform:translateY(0)}
+.bu-card-btn{appearance:none;background:rgba(0,0,0,0.1);border:1px solid rgba(255,255,255,0.1);backdrop-filter:blur(2px);color:var(--text);cursor:pointer;font-size:14px;padding:0;width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;transition:transform 0.2s, color 0.2s, background-color 0.2s, box-shadow 0.2s}
+.bu-card-btn:hover{color:var(--primary);transform:scale(1.1);background:var(--bg);box-shadow:0 3px 6px rgba(0,0,0,0.15)}
+.bu-card-btn.edit-bu-btn:hover{color:var(--primary)}
+.bu-card-btn.delete-bu-btn:hover{color:var(--danger)}
+.bu-empty-badge{font-size:10px;background:var(--ring);color:var(--muted);padding:3px 7px;border-radius:10px;vertical-align:middle;font-weight:500}
+.bu-card.empty{opacity:0.85;border-style:dashed}
+.bu-card-progress{position:relative;height:6px;background:var(--ring);border-radius:3px;margin-top:10px;overflow:hidden}
+.bu-card-progress-bar{position:absolute;left:0;top:0;height:100%;background:var(--primary);border-radius:3px}
+.bu-card-icon{display:inline-block;width:14px;height:14px;line-height:14px;font-size:12px;text-align:center}
+.app-table{
+  width:100%;
+  border-collapse:separate;
+  border-spacing:0;
+  margin-top:0;
+  background:var(--bg);
+  table-layout:auto;
+}
+.app-table th{
+  text-align:left;
+  padding:16px 18px;
+  border-bottom:2px solid var(--ring);
+  font-size:14px;
+  color:var(--text);
+  font-weight:700;
+  background:linear-gradient(180deg, var(--bg-2), rgba(14, 22, 39, 0.8));
+  cursor:pointer;
+  user-select:none;
+  transition:all 0.2s ease;
+  position:sticky;
+  top:0;
+  z-index:5;
+}
+.app-table th:hover{
+  background:linear-gradient(180deg, rgba(91,157,255,0.1), rgba(14, 22, 39, 0.9));
+  color:var(--primary);
+}
+.app-table td{
+  padding:14px 18px;
+  border-bottom:1px solid var(--ring);
+  font-size:14px;
+}
+.app-table tr{background-color:var(--bg);transition:background-color 0.2s ease}
+.app-table tr:hover{background:var(--bg-2)}
+.app-table input[type=text],.app-table input[type=number],.app-table select{appearance:none;background:var(--bg-2);border:1px solid var(--ring);color:var(--text);padding:8px 10px;border-radius:6px;font-size:13px;width:100%;transition:border-color 0.2s ease}
+.app-table input:focus,.app-table select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 8px rgba(91,157,255,.2)}
+
+@media (min-width: 1400px) {
+  .app-table th, .app-table td {padding: 16px 14px}
+  .app-table input[type=text],.app-table input[type=number],.app-table select {padding: 8px 12px;font-size:14px}
+}
+@media (max-width: 768px) {
+  .app-table {display: block; overflow-x: auto; white-space: nowrap}
+  .app-table th, .app-table td {padding: 10px 8px}
+}
+
+/* Applications Overview Table Styles */
+#appsOverviewTable{width:100%;table-layout:fixed;border-collapse:collapse;border-spacing:0}
+#appsOverviewTable th{background-color:var(--bg-2);position:sticky;top:0;z-index:10;border-bottom:2px solid var(--ring);cursor:pointer}
+#appsOverviewTableBody tr{background-color:var(--bg);margin:0;padding:0}
+#appsOverviewTable tbody tr:nth-child(odd){background-color:var(--bg)}
+#appsOverviewTable tbody tr:nth-child(even){background-color:var(--bg-2)}
+#appsOverviewTable th:hover{background-color:var(--ring)}
+#appsOverviewTable th:after{content:"⇵";opacity:0.3;margin-left:5px}
+#appsOverviewTable th.sort-asc:after{content:"↑";opacity:1}
+#appsOverviewTable th.sort-desc:after{content:"↓";opacity:1}
+.apps-table-container{max-height:500px;overflow-y:auto;margin-bottom:20px;border:1px solid var(--ring);border-radius:4px}
+#appsOverviewTable td{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* Column width adjustments */
+#appsOverviewTable th:nth-child(1), #appsOverviewTable td:nth-child(1) {width:50px} /* ID */
+#appsOverviewTable th:nth-child(2), #appsOverviewTable td:nth-child(2) {width:80px} /* BU */
+#appsOverviewTable th:nth-child(3), #appsOverviewTable td:nth-child(3) {width:80px} /* Wave */
+#appsOverviewTable th:nth-child(4), #appsOverviewTable td:nth-child(4) {width:200px} /* App Name */
+#appsOverviewTable th:nth-child(5), #appsOverviewTable td:nth-child(5) {width:60px} /* Priority */
+#appsOverviewTable th:nth-child(6), #appsOverviewTable td:nth-child(6) {width:80px} /* Criticality */
+#appsOverviewTable th:nth-child(7), #appsOverviewTable td:nth-child(7) {width:120px} /* Business Impact */
+#appsOverviewTable th:nth-child(8), #appsOverviewTable td:nth-child(8) {width:150px} /* Completion */
+#appsOverviewTable th:nth-child(9), #appsOverviewTable td:nth-child(9) {width:70px} /* Status */
+#appsOverviewTable .critical{background-color:#ffecec}
+#appsOverviewTable .high{background-color:#fff9ec}
+#appsOverviewTable .progress-cell{width:150px}
+#appsOverviewTable .progress-text{font-size:12px;margin-bottom:2px;font-weight:bold}
+#appsOverviewTable .progress-bar{background-color:var(--ring);height:12px;border-radius:6px;overflow:hidden;margin-top:4px}
+#appsOverviewTable .progress-value{height:100%;background-color:var(--primary)}
+#appsOverviewTable tr.empty-row{display:none}
+#appsOverviewTable tbody tr:nth-child(even){background-color:rgba(255,255,255,0.03)}
+#appsOverviewTable td{padding:10px 8px}
+
+.form-group{margin-bottom:20px}
+.form-group label{display:block;margin-bottom:8px;font-size:13px;color:var(--text);font-weight:600;letter-spacing:0.3px}
+.form-group input,.form-group select,.form-group textarea{appearance:none;background:var(--bg-2);border:1px solid var(--ring);color:var(--text);padding:12px;border-radius:8px;font-size:14px;width:100%;font-family:inherit;transition:all 0.2s ease}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:var(--primary);box-shadow:0 0 12px rgba(91,157,255,.25);background:var(--bg)}
+.form-group input:hover,.form-group select:hover,.form-group textarea:hover{border-color:var(--primary);background:var(--bg)}
+.form-hint{display:block;font-size:12px;color:var(--muted);margin-top:6px;font-style:italic}
+.form-actions{display:flex;gap:12px;margin-top:30px;justify-content:flex-end}
+.form-error{color:var(--danger);font-size:12px;margin-top:6px;display:flex;align-items:center;gap:4px}
+.form-error:before{content:"⚠️";font-size:12px}
+.form-success{color:var(--ok);font-size:12px;margin-top:6px;display:flex;align-items:center;gap:4px}
+.form-success:before{content:"✅";font-size:12px}
+.form-stats{background:var(--glass);border:1px solid var(--ring);border-radius:10px;padding:16px;margin-top:16px}
+.form-stats-title{font-weight:600;font-size:15px;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.form-stats-title:before{content:"📊";font-size:15px}
+.form-stats-item{display:flex;justify-content:space-between;margin-bottom:6px;font-size:13px;padding:4px 0;border-bottom:1px dashed var(--ring)}
+.form-stats-item:last-child{border-bottom:none}
+.form-row{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+
+/* New Form Elements */
+.input-with-icon{position:relative;display:flex;align-items:center}
+.input-with-icon .input-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:14px;pointer-events:none;opacity:0.7}
+.input-with-icon input{padding-left:36px}
+
+.color-picker{display:flex;align-items:center;gap:10px;background:var(--bg-2);border:1px solid var(--ring);border-radius:8px;padding:6px 12px;transition:all 0.2s ease}
+.color-picker:hover{border-color:var(--primary);background:var(--bg)}
+.color-picker input[type="color"]{-webkit-appearance:none;appearance:none;border:none;background:none;width:30px;height:30px;padding:0;cursor:pointer}
+.color-picker input[type="color"]::-webkit-color-swatch-wrapper{padding:0}
+.color-picker input[type="color"]::-webkit-color-swatch{border:none;border-radius:50%}
+.color-preview{display:inline-block;width:24px;height:24px;border-radius:50%;background:var(--primary)}
+
+.btn-icon{margin-right:6px;font-size:14px}
+.status-badge{display:inline-block;padding:3px 8px;border-radius:4px;font-size:11px;font-weight:600;text-transform:uppercase}
+.status-tbs{background:rgba(255,95,122,.2);color:var(--danger)}
+.status-wip{background:rgba(255,209,102,.2);color:var(--warn)}
+.status-clo{background:rgba(50,230,133,.2);color:var(--ok)}
+.btn-group{display:flex;gap:8px;margin-top:16px}
+.btn-primary{
+  appearance:none;
+  background:linear-gradient(135deg,var(--primary),#4d86ff);
+  border:none;
+  color:white;
+  padding:12px 24px;
+  border-radius:10px;
+  cursor:pointer;
+  font-weight:600;
+  font-size:14px;
+  transition:all .3s cubic-bezier(.25,.8,.25,1);
+  box-shadow:0 4px 15px rgba(91,157,255,0.3);
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  position:relative;
+  overflow:hidden;
+}
+.btn-primary:hover{
+  filter:brightness(1.15);
+  box-shadow:0 6px 20px rgba(91,157,255,0.4);
+  transform:translateY(-2px);
+}
+.btn-primary:hover::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: rgba(255,255,255,0.1);
+  transform: rotate(30deg);
+  animation: btn-shine 1.5s ease-in-out;
+}
+.btn-primary:active{
+  transform:translateY(0);
+  filter:brightness(0.95);
+}
+@keyframes btn-shine {
+  0% {
+    transform: translateX(-100%) rotate(30deg);
+  }
+  100% {
+    transform: translateX(100%) rotate(30deg);
+  }
+}
+.btn-secondary{
+  appearance:none;
+  background:rgba(255,255,255,0.03);
+  border:1px solid var(--ring);
+  color:var(--text);
+  padding:12px 24px;
+  border-radius:10px;
+  cursor:pointer;
+  font-weight:600;
+  font-size:14px;
+  transition:all .3s cubic-bezier(.25,.8,.25,1);
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  box-shadow:0 2px 10px rgba(0,0,0,0.1);
+}
+.btn-secondary:hover{
+  background:rgba(91,157,255,0.08);
+  border-color:var(--primary);
+  color:var(--primary);
+  box-shadow:0 4px 15px rgba(0,0,0,0.15);
+}
+.btn-danger{appearance:none;background:linear-gradient(135deg,var(--danger),#ff4757);border:none;color:white;padding:12px 20px;border-radius:8px;cursor:pointer;font-weight:600;font-size:13px;transition:all .2s ease;box-shadow:0 4px 12px rgba(255,95,122,0.3);display:inline-flex;align-items:center;gap:6px}
+.btn-danger:hover{filter:brightness(1.15);box-shadow:0 6px 16px rgba(255,95,122,0.4);transform:translateY(-1px)}
+.btn-info{appearance:none;background:linear-gradient(135deg,var(--primary),#4a90e2);border:none;color:white;padding:12px 20px;border-radius:8px;cursor:pointer;font-weight:600;font-size:13px;transition:all .2s ease;box-shadow:0 4px 12px rgba(91,157,255,0.3);display:inline-flex;align-items:center;gap:6px}
+.btn-info:hover{filter:brightness(1.15);box-shadow:0 6px 16px rgba(91,157,255,0.4);transform:translateY(-1px)}
+.btn-sm{padding:8px 12px;font-size:12px}
+
+/* Dashboard Specific Styles */
+/* --- HERO GAUGE --- */
+.hero{grid-column:span 5;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.hero .inner{width:100%;display:flex;align-items:center;justify-content:center;aspect-ratio:1/1;position:relative}
+.hero h2{position:absolute;top:16px;left:16px;margin:0;font-size:16px;color:var(--muted)}
+.hero .val{position:absolute;text-align:center;inset:auto;top:50%;transform:translateY(-50%)}
+.hero .val .big{font-size:48px;font-weight:900;letter-spacing:.5px}
+.hero .val .sub{color:var(--muted)}
+.spark{position:absolute;inset:auto 10% 6% auto;background:radial-gradient(circle at 30% 30%, #fff, #fff0 60%);filter:blur(12px);width:120px;height:120px;opacity:.2}
+
+/* --- CONSTELLATION GRID --- */
+.constel{grid-column:span 7;padding:16px}
+.constel h3{margin:0 0 8px 0;font-size:16px;color:var(--muted)}
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.tile{position:relative;padding:10px 12px 12px 12px;border-radius:14px;background:linear-gradient(160deg, var(--glass), transparent);border:1px solid var(--ring);display:flex;align-items:center;gap:12px;overflow:hidden}
+.tile .name{font-weight:700}
+.tile .meta{font-size:12px;color:var(--muted)}
+.tile .orb{width:80px;height:80px;flex:0 0 auto}
+.tile .spot{position:absolute;inset:-20% -10% auto auto;width:120px;height:120px;background:radial-gradient(closest-side, rgba(255,255,255,.12), transparent);filter:blur(8px)}
+
+/* --- RANKED BARS --- */
+.bars{grid-column:span 12;padding:16px}
+.bars h3{margin:0 0 8px 0;font-size:16px;color:var(--muted)}
+.tip{color:var(--muted);font-size:12px}
+
+/* --- KPIs STRIP --- */
+.kpis{grid-column:span 12;display:grid;grid-template-columns:repeat(4,1fr);gap:var(--gap)}
+.kpi{display:flex;align-items:center;gap:12px;padding:14px 16px;background:linear-gradient(180deg, var(--glass), transparent), var(--panel);border:1px solid var(--ring);border-radius:14px}
+.kpi .dot{width:12px;height:12px;border-radius:50%}
+.kpi h4{margin:0;font-size:12px;color:var(--muted)}
+.kpi .num{font-size:24px;font-weight:900}
+
+/* Main CSS styles */
+:root{
+  --bg:#080b13;
+  --bg-2:#0d1320;
+  --panel:#0e1627;
+  --glass:rgba(255,255,255,.06);
+
+  --text:#e9eef7;
+  --muted:#9fb0c7;
+
+  --grid:#22133d;
+  --ring:#1a2a48;
+
+  --ok:#32e685;
+  --warn:#ffd166;
+  --low:#693bff;
+  --danger:#ff5f7a;
+
+  --accent:#78bfae;
+  --primary:#5b9dff;
+
+  --white:#fff;
+  --black:#000;
+
+  --shadow:0 10px 40px rgba(0,0,0,.35);
+  --radius:16px;
+  --gap:16px;
+}
+
+[data-theme="light"]{
+  --bg:#f6f8fc;
+  --bg-2:#eef2f9;
+  --panel:#ffffff;
+  --glass:rgba(20,30,60,.08);
+
+  --text:#0e1726;
+  --muted:#4b5b78;
+
+  --grid:#d6deea;
+  --ring:#c8d4e8;
+
+  --shadow:0 10px 28px rgba(15,45,90,.12);
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  background:radial-gradient(1400px 700px at 10% -10%, #20355f00, #0b1220), var(--bg);
+  color:var(--text);
+  font-family:ui-sans-serif,system-ui,Segoe UI,Roboto,Arial;
+}
+
+.wrapper{max-width:1280px;margin:0 auto;padding:20px}
+header{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:10px}
+.h-title h1{margin:0;font-size:22px;letter-spacing:.3px}
+.h-title small{color:var(--muted)}
+
+.controls{display:flex;gap:8px;flex-wrap:wrap}
+.controls>*{
+  background:var(--panel);
+  border:1px solid var(--ring);
+  color:var(--text);
+  border-radius:10px;
+  padding:10px 12px;
+  box-shadow:var(--shadow)
+}
+.controls input[type=search]{
+  min-width:240px;background:transparent;outline:none;border:none
+}
+
+.btn{cursor:pointer;user-select:none}
+.btn:hover{filter:brightness(1.08)}
+
+.pill{border-radius:9999px;border:1px solid var(--ring);background:var(--panel);padding:6px 10px;color:var(--muted);font-size:12px}
+
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:var(--gap)}
+.card{
+  background:linear-gradient(180deg, var(--glass), transparent), var(--panel);
+  border:1px solid var(--ring);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow)
+}
+.card.pad{padding:16px}
+
+/* --- HERO GAUGE --- */
+.hero{grid-column:span 5;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.hero .inner{width:100%;display:flex;align-items:center;justify-content:center;aspect-ratio:1/1;position:relative}
+.hero h2{position:absolute;top:16px;left:16px;margin:0;font-size:16px;color:var(--muted)}
+.hero .val{position:absolute;text-align:center;inset:auto;top:50%;transform:translateY(-50%)}
+.hero .val .big{font-size:48px;font-weight:900;letter-spacing:.5px}
+.hero .val .sub{color:var(--muted)}
+.spark{position:absolute;inset:auto 10% 6% auto;background:radial-gradient(circle at 30% 30%, #fff, #fff0 60%);filter:blur(12px);width:120px;height:120px;opacity:.2}
+
+/* --- CONSTELLATION GRID --- */
+.constel{grid-column:span 7;padding:16px}
+.constel h3{margin:0 0 8px 0;font-size:16px;color:var(--muted)}
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.tile{position:relative;padding:10px 12px 12px 12px;border-radius:14px;background:linear-gradient(160deg, var(--glass), transparent);border:1px solid var(--ring);display:flex;align-items:center;gap:12px;overflow:hidden}
+.tile .name{font-weight:700}
+.tile .meta{font-size:12px;color:var(--muted)}
+.tile .orb{width:80px;height:80px;flex:0 0 auto}
+.tile .spot{position:absolute;inset:-20% -10% auto auto;width:120px;height:120px;background:radial-gradient(closest-side, rgba(255,255,255,.12), transparent);filter:blur(8px)}
+
+/* --- RANKED BARS --- */
+.bars{grid-column:span 12;padding:16px}
+.bars h3{margin:0 0 8px 0;font-size:16px;color:var(--muted)}
+.tip{color:var(--muted);font-size:12px}
+
+/* --- KPIs STRIP --- */
+.kpis{grid-column:span 12;display:grid;grid-template-columns:repeat(4,1fr);gap:var(--gap)}
+.kpi{display:flex;align-items:center;gap:12px;padding:14px 16px;background:linear-gradient(180deg, var(--glass), transparent), var(--panel);border:1px solid var(--ring);border-radius:14px}
+.kpi .dot{width:12px;height:12px;border-radius:50%}
+.kpi h4{margin:0;font-size:12px;color:var(--muted)}
+.kpi .num{font-size:24px;font-weight:900}
+
+/* --- Cinematic mode --- */
+body.cinematic .wrapper{max-width:none}
+body.cinematic .controls{display:none}
+body.cinematic header{margin-bottom:0}
+body.cinematic .grid{gap:12px}
+body.cinematic .hero{grid-column:span 7}
+body.cinematic .constel{grid-column:span 5}
+/* FIX (cinema): reduce indicador principal para evitar scroll */
+body.cinematic .hero .inner{max-width:420px}
+body.cinematic .hero .val .big{font-size:36px}
+body.cinematic .hero .val .sub{font-size:12px}
+
+/* --- Exit Cinematic floating button --- */
+.exit-cinema{position:fixed;top:16px;right:16px;z-index:10000;display:none}
+body.cinematic .exit-cinema{display:inline-flex}
+
+/* --- Theme toggle --- */
+.switch{display:inline-flex;gap:8px;align-items:center}
+.toggle{appearance:none;width:44px;height:24px;border:1px solid var(--ring);border-radius:20px;background:var(--bg-2);position:relative;outline:none;cursor:pointer}
+.toggle::after{content:"";position:absolute;inset:3px auto auto 3px;width:18px;height:18px;border-radius:50%;background:linear-gradient(180deg,#2bc3ff,#4d86ff);box-shadow:0 2px 8px rgba(0,0,0,.4);transition:transform .2s ease}
+.toggle:checked::after{transform:translateX(20px)}
+
+/* --- Accessibility helpers --- */
+.sr{position:absolute;left:-9999px}
+
+@media (max-width:1080px){
+  .hero{grid-column:span 12}
+  .constel{grid-column:span 12}
+}
+@media (max-width:720px){
+  .tiles{grid-template-columns:repeat(2,1fr)}
+  .kpis{grid-template-columns:repeat(2,1fr)}
+}
+@media (max-width:520px){
+  .tiles{grid-template-columns:1fr}
+  .kpis{grid-template-columns:1fr}
+}
+
+</style>
+</head>
+<body>
+  <div class="wrapper">
+    <header>
+            <div class="h-title">
+              <h1 id="mainTitleDisplay"></h1>
+              <small id="subtitleDisplay"></small>
+            </div>      <div class="controls" role="region" aria-label="Controles">
+        <input id="q" type="search" placeholder="/ Search Business Unit… (HR, PAY, GDPA)" aria-label="Buscar" />
+        <select id="status" aria-label="Filtro de estado">
+          <option value="all">All</option>
+          <option value="done">100%</option>
+          <option value="wip">1–99%</option>
+          <option value="todo">0%</option>
+        </select>
+
+        <button class="btn pill" data-sort="name" title="Order A→Z (tecla: s)">A→Z</button>
+        <button class="btn pill" data-sort="progress" title="Order by Advance">Advance</button>
+
+        <div class="switch" title="Theme light/dark">
+          <span>🌙</span><input id="theme" class="toggle" type="checkbox" /><span>☀️</span>
+        </div>
+
+        <button id="cinema" class="btn pill" title="Cinematic Mode (key: x)">Cinematic</button>
+        <button id="exportBars" class="btn pill" title="Exportar barras PNG">Bar PNG</button>
+        <button id="exportSVG" class="btn pill" title="Exportar barras SVG">Bar SVG</button>
+        <button id="exportCSV" class="btn pill" title="Exportar CSV">CSV</button>
+        <button id="setupAdmin" class="btn pill" title="Administration">Setup</button>
+      </div>
+    </header>
+
+    <!-- FIX: botón flotante para salir del modo cinemático -->
+    <button id="exitCinema" class="btn pill exit-cinema" title="Turn off cinematic mode (Esc)">Exit</button>
+
+    <section class="grid">
+      <div class="card hero">
+        <div class="inner">
+          <h2>Progreso Global</h2>
+          <svg id="heroGauge" viewBox="0 0 360 360" width="100%" height="100%" role="img" aria-label="Medidor global"></svg>
+          <div class="val" style="inset:auto; top:50%; transform:translateY(-50%);">
+            <div class="big" id="heroPct">—%</div>
+            <div class="sub" id="heroCaption">Avg</div>
+          </div>
+          <div class="spark"></div>
+        </div>
+      </div>
+
+      <div class="card constel pad">
+        <h3>BU's Constellation</h3>
+        <div class="tiles" id="tiles"></div>
+        <p class="tip">Hover to activate spotlight · Click to lock focus · Press ESC to release</p>
+      </div>
+
+      <div class="card kpis">
+        <div class="kpi"><div class="dot" style="background:var(--ok)"></div><h4>Completed</h4><div class="num" id="kpiDone">—</div></div>
+        <div class="kpi"><div class="dot" style="background:var(--warn)"></div><h4>In Progress</h4><div class="num" id="kpiWip">—</div></div>
+        <div class="kpi"><div class="dot" style="background:var(--danger)"></div><h4>About to Start</h4><div class="num" id="kpiTodo">—</div></div>
+        <div class="kpi"><div class="dot" style="background:var(--accent)"></div><h4>Total Avg</h4><div class="num" id="kpiAvg">—%</div></div>
+      </div>
+
+      <div class="card bars pad">
+        <h3>Ranking by Advance</h3>
+        <svg id="bars" viewBox="0 0 1100 460" width="100%" height="100%" role="img" aria-label="Barras de avance"></svg>
+        <p class="tip">Use controls to order and filter · Enter to clean up Search Bar</p>
+      </div>
+    </section>
+  </div>
+
+  
+  <!-- ADMIN MODAL -->
+  <div id="adminModal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>📊 Project Administration</h2>
+        <button class="modal-close" id="closeAdminModal">✕</button>
+      </div>
+      
+      <!-- BU EDITOR MODAL (nested) -->
+      <div id="buEditorModal" class="nested-modal">
+        <div class="nested-modal-content">
+          <div class="modal-header">
+            <h3 id="buEditorTitle">Edit Business Unit</h3>
+            <button class="modal-close" id="closeBUEditorModal">✕</button>
+          </div>
+          <div class="modal-body">
+            <form id="buEditorForm">
+              <div class="form-group">
+                <label for="buNameInput">Business Unit Name <span style="color:var(--danger)">*</span></label>
+                <div class="input-with-icon">
+                  <span class="input-icon">✏️</span>
+                  <input type="text" id="buNameInput" placeholder="Business Unit Name" required>
+                </div>
+                <small class="form-hint">The display name for this business unit (e.g., HR, IT, SALES)</small>
+                <div id="buNameError" class="form-error"></div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="buDomainInput">Domain Code <span style="color:var(--danger)">*</span></label>
+                  <div class="input-with-icon">
+                    <span class="input-icon">🏢</span>
+                    <input type="text" id="buDomainInput" placeholder="ABCD" maxlength="4" required pattern="[A-Z0-9]{1,4}">
+                  </div>
+                  <small class="form-hint">Short code (max 4 characters, uppercase)</small>
+                  <div id="buDomainError" class="form-error"></div>
+                </div>
+                <div class="form-group">
+                  <label for="buColorInput">Color Theme</label>
+                  <div class="color-picker">
+                    <input type="color" id="buColorInput" value="#5b9dff">
+                    <span class="color-preview" id="colorPreview"></span>
+                  </div>
+                  <small class="form-hint">Choose a representative color</small>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="buFullnameInput">Full Name/Description <span style="color:var(--danger)">*</span></label>
+                <div class="input-with-icon">
+                  <span class="input-icon">📝</span>
+                  <input type="text" id="buFullnameInput" placeholder="Business Unit Full Name" required>
+                </div>
+                <small class="form-hint">Complete name or description (e.g., Human Resources Department)</small>
+                <div id="buFullnameError" class="form-error"></div>
+              </div>
+              <div class="form-group">
+                <label for="buManagerInput">Manager/Lead Contact</label>
+                <div class="input-with-icon">
+                  <span class="input-icon">👤</span>
+                  <input type="text" id="buManagerInput" placeholder="Manager Name">
+                </div>
+                <small class="form-hint">Optional: Name of the Business Unit leader</small>
+              </div>
+              <div class="form-group" id="buEditorStats"></div>
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary"><span class="btn-icon">💾</span> Save Changes</button>
+                <button type="button" class="btn btn-secondary" id="buEditorCancel">Cancel</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      
+      <!-- APP EDITOR MODAL (nested) -->
+      <div id="appEditorModal" class="nested-modal">
+        <div class="nested-modal-content">
+          <div class="modal-header">
+            <h3 id="appEditorTitle">✨ Create New Application</h3>
+            <button class="modal-close" id="closeAppEditorModal">✕</button>
+          </div>
+          <div class="modal-body">
+            <form id="appEditorForm">
+              <div class="form-group">
+                <label for="appNameInput">Application Name <span style="color:var(--danger)">*</span></label>
+                <div class="input-with-icon">
+                  <span class="input-icon">📱</span>
+                  <input type="text" id="appNameInput" placeholder="Application Name" required>
+                </div>
+                <small class="form-hint">Display name for this application</small>
+                <div id="appNameError" class="form-error"></div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="appStatusInput">Status <span style="color:var(--danger)">*</span></label>
+                  <select id="appStatusInput" required>
+                    <option value="TBS">To Be Started (TBS)</option>
+                    <option value="WIP">Work In Progress (WIP)</option>
+                    <option value="CLO">Completed (CLO)</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="appProgressInput">Progress %</label>
+                  <input type="number" id="appProgressInput" min="0" max="100" value="0">
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="appCriticalityInput">Criticality <span style="color:var(--danger)">*</span></label>
+                  <select id="appCriticalityInput" required>
+                    <option value="Low">Low</option>
+                    <option value="Medium" selected>Medium</option>
+                    <option value="High">High</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="appImpactInput">Business Impact <span style="color:var(--danger)">*</span></label>
+                  <select id="appImpactInput" required>
+                    <option value="Low">Low</option>
+                    <option value="Medium" selected>Medium</option>
+                    <option value="High">High</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="appWeightInput">Weight (Impact Factor)</label>
+                  <input type="number" id="appWeightInput" min="0.5" max="3" step="0.5" value="1">
+                  <small class="form-hint">0.5 = Low, 1 = Normal, 3 = Critical</small>
+                </div>
+                <div class="form-group">
+                  <label for="appWaveInput">Wave</label>
+                  <select id="appWaveInput">
+                    <option value="Wave 1">Wave 1</option>
+                    <option value="Wave 2">Wave 2</option>
+                    <option value="Wave 3">Wave 3</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group" id="appEditorStats"></div>
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary"><span class="btn-icon">💾</span> Create Application</button>
+                <button type="button" class="btn btn-secondary" id="appEditorCancel">Cancel</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      
+      <div class="modal-tabs">
+        <button class="modal-tab active" data-tab="buses">Business Units</button>
+        <button class="modal-tab" data-tab="apps">Applications</button>
+        <button class="modal-tab" data-tab="app-overview">Applications Overview</button>
+        <button class="modal-tab" data-tab="whitelabel">Whitelabel</button>
+        <button class="modal-tab" data-tab="formulas">Calculation Formulas</button>
+        <button class="modal-tab" data-tab="settings">Settings</button>
+      </div>
+      
+      <div class="modal-scroll-container">
+      
+      <!-- TAB: BUSINESS UNITS -->
+      <div class="modal-tabpanel active" id="tab-buses">
+        <div class="tab-header">
+          <div>
+            <h3>Business Units Management</h3>
+            <p class="tab-description">Create, edit, and manage all business units for your project</p>
+          </div>
+          <button class="btn btn-primary" id="newBUBtn"><span class="btn-icon">✨</span> New Business Unit</button>
+        </div>
+        <div class="bu-list" id="buList"></div>
+      </div>
+      
+      <!-- TAB: APPLICATIONS -->
+      <div class="modal-tabpanel" id="tab-apps">
+        <div class="tab-header">
+          <div>
+            <h3>Applications Management</h3>
+            <p class="tab-description">Manage applications and their properties for each business unit</p>
+          </div>
+        </div>
+        <div class="apps-selector-section">
+          <div class="form-group" style="margin-bottom:0">
+            <label for="appBUFilter">📱 Select Business Unit</label>
+            <select id="appBUFilter" class="bu-selector-premium"></select>
+          </div>
+        </div>
+        <div id="appEditorContainer"></div>
+      </div>
+      
+      <!-- TAB: APPLICATIONS OVERVIEW -->
+      <div class="modal-tabpanel" id="tab-app-overview">
+        <div class="tab-header">
+          <div>
+            <h3>Applications Overview</h3>
+            <p class="tab-description">Complete view of all applications across business units with filtering and sorting</p>
+          </div>
+          <button class="btn btn-secondary" id="resetAppOverviewFilters"><span class="btn-icon">🔄</span> Reset Filters</button>
+        </div>
+        <div class="filters-bar">
+          <select id="overviewFilterField" class="filter-select">
+            <option value="all">Filter By: All</option>
+            <option value="status">Status</option>
+            <option value="criticality">Criticality</option>
+            <option value="wave">Wave</option>
+            <option value="buId">Business Unit</option>
+          </select>
+          <select id="overviewFilterValue" class="filter-select">
+            <option value="all">All Values</option>
+          </select>
+        </div>
+        <div class="apps-table-container">
+          <table class="app-table" id="appsOverviewTable">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>BU</th>
+                <th>Wave</th>
+                <th>App Name</th>
+                <th>Priority</th>
+                <th>Criticality</th>
+                <th>Business Impact</th>
+                <th>Completion</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="appsOverviewTableBody">
+              <!-- App data will be populated here -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+      
+      <!-- TAB: WHITELABEL -->
+      <div class="modal-tabpanel" id="tab-whitelabel">
+        <div class="tab-header">
+          <div>
+            <h3>Whitelabel Configuration</h3>
+            <p class="tab-description">Customize branding, titles, and logos for your project</p>
+          </div>
+        </div>
+        <div class="whitelabel-container">
+          <!-- Title Section -->
+          <div class="whitelabel-section">
+            <h4 class="whitelabel-section-title">📝 Project Title</h4>
+            <div class="form-group">
+              <label>Main Title</label>
+              <input type="text" id="wl-mainTitle" placeholder="" class="form-input"/>
+              <p class="form-help">Appears in the main header</p>
+            </div>
+            <div class="form-group">
+              <label>Subtitle</label>
+              <input type="text" id="wl-subtitle" placeholder="" class="form-input"/>
+              <p class="form-help">Appears below the main title</p>
+            </div>
+          </div>
+
+          <!-- Logos Section -->
+          <div class="whitelabel-section">
+            <h4 class="whitelabel-section-title">🎨 Logos</h4>
+            
+            <!-- Left Logo -->
+            <div class="form-group">
+              <label>Left Logo</label>
+              <div class="logo-upload-area" id="leftLogoArea">
+                <div class="logo-preview" id="leftLogoPreview">
+                  <span class="logo-placeholder">📷 Left Logo</span>
+                </div>
+                <input type="file" id="leftLogoInput" accept="image/*" style="display:none"/>
+                <button type="button" class="btn btn-secondary" id="leftLogoBrowseBtn"><span class="btn-icon">📁</span> Upload Logo</button>
+              </div>
+              <p class="form-help">Recommended size: 200x80px (PNG/JPG)</p>
+              <button type="button" class="btn btn-sm btn-danger" id="leftLogoClearBtn" style="margin-top:8px">Clear Logo</button>
+            </div>
+
+            <!-- Right Logo -->
+            <div class="form-group">
+              <label>Right Logo</label>
+              <div class="logo-upload-area" id="rightLogoArea">
+                <div class="logo-preview" id="rightLogoPreview">
+                  <span class="logo-placeholder">📷 Right Logo</span>
+                </div>
+                <input type="file" id="rightLogoInput" accept="image/*" style="display:none"/>
+                <button type="button" class="btn btn-secondary" id="rightLogoBrowseBtn"><span class="btn-icon">📁</span> Upload Logo</button>
+              </div>
+              <p class="form-help">Recommended size: 200x80px (PNG/JPG)</p>
+              <button type="button" class="btn btn-sm btn-danger" id="rightLogoClearBtn" style="margin-top:8px">Clear Logo</button>
+            </div>
+          </div>
+
+          <!-- Preview Section -->
+          <div class="whitelabel-section">
+            <h4 class="whitelabel-section-title">👁️ Live Preview</h4>
+            <div class="whitelabel-preview">
+              <div class="preview-header">
+                <div class="preview-logo-left" id="previewLogoLeft">
+                  <span>Logo</span>
+                </div>
+                <div class="preview-title">
+                  <h2 id="previewMainTitle"></h2>
+                  <p id="previewSubtitle"></p>
+                </div>
+                <div class="preview-logo-right" id="previewLogoRight">
+                  <span>Logo</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="whitelabel-section">
+            <button class="btn btn-primary" id="wl-saveBtn"><span class="btn-icon">💾</span> Save Whitelabel Config</button>
+            <button class="btn btn-secondary" id="wl-resetBtn"><span class="btn-icon">↺</span> Reset to Defaults</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: CALCULATION FORMULAS -->
+      <div class="modal-tabpanel" id="tab-formulas">
+        <div class="tab-header">
+          <div>
+            <h3>Calculation Formulas</h3>
+            <p class="tab-description">Configure how progress is calculated for business units and the overall dashboard</p>
+          </div>
+        </div>
+        <div class="formula-container">
+          <!-- Progress Calculation Method -->
+          <div class="formula-section">
+            <h4 class="formula-section-title">📊 Progress Calculation Method</h4>
+            <div class="form-group">
+              <label>BU Progress Formula</label>
+              <select id="formula-progress-method" class="form-select">
+                <option value="weighted">Weighted Average (Current)</option>
+                <option value="simple">Simple Average</option>
+                <option value="minimum">Minimum Progress</option>
+              </select>
+              <p class="formula-label">
+                <span class="math-formula weighted">BU Progress = Σ(App Progress × Weight) / Σ(Weight)</span>
+                <span class="math-formula simple" style="display:none">BU Progress = Σ(App Progress) / Count(Apps)</span>
+                <span class="math-formula minimum" style="display:none">BU Progress = MIN(App Progress)</span>
+              </p>
+            </div>
+          </div>
+          
+          <!-- Status Inclusion Rules -->
+          <div class="formula-section">
+            <h4 class="formula-section-title">🔄 Status Inclusion Rules</h4>
+            <p class="settings-description">Select which application statuses should be included in calculations</p>
+            <div class="status-config">
+              <div class="form-check">
+                <input type="checkbox" id="include-status-tbs" class="form-checkbox">
+                <label for="include-status-tbs">
+                  <span class="status-badge danger">TBS</span> To Be Started
+                </label>
+              </div>
+              <div class="form-check">
+                <input type="checkbox" id="include-status-wip" class="form-checkbox" checked>
+                <label for="include-status-wip">
+                  <span class="status-badge warn">WIP</span> Work In Progress
+                </label>
+              </div>
+              <div class="form-check">
+                <input type="checkbox" id="include-status-clo" class="form-checkbox" checked>
+                <label for="include-status-clo">
+                  <span class="status-badge ok">CLO</span> Closed
+                </label>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Weight Parameters -->
+          <div class="formula-section">
+            <h4 class="formula-section-title">⚖️ Weight Parameters</h4>
+            <div class="weight-config">
+              <div class="form-group">
+                <label>Minimum Weight</label>
+                <input type="number" id="weight-min" class="form-input" value="0.5" min="0.1" max="10" step="0.1">
+              </div>
+              <div class="form-group">
+                <label>Maximum Weight</label>
+                <input type="number" id="weight-max" class="form-input" value="3.0" min="0.5" max="10" step="0.1">
+              </div>
+              <div class="form-group">
+                <label>Default Weight</label>
+                <input type="number" id="weight-default" class="form-input" value="1.0" min="0.5" max="5" step="0.1">
+              </div>
+            </div>
+          </div>
+          
+          <!-- Criticality Multipliers -->
+          <div class="formula-section">
+            <h4 class="formula-section-title">🔥 Criticality Multipliers</h4>
+            <div class="weight-config">
+              <div class="form-group">
+                <label>Low Criticality (×)</label>
+                <input type="number" id="crit-low" class="form-input" value="1.0" min="0.5" max="2" step="0.1">
+              </div>
+              <div class="form-group">
+                <label>Medium Criticality (×)</label>
+                <input type="number" id="crit-medium" class="form-input" value="1.0" min="0.5" max="2" step="0.1">
+              </div>
+              <div class="form-group">
+                <label>High Criticality (×)</label>
+                <input type="number" id="crit-high" class="form-input" value="1.2" min="0.5" max="3" step="0.1">
+                <p class="form-help">Default: 20% boost for high criticality apps</p>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Global Progress Formula -->
+          <div class="formula-section">
+            <h4 class="formula-section-title">🌐 Global Progress Formula</h4>
+            <div class="form-group">
+              <label>Overall Progress Method</label>
+              <select id="formula-global-method" class="form-select">
+                <option value="weighted">Weighted by BU Size</option>
+                <option value="simple">Simple BU Average</option>
+              </select>
+              <p class="formula-label">
+                <span class="math-formula global-weighted">Global = Σ(BU Progress × BU App Count) / Σ(App Count)</span>
+                <span class="math-formula global-simple" style="display:none">Global = Σ(BU Progress) / Count(BUs)</span>
+              </p>
+            </div>
+          </div>
+
+<!-- FORMULA HELPERS - WORLD CLASS INLINE SUPPORT SYSTEM -->
+<!-- This fragment adds interactive helpers, tooltips, presets, and quick tips to the formula configuration modal -->
+
+<!-- CSS STYLES FOR HELPERS -->
+<style>
+/* Helper Container and Layout */
+.formula-helpers-section {
+  background: linear-gradient(135deg, rgba(91,157,255,0.08), rgba(91,157,255,0.02));
+  border: 1px solid rgba(91,157,255,0.2);
+  border-radius: 14px;
+  padding: 20px;
+  margin: 24px 0;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  animation: slideIn 0.4s ease;
+}
+
+.helper-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--primary);
+  cursor: pointer;
+  user-select: none;
+  transition: color 0.2s ease;
+}
+
+.helper-header:hover {
+  color: #7bb2ff;
+}
+
+.helper-toggle-icon {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  line-height: 20px;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  font-size: 16px;
+}
+
+.helper-toggle-icon.expanded {
+  transform: rotate(180deg);
+}
+
+/* Quick Presets Grid */
+.quick-presets-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  margin: 16px 0;
+}
+
+.preset-button {
+  background: rgba(91,157,255,0.1);
+  border: 1px solid rgba(91,157,255,0.3);
+  border-radius: 10px;
+  padding: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 13px;
+  color: var(--text);
+  text-align: left;
+  position: relative;
+  overflow: hidden;
+}
+
+.preset-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(91,157,255,0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.preset-button:hover {
+  background: rgba(91,157,255,0.15);
+  border-color: rgba(91,157,255,0.5);
+  box-shadow: 0 0 15px rgba(91,157,255,0.2);
+}
+
+.preset-button:hover::before {
+  left: 100%;
+}
+
+.preset-title {
+  font-weight: 600;
+  color: var(--primary);
+  margin-bottom: 6px;
+  display: block;
+}
+
+.preset-desc {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+.preset-meta {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+  font-size: 11px;
+}
+
+.preset-tag {
+  background: rgba(50,230,133,0.15);
+  color: #32e685;
+  padding: 3px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.preset-tag.warn {
+  background: rgba(255,209,102,0.15);
+  color: #ffd166;
+}
+
+.preset-tag.danger {
+  background: rgba(255,95,122,0.15);
+  color: #ff5f7a;
+}
+
+/* Quick Tips */
+.quick-tips-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 16px 0;
+}
+
+.quick-tip {
+  background: rgba(50,230,133,0.08);
+  border-left: 3px solid #32e685;
+  padding: 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text);
+  transition: all 0.3s ease;
+}
+
+.quick-tip:hover {
+  background: rgba(50,230,133,0.12);
+  box-shadow: 0 2px 8px rgba(50,230,133,0.15);
+}
+
+.quick-tip-icon {
+  font-weight: bold;
+  margin-right: 6px;
+  color: #32e685;
+}
+
+.quick-tip.warn {
+  background: rgba(255,209,102,0.08);
+  border-left-color: #ffd166;
+}
+
+.quick-tip.warn .quick-tip-icon {
+  color: #ffd166;
+}
+
+.quick-tip.danger {
+  background: rgba(255,95,122,0.08);
+  border-left-color: #ff5f7a;
+}
+
+.quick-tip.danger .quick-tip-icon {
+  color: #ff5f7a;
+}
+
+/* Formula Comparison Chart */
+.formula-comparison {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+  margin: 16px 0;
+}
+
+.formula-card {
+  background: linear-gradient(135deg, rgba(91,157,255,0.05), transparent);
+  border: 1px solid rgba(91,157,255,0.2);
+  border-radius: 10px;
+  padding: 12px;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.formula-card:hover {
+  border-color: rgba(91,157,255,0.4);
+  box-shadow: 0 4px 12px rgba(91,157,255,0.15);
+  background: linear-gradient(135deg, rgba(91,157,255,0.1), transparent);
+}
+
+.formula-card-name {
+  font-weight: 600;
+  color: var(--primary);
+  margin-bottom: 8px;
+  font-size: 13px;
+}
+
+.formula-card-desc {
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.4;
+  margin-bottom: 8px;
+}
+
+.formula-card-meta {
+  font-size: 10px;
+  background: rgba(0,0,0,0.2);
+  padding: 6px;
+  border-radius: 4px;
+  color: var(--muted);
+}
+
+/* Visual Indicators */
+.complexity-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+}
+
+.complexity-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(91,157,255,0.3);
+}
+
+.complexity-dot.filled {
+  background: var(--primary);
+  box-shadow: 0 0 4px var(--primary);
+}
+
+/* Decision Matrix */
+.decision-matrix {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 16px 0;
+  font-size: 12px;
+  border: 1px solid rgba(91,157,255,0.2);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.decision-matrix thead {
+  background: rgba(91,157,255,0.1);
+  border-bottom: 2px solid rgba(91,157,255,0.2);
+}
+
+.decision-matrix th {
+  padding: 12px;
+  text-align: left;
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.decision-matrix td {
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(91,157,255,0.1);
+  color: var(--text);
+}
+
+.decision-matrix tr:last-child td {
+  border-bottom: none;
+}
+
+.decision-matrix tr:hover {
+  background: rgba(91,157,255,0.05);
+}
+
+/* Parameter Guide */
+.param-guide {
+  background: rgba(0,0,0,0.2);
+  border-radius: 10px;
+  padding: 14px;
+  margin: 12px 0;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text);
+  border: 1px solid rgba(91,157,255,0.15);
+}
+
+.param-guide-title {
+  font-weight: 600;
+  color: var(--primary);
+  margin-bottom: 8px;
+  display: block;
+}
+
+.param-range {
+  font-family: monospace;
+  background: rgba(0,0,0,0.3);
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  color: #7bb2ff;
+  display: inline-block;
+  margin: 0 4px;
+}
+
+/* Best Practice Badge */
+.best-practice-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, rgba(50,230,133,0.2), rgba(50,230,133,0.05));
+  border: 1px solid rgba(50,230,133,0.3);
+  color: #32e685;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  margin: 0 4px;
+  animation: glowPulse 2s ease infinite;
+}
+
+/* Recommended Configuration */
+.recommended-config {
+  background: linear-gradient(135deg, rgba(50,230,133,0.1), rgba(50,230,133,0.02));
+  border: 2px solid rgba(50,230,133,0.3);
+  border-radius: 10px;
+  padding: 16px;
+  margin: 16px 0;
+  position: relative;
+}
+
+.recommended-config::before {
+  content: '✨ RECOMMENDED';
+  position: absolute;
+  top: -12px;
+  left: 12px;
+  background: linear-gradient(135deg, #32e685, #1fa05d);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(50,230,133,0.3);
+}
+
+.recommended-config-title {
+  font-weight: 600;
+  color: #32e685;
+  margin-bottom: 8px;
+  font-size: 13px;
+  margin-top: 8px;
+}
+
+.recommended-config-desc {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+/* Animation for helpers appearing */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .quick-presets-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .formula-comparison {
+    grid-template-columns: 1fr;
+  }
+  
+  .decision-matrix {
+    font-size: 11px;
+  }
+  
+  .decision-matrix th,
+  .decision-matrix td {
+    padding: 8px;
+  }
+}
+</style>
+
+<!-- Quick Presets Section -->
+<div class="formula-helpers-section">
+  <div class="helper-header" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'block' : 'none'; this.querySelector('.helper-toggle-icon').classList.toggle('expanded')">
+    <span class="helper-toggle-icon">▼</span>
+    <span>📌 QUICK PRESETS - Start in 30 seconds</span>
+  </div>
+  
+  <div class="quick-presets-grid">
+    <button class="preset-button" onclick="applyFormulaPreset('startup')">
+      <span class="preset-title">🚀 Startup</span>
+      <span class="preset-desc">Simple, transparent. Perfect for new teams.</span>
+      <div class="preset-meta">
+        <span class="preset-tag">Simple Avg</span>
+        <span class="preset-tag">Fast Setup</span>
+      </div>
+    </button>
+    
+    <button class="preset-button" onclick="applyFormulaPreset('enterprise')">
+      <span class="preset-title">🏢 Enterprise</span>
+      <span class="preset-desc">Weighted, realistic. For complex organizations.</span>
+      <div class="preset-meta">
+        <span class="preset-tag">Weighted</span>
+        <span class="preset-tag warn">Customizable</span>
+      </div>
+    </button>
+    
+    <button class="preset-button" onclick="applyFormulaPreset('audit')">
+      <span class="preset-title">📋 Audit/Compliance</span>
+      <span class="preset-desc">Conservative, strict. All apps must complete.</span>
+      <div class="preset-meta">
+        <span class="preset-tag">Minimum</span>
+        <span class="preset-tag danger">Strict</span>
+      </div>
+    </button>
+    
+    <button class="preset-button" onclick="applyFormulaPreset('agile')">
+      <span class="preset-title">⚡ Agile/Project</span>
+      <span class="preset-desc">Dynamic, focused. For sprints and iterations.</span>
+      <div class="preset-meta">
+        <span class="preset-tag">Weighted</span>
+        <span class="preset-tag warn">Active+Finished</span>
+      </div>
+    </button>
+  </div>
+</div>
+
+<!-- Quick Tips Section -->
+<div class="formula-helpers-section">
+  <div class="helper-header" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'block' : 'none'; this.querySelector('.helper-toggle-icon').classList.toggle('expanded')">
+    <span class="helper-toggle-icon">▼</span>
+    <span>💡 QUICK TIPS</span>
+  </div>
+  
+  <div class="quick-tips-list">
+    <div class="quick-tip">
+      <span class="quick-tip-icon">✓</span>
+      <strong>Start simple:</strong> Use 'Simple Average' if unsure. You can always switch to 'Weighted' later.
+    </div>
+    <div class="quick-tip">
+      <span class="quick-tip-icon">✓</span>
+      <strong>Test before saving:</strong> Click "Test Calculation" to preview changes without persisting.
+    </div>
+    <div class="quick-tip warn">
+      <span class="quick-tip-icon">⚠</span>
+      <strong>Weight matters:</strong> Higher weights = more impact on overall progress. Use 0.5-2.0 for most apps.
+    </div>
+    <div class="quick-tip">
+      <span class="quick-tip-icon">✓</span>
+      <strong>Status inclusion:</strong> Include 'To Be Started' to show realistic timelines. Exclude for current-work focus.
+    </div>
+    <div class="quick-tip danger">
+      <span class="quick-tip-icon">⚠</span>
+      <strong>Minimum formula:</strong> Shows bottleneck (lowest app progress). Use only when all items must complete.
+    </div>
+    <div class="quick-tip">
+      <span class="quick-tip-icon">✓</span>
+      <strong>Export your config:</strong> Save your formula as JSON to share with team or backup.
+    </div>
+  </div>
+</div>
+
+<!-- Formula Comparison Section -->
+<div class="formula-helpers-section">
+  <div class="helper-header" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'block' : 'none'; this.querySelector('.helper-toggle-icon').classList.toggle('expanded')">
+    <span class="helper-toggle-icon">▼</span>
+    <span>📊 FORMULA COMPARISON</span>
+  </div>
+  
+  <div class="formula-comparison">
+    <div class="formula-card">
+      <div class="formula-card-name">Weighted Average</div>
+      <div class="formula-card-desc">Accounts for app importance via weights.</div>
+      <div class="formula-card-meta">
+        <div class="complexity-indicator">
+          Complexity:
+          <span class="complexity-dot filled"></span>
+          <span class="complexity-dot filled"></span>
+          <span class="complexity-dot"></span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="formula-card">
+      <div class="formula-card-name">Simple Average</div>
+      <div class="formula-card-desc">All apps equally important. Easy to explain.</div>
+      <div class="formula-card-meta">
+        <div class="complexity-indicator">
+          Complexity:
+          <span class="complexity-dot filled"></span>
+          <span class="complexity-dot"></span>
+          <span class="complexity-dot"></span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="formula-card">
+      <div class="formula-card-name">Minimum Progress</div>
+      <div class="formula-card-desc">Shows bottleneck. Very conservative.</div>
+      <div class="formula-card-meta">
+        <div class="complexity-indicator">
+          Complexity:
+          <span class="complexity-dot filled"></span>
+          <span class="complexity-dot"></span>
+          <span class="complexity-dot"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Decision Matrix -->
+<div class="formula-helpers-section">
+  <div class="helper-header" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'block' : 'none'; this.querySelector('.helper-toggle-icon').classList.toggle('expanded')">
+    <span class="helper-toggle-icon">▼</span>
+    <span>🎯 DECISION GUIDE</span>
+  </div>
+  
+  <table class="decision-matrix">
+    <thead>
+      <tr>
+        <th>Your Situation</th>
+        <th>Recommended Setup</th>
+        <th>Key Settings</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Apps with different priorities</td>
+        <td><span class="best-practice-badge">Weighted Avg</span></td>
+        <td>Customize weights per app</td>
+      </tr>
+      <tr>
+        <td>All apps equally important</td>
+        <td><span class="best-practice-badge">Simple Avg</span></td>
+        <td>Default weights (all 1.0)</td>
+      </tr>
+      <tr>
+        <td>Critical: ALL must complete</td>
+        <td><span class="best-practice-badge">Minimum</span></td>
+        <td>Include CLO status only</td>
+      </tr>
+      <tr>
+        <td>Active work focus</td>
+        <td>Any method</td>
+        <td>Include WIP+CLO, exclude TBS</td>
+      </tr>
+      <tr>
+        <td>Show realistic timeline</td>
+        <td>Any method</td>
+        <td>Include TBS+WIP+CLO</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Parameter Quick Reference -->
+<div class="formula-helpers-section">
+  <div class="helper-header" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'block' : 'none'; this.querySelector('.helper-toggle-icon').classList.toggle('expanded')">
+    <span class="helper-toggle-icon">▼</span>
+    <span>⚙️ PARAMETER QUICK REFERENCE</span>
+  </div>
+  
+  <div class="param-guide">
+    <span class="param-guide-title">📊 Weight (App Importance)</span>
+    Range: <span class="param-range">0.3 - 10.0</span> | Default: <span class="param-range">1.0</span>
+    <br>
+    <small style="line-height: 1.6; display: block; margin-top: 6px;">Lower weight = less important | Higher weight = more important | 1.0 = standard importance</small>
+  </div>
+  
+  <div class="param-guide">
+    <span class="param-guide-title">🔥 Criticality (Urgency Multiplier)</span>
+    Range: <span class="param-range">0.5 - 2.0</span> | Default: <span class="param-range">1.0 - 1.2</span>
+    <br>
+    <small style="line-height: 1.6; display: block; margin-top: 6px;">Applied on top of weight | Use 1.5+ for deadline pressure | Use 0.8 for low urgency</small>
+  </div>
+  
+  <div class="param-guide">
+    <span class="param-guide-title">🔄 Status Inclusion</span>
+    <br>
+    <small style="line-height: 1.6; display: block; margin-top: 6px;"><strong>TBS (To Be Started):</strong> Future work. Include for realistic timeline. | <strong>WIP (In Progress):</strong> Active work. Usually include. | <strong>CLO (Closed):</strong> Finished work. Usually include.</small>
+  </div>
+</div>
+
+<!-- Recommended Configuration -->
+<div class="recommended-config">
+  <div class="recommended-config-title">🌟 Best Practice for Most Organizations</div>
+  <div class="recommended-config-desc">
+    <strong>Method:</strong> Weighted Average | <strong>Status:</strong> Include all (TBS + WIP + CLO) | 
+    <strong>Weights:</strong> 0.5-3.0 by importance | <strong>Criticality:</strong> 1.0-1.2 standard
+    <br><br>
+    This combination is transparent, realistic, and handles most scenarios well. Adjust as needed for your specific context.
+  </div>
+</div>
+
+<!-- JavaScript for Presets -->
+<script>
+// Preset configurations
+const formulaPresets = {
+  startup: {
+    method: 'simple',
+    statusTBS: false,
+    statusWIP: true,
+    statusCLO: false,
+    weightMin: 0.5,
+    weightMax: 1.0,
+    weightDefault: 1.0,
+    critLow: 1.0,
+    critMedium: 1.0,
+    critHigh: 1.0,
+    globalMethod: 'simple'
+  },
+  enterprise: {
+    method: 'weighted',
+    statusTBS: true,
+    statusWIP: true,
+    statusCLO: true,
+    weightMin: 0.3,
+    weightMax: 3.0,
+    weightDefault: 1.0,
+    critLow: 0.8,
+    critMedium: 1.0,
+    critHigh: 1.3,
+    globalMethod: 'weighted'
+  },
+  audit: {
+    method: 'minimum',
+    statusTBS: false,
+    statusWIP: false,
+    statusCLO: true,
+    weightMin: 0.5,
+    weightMax: 1.0,
+    weightDefault: 1.0,
+    critLow: 1.0,
+    critMedium: 1.0,
+    critHigh: 1.0,
+    globalMethod: 'simple'
+  },
+  agile: {
+    method: 'weighted',
+    statusTBS: false,
+    statusWIP: true,
+    statusCLO: true,
+    weightMin: 0.5,
+    weightMax: 2.0,
+    weightDefault: 1.0,
+    critLow: 0.9,
+    critMedium: 1.0,
+    critHigh: 1.1,
+    globalMethod: 'simple'
+  }
+};
+
+// Apply formula preset
+function applyFormulaPreset(presetName) {
+  const preset = formulaPresets[presetName];
+  if (!preset) return;
+  
+  // Set method
+  document.getElementById('formula-progress-method').value = preset.method;
+  
+  // Set status inclusion
+  document.getElementById('include-status-tbs').checked = preset.statusTBS;
+  document.getElementById('include-status-wip').checked = preset.statusWIP;
+  document.getElementById('include-status-clo').checked = preset.statusCLO;
+  
+  // Set weights
+  document.getElementById('weight-min').value = preset.weightMin;
+  document.getElementById('weight-max').value = preset.weightMax;
+  document.getElementById('weight-default').value = preset.weightDefault;
+  
+  // Set criticality
+  document.getElementById('crit-low').value = preset.critLow;
+  document.getElementById('crit-medium').value = preset.critMedium;
+  document.getElementById('crit-high').value = preset.critHigh;
+  
+  // Set global method
+  document.getElementById('formula-global-method').value = preset.globalMethod;
+  
+  // Show confirmation
+  alert(`✅ Applied preset: ${presetName.toUpperCase()}\n\nClick "Test Calculation" to see the impact.`);
+}
+</script>
+          
+          <!-- Actions -->
+          <div class="formula-actions">
+            <button class="btn btn-primary" id="save-formula-config"><span class="btn-icon">💾</span> Save Configuration</button>
+            <button class="btn btn-secondary" id="reset-formula-config"><span class="btn-icon">↺</span> Reset to Defaults</button>
+            <button class="btn btn-secondary" id="test-formula-config"><span class="btn-icon">🧪</span> Test Calculation</button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- TAB: SETTINGS -->
+      <div class="modal-tabpanel" id="tab-settings">
+        <div class="tab-header">
+          <div>
+            <h3>Global Settings</h3>
+            <p class="tab-description">Manage configuration, data import/export, and other global settings</p>
+          </div>
+        </div>
+        <div class="settings-grid">
+          <div class="settings-section">
+            <h4 class="settings-section-title">💾 Data Export</h4>
+            <p class="settings-description">Export your project configuration as JSON</p>
+            <button class="btn btn-secondary" id="exportAdminJSON"><span class="btn-icon">📥</span> Export Config as JSON</button>
+          </div>
+          <div class="settings-section">
+            <h4 class="settings-section-title">📂 Data Import</h4>
+            <p class="settings-description">Import a previously exported configuration file</p>
+            <input type="file" id="importAdminJSON" accept=".json" style="display:block;width:100%;padding:8px;border:1px solid var(--ring);border-radius:8px;background:var(--bg-2);color:var(--text);cursor:pointer"/>
+          </div>
+          <div class="settings-section">
+            <h4 class="settings-section-title">📋 Audit Trail</h4>
+            <p class="settings-description">View all application reassignments and changes</p>
+            <button class="btn btn-secondary" id="showAuditTrailBtn"><span class="btn-icon">📋</span> View Audit Trail</button>
+          </div>
+          <div class="settings-section danger">
+            <h4 class="settings-section-title">🗑️ Clear All Data</h4>
+            <p class="settings-description">Remove all data from local storage. This action cannot be undone.</p>
+            <button class="btn btn-danger" id="clearAllDataBtn"><span class="btn-icon">⚠️</span> Clear All Data</button>
+          </div>
+        </div>
+      </div>
+      </div>
+      
+      <div class="modal-footer">
+        <button class="btn btn-primary" id="saveAdminBtn"><span class="btn-icon">💾</span> Save & Close</button>
+        <button class="btn btn-secondary" id="cancelAdminBtn">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript Modules - Embedded directly to avoid CORS issues -->
+  <!-- No external scripts - all code embedded inline to avoid CORS errors -->
+<script>
+/* ========== Storage Manager Module ========== */
+const StorageManager = {
+  STORAGE_KEY: 'dashboard_config_v1',
+  CLEARED_FLAG: 'dashboard_user_cleared_v1',
+  
+  init() {
+    // =========== SISTEMA DE DETECCIÓN DE BORRADO INTENCIONAL ===========
+    console.log('🔍 [StorageManager.init] Verificando estado de los datos...');
+    console.log('📊 [DIAGNÓSTICO INICIAL]', {
+      localStorage_STORAGE_KEY: localStorage.getItem(this.STORAGE_KEY),
+      localStorage_Keys: Object.keys(localStorage),
+      DATA_length: DATA ? DATA.length : 'undefined',
+      Dashboard_DATA_length: window.Dashboard && window.Dashboard.DATA ? window.Dashboard.DATA.length : 'undefined'
+    });
+    
+    // 1. SOLO inicializar si no hay datos
+    if (!localStorage.getItem(this.STORAGE_KEY)) {
+      console.log('🔄 [StorageManager.init] No hay datos existentes, inicializando dashboard por defecto');
+      console.log('📊 [INICIALIZACIÓN] Usando DATA con', DATA.length, 'elementos:', JSON.stringify(DATA));
+      
+      // Solo inicializar si DATA tiene elementos (de lo contrario, mantener vacío)
+      if (DATA && DATA.length > 0) {
+        this.saveConfig({
+          buses: DATA.map((d, i) => ({
+            id: i + 1,
+            key: d.key,
+            name: d.name,
+            domain: 'CORF',
+            fullname: d.name + ' Department',
+            apps: []
+          })),
+          apps: [],
+          waves: [
+            { id: 1, name: 'Wave 1' },
+            { id: 2, name: 'Wave 2' },
+            { id: 3, name: 'Wave 3' }
+          ]
+        });
+        console.log('✅ [StorageManager.init] Dashboard inicializado con datos por defecto');
+      } else {
+        console.log('✅ [StorageManager.init] DATA está vacío, manteniendo estado vacío');
+        this.saveConfig({ buses: [], apps: [], waves: [] });
+      }
+    } else {
+      console.log('ℹ️ [StorageManager.init] Datos existentes encontrados en localStorage');
+    }
+    
+    // CRITICAL: Rebuild DATA array from storage (not from hardcode)
+    console.log('🔄 [StorageManager.init] Reconstruyendo DATA desde storage...');
+    rebuildDATAFromStorage();
+  },
+  
+  loadConfig() {
+    const config = localStorage.getItem(this.STORAGE_KEY);
+    return config ? JSON.parse(config) : this.getDefaultConfig();
+  },
+  
+  saveConfig(config) {
+    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(config));
+  },
+  
+  getDefaultConfig() {
+    return { buses: [], apps: [], waves: [] };
+  },
+  
+  getBUs() {
+    return this.loadConfig().buses || [];
+  },
+  
+  getApps() {
+    return this.loadConfig().apps || [];
+  },
+  
+  getAppsByBU(buId) {
+    return this.getApps().filter(app => app.buId === buId);
+  },
+  
+  addBU(bu) {
+    const config = this.loadConfig();
+    bu.id = Math.max(...config.buses.map(b => b.id), 0) + 1;
+    
+    // Ensure all new properties are set with defaults
+    bu.key = bu.domain; // Keep key and domain in sync
+    bu.color = bu.color || '#5b9dff';
+    bu.manager = bu.manager || '';
+    
+    config.buses.push(bu);
+    this.saveConfig(config);
+    return bu;
+  },
+  
+  updateBU(buId, updates) {
+    const config = this.loadConfig();
+    const bu = config.buses.find(b => b.id === buId);
+    if (bu) {
+      // Ensure we preserve custom properties like color and manager
+      Object.assign(bu, updates);
+      // Make sure key and domain stay in sync
+      bu.key = bu.domain;
+    }
+    this.saveConfig(config);
+  },
+  
+  deleteBU(buId) {
+    const config = this.loadConfig();
+    config.buses = config.buses.filter(b => b.id !== buId);
+    config.apps = config.apps.filter(a => a.buId !== buId);
+    this.saveConfig(config);
+  },
+  
+  addApp(app) {
+    const config = this.loadConfig();
+    app.id = Math.max(...config.apps.map(a => a.id || 0), 0) + 1;
+    
+    // Ensure all required fields have default values if not provided
+    app.name = app.name || 'Unnamed App';
+    app.buId = app.buId || null; // This should be caught by validation
+    app.status = app.status || 'TBS';
+    app.progress = app.progress || 0;
+    app.criticality = app.criticality || 'Medium';
+    app.impact = app.impact || 'Medium';
+    app.order = app.order || 0;
+    app.wave = app.wave || 'Wave 1';
+    app.weight = app.weight || 1;
+    
+    // Only add if it has a valid buId
+    if (app.buId !== null && app.buId !== undefined) {
+      config.apps.push(app);
+      this.saveConfig(config);
+    }
+    
+    return app;
+  },
+  
+  updateApp(appId, updates) {
+    const config = this.loadConfig();
+    const app = config.apps.find(a => a.id === appId);
+    if (app) Object.assign(app, updates);
+    this.saveConfig(config);
+  },
+  
+  deleteApp(appId) {
+    const config = this.loadConfig();
+    config.apps = config.apps.filter(a => a.id !== appId);
+    this.saveConfig(config);
+  },
+  
+  getAllApps() {
+    return this.getApps();
+  },
+  
+  getBUById(buId) {
+    return this.getBUs().find(bu => bu.id === buId);
+  },
+  
+  markAsCleared() {
+    // Mark in sessionStorage so page reload doesn't auto-recreate data
+    console.log('🚫 Marking data as INTENTIONALLY CLEARED');
+    sessionStorage.clear(); // Limpiar cualquier valor previo
+    sessionStorage.setItem(this.CLEARED_FLAG, 'INTENTIONALLY_CLEARED_BY_USER');
+    
+    // Verificar que se guardó correctamente
+    const verifyFlag = sessionStorage.getItem(this.CLEARED_FLAG);
+    console.log('✅ Verification - CLEARED_FLAG saved as:', verifyFlag);
+  },
+  
+  // Función emergencia para restablecer datos si es necesario
+  resetClearedFlag() {
+    console.log('🔄 Resetting cleared flag - allowing data initialization');
+    sessionStorage.removeItem(this.CLEARED_FLAG);
+    return !sessionStorage.getItem(this.CLEARED_FLAG);
+  },
+  
+  reassignApp(appId, newBuId) {
+    console.log(`📋 [StorageManager] Reassigning app ${appId} to BU ${newBuId}`);
+    
+    const config = this.loadConfig();
+    const app = config.apps.find(a => a.id === appId);
+    
+    if (!app) {
+      console.error(`❌ App ${appId} not found`);
+      return false;
+    }
+    
+    const oldBuId = app.buId;
+    const oldBU = config.buses.find(b => b.id === oldBuId);
+    const newBU = config.buses.find(b => b.id === newBuId);
+    
+    if (!newBU) {
+      console.error(`❌ Target BU ${newBuId} not found`);
+      return false;
+    }
+    
+    // Create audit entry
+    const auditEntry = {
+      timestamp: new Date().toISOString(),
+      action: 'APP_REASSIGNED',
+      appId: appId,
+      appName: app.name,
+      fromBuId: oldBuId,
+      fromBuName: oldBU ? oldBU.name : 'Unknown',
+      toBuId: newBuId,
+      toBuName: newBU.name,
+      status: app.status,
+      progress: app.progress
+    };
+    
+    // Update app
+    app.buId = newBuId;
+    
+    // Initialize audit trail if doesn't exist
+    if (!config.auditTrail) {
+      config.auditTrail = [];
+    }
+    
+    config.auditTrail.push(auditEntry);
+    
+    this.saveConfig(config);
+    
+    console.log(`✅ App reassigned: ${app.name} (${oldBU?.name} → ${newBU.name})`);
+    console.log('📊 Audit entry:', auditEntry);
+    
+    return true;
+  },
+  
+  getAuditTrail() {
+    const config = this.loadConfig();
+    return config.auditTrail || [];
+  },
+  
+  clearAuditTrail() {
+    const config = this.loadConfig();
+    config.auditTrail = [];
+    this.saveConfig(config);
+    console.log('🗑️ Audit trail cleared');
+  }
+};
+
+// Export module for namespace compatibility
+if (!window.Dashboard) window.Dashboard = {};
+window.Dashboard.StorageManager = StorageManager;
+
+/* ========== Progress Calculator Module ========== */
+// REPLACEMENT FOR HARDCODED DATA ARRAY
+// This is now DYNAMICALLY built from StorageManager, not hardcoded
+// The old const DATA = [...] is REMOVED entirely
+
+const DATA = [];  // Empty by default, populated from StorageManager
+
+// Function to rebuild DATA from storage (single source of truth)
+function rebuildDATAFromStorage() {
+  DATA.length = 0;  // Clear array
+  const buses = Dashboard.StorageManager.getBUs();
+  
+  buses.forEach(bus => {
+    const apps = Dashboard.StorageManager.getAppsByBU(bus.id);
+    let progress = 0;
+    
+    if (apps.length > 0) {
+      const totalWeight = apps.reduce((sum, app) => sum + (app.weight || 1), 0);
+      const weightedSum = apps.reduce((sum, app) => {
+        return sum + ((app.progress || 0) * (app.weight || 1));
+      }, 0);
+      progress = totalWeight > 0 ? Math.round((weightedSum / totalWeight) * 100) / 100 : 0;
+    }
+    
+    DATA.push({
+      key: bus.key,
+      name: bus.name,
+      progress: progress
+    });
+  });
+  
+  console.log('🔄 [DATA] Rebuilt from storage:', JSON.stringify(DATA));
+  return DATA;
+}
+
+const ProgressCalculator = {
+  calculateAppWeight(app) {
+    const statusWeights = { TBS: 0, WIP: 0.5, CLO: 1.0 };
+    const criticalityWeights = { Low: 1, Medium: 2, High: 3 };
+    return (statusWeights[app.status] || 0) * (criticalityWeights[app.criticality] || 1);
+  },
+  
+  calculateBUProgress(buId) {
+    const apps = Dashboard.StorageManager.getAppsByBU(buId);
+    if (apps.length === 0) return 0;
+    
+    const weightedSum = apps.reduce((sum, app) => {
+      const weight = app.weight || 1;
+      const progress = app.progress || 0;
+      return sum + (progress * weight);
+    }, 0);
+    
+    const totalWeight = apps.reduce((sum, app) => sum + (app.weight || 1), 0);
+    return totalWeight > 0 ? Math.round((weightedSum / totalWeight) * 100) / 100 : 0;
+  },
+  
+  recalculateAllBUsProgress() {
+    const buses = Dashboard.StorageManager.getBUs();
+    const updated = buses.map(bu => ({
+      ...bu,
+      computedProgress: this.calculateBUProgress(bu.id)
+    }));
+    return updated;
+  },
+  
+  getEnhancedDATA() {
+    // Devuelve DATA actualizado con progreso computado desde storage
+    const buses = this.recalculateAllBUsProgress();
+    return buses.map(bu => ({
+      key: bu.key,
+      name: bu.name,
+      progress: bu.computedProgress || 0
+    }));
+  }
+};
+
+// Export module for namespace compatibility
+if (!window.Dashboard) window.Dashboard = {};
+window.Dashboard.ProgressCalculator = ProgressCalculator;
+window.Dashboard.DATA = DATA;
+
+/* ========== UI Controller Module ========== */
+const UIController = {
+  state: { q: '', status: 'all', sort: 'progress', theme: 'dark', pinned: null },
+
+  init() {
+    // Load whitelabel titles from localStorage on UI init
+    applyWhitelabelTitles();
+    
+    this.setupEventListeners();
+    this.apply();
+  },
+
+  setupEventListeners() {
+    // Controls
+    document.querySelector('#q').addEventListener('input', e => {
+      this.state.q = e.target.value;
+      this.apply();
+    });
+
+    document.querySelector('#status').addEventListener('change', e => {
+      this.state.status = e.target.value;
+      this.apply();
+    });
+
+    Array.from(document.querySelectorAll('button[data-sort]')).forEach(b => b.addEventListener('click', e => {
+      this.state.sort = e.target.dataset.sort;
+      this.apply();
+    }));
+
+    document.querySelector('#theme').addEventListener('change', e => {
+      const theme = e.target.checked ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', theme);
+      this.state.theme = theme;
+      this.apply();
+    });
+
+    document.querySelector('#cinema').addEventListener('click', () => document.body.classList.toggle('cinematic'));
+    document.querySelector('#exitCinema').addEventListener('click', () => {
+      document.body.classList.remove('cinematic');
+    });
+
+    document.addEventListener('keydown', (ev) => {
+      if (ev.key === '/' && document.activeElement.id !== 'q') {
+        ev.preventDefault();
+        document.querySelector('#q').focus();
+      }
+      if (ev.key === 'Enter' && document.activeElement.id === 'q') {
+        ev.preventDefault();
+        document.querySelector('#q').value = '';
+        this.state.q = '';
+        this.apply();
+      }
+      if (ev.key === 's') {
+        this.state.sort = (this.state.sort === 'name' ? 'progress' : 'name');
+        this.apply();
+      }
+      if (ev.key === 'x') {
+        document.body.classList.toggle('cinematic');
+      }
+      // FIX: ESC primero limpia selección; si no hay selección, sale del modo cinemático
+      if (ev.key === 'Escape') {
+        if (this.state.pinned) {
+          this.state.pinned = null;
+          this.apply();
+        } else if (document.body.classList.contains('cinematic')) {
+          document.body.classList.remove('cinematic');
+        }
+      }
+    });
+
+    document.querySelector('#exportBars').addEventListener('click', () => this.svgToPNG(document.querySelector('#bars'), 2400, 1000, 'ranking_avance.png'));
+    document.querySelector('#exportSVG').addEventListener('click', () => {
+      const svg = document.querySelector('#bars').cloneNode(true);
+      const sty = document.createElement('style');
+      sty.textContent = `text{fill:${this.getCSS('--text')};font-family:${getComputedStyle(document.body).fontFamily}}`;
+      svg.insertBefore(sty, svg.firstChild);
+      const s = `<?xml version="1.0"?>` + new XMLSerializer().serializeToString(svg);
+      this.download('ranking_avance.svg', s, 'image/svg+xml');
+    });
+    
+    document.querySelector('#exportCSV').addEventListener('click', () => {
+      const rows = Dashboard.DATA.map(d => `${d.name},${d.progress}`).join('\n');
+      this.download('avance_por_area.csv', 'area,progress\n' + rows, 'text/csv');
+    });
+
+    // Click en hero gauge para ver apps detail
+    document.querySelector('#heroGauge').addEventListener('click', () => {
+      if (this.state.pinned) {
+        const pinned = Dashboard.DATA.find(d => d.name === this.state.pinned);
+        if (pinned) {
+          const buId = Dashboard.StorageManager.getBUs().find(bu => bu.name === pinned.name)?.id;
+          if (buId) {
+            Dashboard.AdminController.currentBUId = buId;
+            Dashboard.AdminController.openModal();
+            Dashboard.AdminController.switchTab('apps');
+            setTimeout(() => {
+              const busSelect = document.querySelector('#appBUFilter');
+              if (busSelect) busSelect.value = Dashboard.AdminController.currentBUId;
+              Dashboard.AdminController.renderAppsEditor();
+            }, 100);
+          }
+        }
+      }
+    });
+  },
+
+  getCSS(v) {
+    return getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+  },
+
+  fmt(n) {
+    return `${n.toFixed(0)}%`;
+  },
+
+  color(p) {
+    if (p === 100) return this.getCSS('--ok');
+    if (p === 0) return this.getCSS('--danger');
+    if (p >= 50) return this.getCSS('--warn');
+    return this.getCSS('--low');
+  },
+
+  filtered() {
+    let arr = Dashboard.DATA.filter(d => d.name.toLowerCase().includes(this.state.q.toLowerCase()));
+    if (this.state.status === 'done') arr = arr.filter(d => d.progress === 100);
+    if (this.state.status === 'wip') arr = arr.filter(d => d.progress > 0 && d.progress < 100);
+    if (this.state.status === 'todo') arr = arr.filter(d => d.progress === 0);
+
+    if (this.state.sort === 'name') arr.sort((a, b) => a.name.localeCompare(b.name));
+    if (this.state.sort === 'progress') arr.sort((a, b) => b.progress - a.progress || a.name.localeCompare(b.name));
+    return arr;
+  },
+
+  drawHero(avg) {
+    const svg = document.querySelector('#heroGauge');
+    svg.innerHTML = '';
+    const W = 360, H = 360, cx = W / 2, cy = H / 2, r = 130, sw = 28, C = 2 * Math.PI * r;
+    svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+
+    const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+    const lg = document.createElementNS('http://www.w3.org/2000/svg', 'linearGradient');
+    lg.id = 'g';
+    lg.setAttribute('x1', '0');
+    lg.setAttribute('y1', '0');
+    lg.setAttribute('x2', '1');
+    lg.setAttribute('y2', '1');
+    const stops = [['0%', '#4fd1ff'], ['50%', '#7affb3'], ['100%', '#ffd166']];
+    stops.forEach(([o, c]) => {
+      const s = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
+      s.setAttribute('offset', o);
+      s.setAttribute('stop-color', c);
+      lg.appendChild(s);
+    });
+    const f = document.createElementNS('http://www.w3.org/2000/svg', 'filter');
+    f.id = 'glow';
+    f.innerHTML = '<feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>';
+    defs.appendChild(lg);
+    defs.appendChild(f);
+    svg.appendChild(defs);
+
+    const track = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    track.setAttribute('cx', cx);
+    track.setAttribute('cy', cy);
+    track.setAttribute('r', r);
+    track.setAttribute('fill', 'none');
+    track.setAttribute('stroke', this.getCSS('--ring'));
+    track.setAttribute('stroke-width', sw);
+    svg.appendChild(track);
+
+    // grid
+    for (let i = 0; i <= 10; i++) {
+      const a = (i / 10) * Math.PI * 2 - Math.PI / 2, R = r + sw / 2, r2 = R + 8;
+      const x1 = cx + Math.cos(a) * R, y1 = cy + Math.sin(a) * R, x2 = cx + Math.cos(a) * r2, y2 = cy + Math.sin(a) * r2;
+      const L = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      L.setAttribute('x1', x1);
+      L.setAttribute('y1', y1);
+      L.setAttribute('x2', x2);
+      L.setAttribute('y2', y2);
+      L.setAttribute('stroke', this.getCSS('--grid'));
+      L.setAttribute('stroke-width', (i % 5 === 0) ? 2 : 1);
+      svg.appendChild(L);
+    }
+
+    const arc = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    arc.setAttribute('cx', cx);
+    arc.setAttribute('cy', cy);
+    arc.setAttribute('r', r);
+    arc.setAttribute('fill', 'none');
+    arc.setAttribute('stroke', 'url(#g)');
+    arc.setAttribute('stroke-width', sw);
+    arc.setAttribute('stroke-linecap', 'round');
+    arc.setAttribute('transform', `rotate(-90 ${cx} ${cy})`);
+    const target = C * (1 - avg / 100);
+    const t0 = performance.now();
+    const dur = 800;
+    function step(t) {
+      const k = Math.min(1, (t - t0) / dur);
+      const ease = .5 * (1 - Math.cos(Math.PI * k));
+      arc.setAttribute('stroke-dasharray', `${C} ${C}`);
+      arc.setAttribute('stroke-dashoffset', target + (C - target) * (1 - ease));
+      requestAnimationFrame(step);
+    }
+    arc.setAttribute('filter', 'url(#glow)');
+    svg.appendChild(arc);
+
+    const comet = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    comet.setAttribute('r', '6');
+    comet.setAttribute('fill', '#ffffff');
+    comet.setAttribute('opacity', '.9');
+    svg.appendChild(comet);
+
+    function step2() {
+      const ang = -Math.PI / 2 + 2 * Math.PI * (avg / 100);
+      const rr = r;
+      const x = cx + Math.cos(ang) * rr, y = cy + Math.sin(ang) * rr;
+      comet.setAttribute('cx', x);
+      comet.setAttribute('cy', y);
+      requestAnimationFrame(step2);
+    }
+    requestAnimationFrame(step);
+    requestAnimationFrame(step2);
+  },
+
+  orbTile(d) {
+    const wrap = document.createElement('div');
+    wrap.className = 'tile';
+    wrap.dataset.name = d.name;
+    wrap.dataset.progress = d.progress;
+
+    const svgNS = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(svgNS, 'svg');
+    svg.setAttribute('viewBox', '0 0 100 100');
+    svg.setAttribute('class', 'orb');
+
+    const defs = document.createElementNS(svgNS, 'defs');
+    const g = document.createElementNS(svgNS, 'linearGradient');
+    g.id = 'g-' + d.name.replace(/\W/g, '');
+    g.setAttribute('x1', '0');
+    g.setAttribute('y1', '0');
+    g.setAttribute('x2', '1');
+    g.setAttribute('y2', '1');
+    [['0%', '#5bdcff'], ['50%', this.color(Math.max(1, d.progress))], ['100%', '#ffd166']].forEach(([o, c]) => {
+      const s = document.createElementNS(svgNS, 'stop');
+      s.setAttribute('offset', o);
+      s.setAttribute('stop-color', c);
+      g.appendChild(s);
+    });
+    defs.appendChild(g);
+    svg.appendChild(defs);
+
+    const r = 34, cx = 50, cy = 50, sw = 10, C = 2 * Math.PI * r;
+    const track = document.createElementNS(svgNS, 'circle');
+    track.setAttribute('cy', cy);
+    track.setAttribute('cx', cx);
+    track.setAttribute('r', r);
+    track.setAttribute('fill', 'none');
+    track.setAttribute('stroke', this.getCSS('--ring'));
+    track.setAttribute('stroke-width', sw);
+    svg.appendChild(track);
+
+    const fg = document.createElementNS(svgNS, 'circle');
+    fg.setAttribute('cy', cy);
+    fg.setAttribute('cx', cx);
+    fg.setAttribute('r', r);
+    fg.setAttribute('fill', 'none');
+    fg.setAttribute('stroke', `url(#${g.id})`);
+    fg.setAttribute('stroke-width', sw);
+    fg.setAttribute('stroke-linecap', 'round');
+    fg.setAttribute('transform', `rotate(-90 ${cx} ${cy})`);
+    const target = C * (1 - d.progress / 100);
+    const t0 = performance.now();
+    const dur = 600 + d.progress * 2;
+    function anim(t) {
+      const k = Math.min(1, (t - t0) / dur);
+      const ease = .5 * (1 - Math.cos(Math.PI * k));
+      fg.setAttribute('stroke-dashoffset', target + (C - target) * (1 - ease));
+      if (k < 1) requestAnimationFrame(anim);
+    }
+    fg.setAttribute('stroke-dasharray', `${C} ${C}`);
+    svg.appendChild(fg);
+    requestAnimationFrame(anim);
+
+    const sat = document.createElementNS(svgNS, 'circle');
+    sat.setAttribute('r', '3');
+    sat.setAttribute('fill', '#fff');
+    svg.appendChild(sat);
+    function anim2() {
+      const ang = -Math.PI / 2 + 2 * Math.PI * (d.progress / 100);
+      const x = cx + Math.cos(ang) * r, y = cy + Math.sin(ang) * r;
+      sat.setAttribute('cx', x);
+      sat.setAttribute('cy', y);
+      requestAnimationFrame(anim2);
+    }
+    requestAnimationFrame(anim2);
+
+    const info = document.createElement('div');
+    info.innerHTML = `<div class="name">${d.name}</div><div class="meta">${d.progress}%</div>`;
+    const spot = document.createElement('div');
+    spot.className = 'spot';
+    wrap.appendChild(svg);
+    wrap.appendChild(info);
+    wrap.appendChild(spot);
+
+    wrap.addEventListener('mouseenter', () => this.spotlight(d.name, true));
+    wrap.addEventListener('mouseleave', () => this.spotlight(d.name, false));
+    wrap.addEventListener('click', () => {
+      this.state.pinned = (this.state.pinned === d.name ? null : d.name);
+      this.apply();
+    });
+
+    return wrap;
+  },
+
+  spotlight(name, on) {
+    if (this.state.pinned) return; // si hay selección, ignorar hover
+    Array.from(document.querySelectorAll('#tiles .tile')).forEach(t => {
+      t.style.opacity = on ? (t.dataset.name === name ? '1' : '.25') : '1';
+    });
+  },
+
+  drawBars(items) {
+    const svg = document.querySelector('#bars');
+    svg.innerHTML = '';
+    const W = 1100, H = 460, M = { t: 40, r: 24, b: 40, l: 150 };
+    const w = W - M.l - M.r, h = H - M.t - M.b;
+    svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+
+    // grid + etiquetas
+    for (let i = 0; i <= 10; i++) {
+      const x = M.l + (i / 10) * w;
+      const L = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      L.setAttribute('x1', x);
+      L.setAttribute('y1', M.t);
+      L.setAttribute('x2', x);
+      L.setAttribute('y2', M.t + h);
+      L.setAttribute('stroke', this.getCSS('--grid'));
+      L.setAttribute('stroke-width', (i % 2 === 0) ? 2 : 1);
+      svg.appendChild(L);
+
+      const T = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      T.setAttribute('x', x);
+      T.setAttribute('y', M.t - 10);
+      T.setAttribute('text-anchor', 'middle');
+      T.setAttribute('font-size', '11');
+      T.textContent = (i * 10) + '%';
+      T.setAttribute('fill', this.getCSS('--text'));
+      svg.appendChild(T);
+    }
+
+    const barH = Math.min(26, h / items.length - 10);
+    items.forEach((d, i) => {
+      const y = M.t + i * (barH + 10);
+
+      const lab = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      lab.setAttribute('x', M.l - 12);
+      lab.setAttribute('y', y + barH / 2);
+      lab.setAttribute('text-anchor', 'end');
+      lab.setAttribute('dominant-baseline', 'middle');
+      lab.setAttribute('font-size', '13');
+      lab.textContent = d.name;
+      lab.setAttribute('fill', this.getCSS('--text'));
+      svg.appendChild(lab);
+
+      const track = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      track.setAttribute('x', M.l);
+      track.setAttribute('y', y);
+      track.setAttribute('width', w);
+      track.setAttribute('height', barH);
+      track.setAttribute('rx', '8');
+      track.setAttribute('fill', this.getCSS('--ring'));
+      svg.appendChild(track);
+
+      const defs = svg.querySelector('defs') || document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+      if (!svg.querySelector('defs')) svg.appendChild(defs);
+      const gid = 'gb' + i;
+      const gr = document.createElementNS('http://www.w3.org/2000/svg', 'linearGradient');
+      gr.id = gid;
+      gr.setAttribute('x1', '0');
+      gr.setAttribute('y1', '0');
+      gr.setAttribute('x2', '1');
+      gr.setAttribute('y2', '0');
+      [['0%', this.color(Math.max(1, d.progress))], ['100%', '#ffd166']].forEach(([o, c]) => {
+        const s = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
+        s.setAttribute('offset', o);
+        s.setAttribute('stop-color', c);
+        gr.appendChild(s);
+      });
+      defs.appendChild(gr);
+
+      const bar = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      bar.setAttribute('x', M.l);
+      bar.setAttribute('y', y);
+      bar.setAttribute('width', '0');
+      bar.setAttribute('height', barH);
+      bar.setAttribute('fill', `url(#${gid})`);
+      bar.style.filter = 'drop-shadow(0 2px 10px rgba(0,0,0,.2))';
+      bar.dataset.target = w * d.progress / 100;
+      svg.appendChild(bar);
+
+      const gloss = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      gloss.setAttribute('x', M.l);
+      gloss.setAttribute('y', y);
+      gloss.setAttribute('width', '0');
+      gloss.setAttribute('height', Math.max(2, barH * 0.35));
+      gloss.setAttribute('rx', '6');
+      gloss.setAttribute('fill', '#fff');
+      gloss.setAttribute('opacity', '0.18');
+      svg.appendChild(gloss);
+
+      const v = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      v.setAttribute('x', M.l + 4);
+      v.setAttribute('y', y + barH / 2);
+      v.setAttribute('dominant-baseline', 'middle');
+      v.setAttribute('font-size', '12');
+      v.setAttribute('fill', this.getCSS('--text'));
+      v.textContent = this.fmt(d.progress);
+      svg.appendChild(v);
+    });
+
+    // ✅ FIX: seleccionar solo las barras animables por su data-attribute
+    const bars = Array.from(svg.querySelectorAll('rect[data-target]'));
+    const glosses = Array.from(svg.querySelectorAll('rect[rx="6"]'));
+    bars.forEach((el, idx) => {
+      const target = +el.dataset.target;
+      const t0 = performance.now();
+      const dur = 600;
+      function step(t) {
+        const k = Math.min(1, (t - t0) / dur);
+        const ease = 1 - Math.pow(1 - k, 3);
+        const w = target * ease;
+        el.setAttribute('width', w);
+        if (glosses[idx]) glosses[idx].setAttribute('width', Math.max(0, w - 6));
+        if (k < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    });
+  },
+
+  updateKPIs(items) {
+    console.log('🔍 [updateKPIs] Actualizando KPIs con', items.length, 'items');
+    
+    const done = items.filter(d => d.progress === 100).length;
+    const wip = items.filter(d => d.progress > 0 && d.progress < 100).length;
+    const todo = items.filter(d => d.progress === 0).length;
+    
+    console.log('📊 [KPI] Conteo:', { done, wip, todo });
+    
+    const avg = Dashboard.DATA.length > 0 
+      ? Dashboard.DATA.reduce((s, d) => s + (d.progress || 0), 0) / Dashboard.DATA.length 
+      : 0;
+      
+    console.log('📊 [KPI] Promedio calculado:', avg);
+    
+    document.querySelector('#kpiDone').textContent = done;
+    document.querySelector('#kpiWip').textContent = wip;
+    document.querySelector('#kpiTodo').textContent = todo;
+    document.querySelector('#kpiAvg').textContent = avg.toFixed(2) + '%';
+  },
+
+  renderTiles(items) {
+    const box = document.querySelector('#tiles');
+    box.innerHTML = '';
+    items.forEach(d => box.appendChild(this.orbTile(d))); // posiciones fijas
+    if (this.state.pinned) {
+      Array.from(document.querySelectorAll('#tiles .tile')).forEach(t => t.style.opacity = (t.dataset.name === this.state.pinned ? '1' : '.18'));
+    }
+  },
+
+  apply() {
+    console.log('🔍 [UIController.apply] Iniciando actualización de UI');
+    
+    // CRITICAL: Rebuild DATA from storage first (single source of truth)
+    rebuildDATAFromStorage();
+    console.log('📊 [APPLY] DATA after rebuild:', JSON.stringify(DATA));
+    
+    // Get data from StorageManager (the single source of truth)
+    const busesFromStorage = Dashboard.StorageManager.getBUs();
+    console.log('📊 [STORAGE] BUs in storage:', JSON.stringify(busesFromStorage));
+    console.log('🧹 [CLEARED] Flag state:', sessionStorage.getItem(Dashboard.StorageManager.CLEARED_FLAG));
+    
+    // If storage is empty (user cleared data), use empty items
+    if (busesFromStorage.length === 0) {
+      console.log('✅ [APPLY] Storage is empty - showing empty dashboard');
+      const items = [];
+      this.drawHero(0);
+      document.querySelector('#heroPct').textContent = '0';
+      document.querySelector('#heroCaption').textContent = 'Empty';
+      this.renderTiles(items);
+      this.drawBars(items);
+      this.updateKPIs(items);
+      return;
+    }
+    
+    const items = this.filtered();
+    const avgGlobal = DATA.length > 0 
+      ? DATA.reduce((s, d) => s + (d.progress || 0), 0) / DATA.length 
+      : 0;
+    
+    console.log('📊 [CALCULO] Progreso global:', avgGlobal, 'Items filtrados:', items.length);
+    
+    let heroValue = avgGlobal;
+    let heroText = 'Avg';
+    if (this.state.pinned) {
+      const sel = Dashboard.DATA.find(d => d.name === this.state.pinned);
+      if (sel) {
+        heroValue = sel.progress;
+        heroText = sel.name;
+      }
+    }
+    this.drawHero(heroValue);
+    document.querySelector('#heroPct').textContent = this.fmt(heroValue);
+    document.querySelector('#heroCaption').textContent = heroText;
+
+    this.renderTiles(items);
+    this.drawBars(items);
+    this.updateKPIs(items);
+  },
+
+  download(filename, text, type = 'text/plain') {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([text], { type }));
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  },
+
+  svgToPNG(svgEl, w = 2200, h = 920, filename = 'chart.png') {
+    const svg = new XMLSerializer().serializeToString(svgEl);
+    const img = new Image();
+    img.onload = function() {
+      const c = document.createElement('canvas');
+      c.width = w;
+      c.height = h;
+      const ctx = c.getContext('2d');
+      ctx.fillStyle = UIController.getCSS('--bg');
+      ctx.fillRect(0, 0, w, h);
+      ctx.drawImage(img, 0, 0, w, h);
+      c.toBlob(b => {
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(b);
+        a.download = filename;
+        a.click();
+        URL.revokeObjectURL(a.href);
+      }, 'image/png');
+    };
+    img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svg)));
+  }
+};
+
+// Export module for namespace compatibility
+if (!window.Dashboard) window.Dashboard = {};
+window.Dashboard.UIController = UIController;
+
+/* ========== Whitelabel Dynamic Loader ========== */
+function applyWhitelabelTitles() {
+  const mainTitle = localStorage.getItem('wl_mainTitle');
+  const subtitle = localStorage.getItem('wl_subtitle');
+  
+  const h1 = document.querySelector('#mainTitleDisplay');
+  const small = document.querySelector('#subtitleDisplay');
+  
+  // CRITICAL: Only set if values exist in localStorage
+  // NO fallbacks, NO defaults - only what's in persistent storage
+  if (mainTitle !== null && h1) {
+    h1.textContent = mainTitle;
+  }
+  if (subtitle !== null && small) {
+    small.textContent = subtitle;
+  }
+}
+
+/* ========== Admin Controller Module ========== */
+const AdminController = {
+  currentBUId: null,
+  
+  init() {
+    // Load whitelabel titles dynamically
+    applyWhitelabelTitles();
+    
+    // Initialize state
+    this.currentOverviewFilters = { field: 'all', value: 'all' };
+    this.currentSort = { column: null, direction: 'asc' };
+    
+    this.setupEventListeners();
+    this.renderBUList();
+  },
+  
+  setupEventListeners() {
+    document.querySelector('#setupAdmin').addEventListener('click', () => this.openModal());
+    document.querySelector('#closeAdminModal').addEventListener('click', () => this.closeModal());
+    document.querySelector('#cancelAdminBtn').addEventListener('click', () => this.closeModal());
+    document.querySelector('#saveAdminBtn').addEventListener('click', () => this.saveAndClose());
+    
+    // Tabs
+    Array.from(document.querySelectorAll('.modal-tab')).forEach(tab => {
+      tab.addEventListener('click', (e) => this.switchTab(e.target.dataset.tab));
+    });
+    
+    // Formula Tab event listeners
+    document.getElementById('save-formula-config')?.addEventListener('click', () => this.saveFormulaConfig());
+    document.getElementById('reset-formula-config')?.addEventListener('click', () => this.resetFormulaConfig());
+    document.getElementById('test-formula-config')?.addEventListener('click', () => this.testFormulaConfig());
+    
+    // Formula dropdown change events
+    document.getElementById('formula-progress-method')?.addEventListener('change', () => this.updateFormulaLabels());
+    document.getElementById('formula-global-method')?.addEventListener('change', () => this.updateFormulaLabels());
+    
+    // BU Editor Modal (click outside to close)
+    document.getElementById('buEditorModal').addEventListener('click', (e) => {
+      if (e.target === document.getElementById('buEditorModal')) {
+        this.closeBUEditorModal();
+      }
+    });
+    
+    // New BU button
+    document.querySelector('#newBUBtn').addEventListener('click', () => this.newBU());
+    
+    // App filter
+    document.querySelector('#appBUFilter').addEventListener('change', (e) => {
+      this.currentBUId = parseInt(e.target.value);
+      this.renderAppsEditor();
+    });
+    
+    // Apps overview filters
+    const overviewFilterField = document.querySelector('#overviewFilterField');
+    const overviewFilterValue = document.querySelector('#overviewFilterValue');
+    const resetAppOverviewFilters = document.querySelector('#resetAppOverviewFilters');
+    
+    if (overviewFilterField) {
+      overviewFilterField.addEventListener('change', () => {
+        this.currentOverviewFilters.field = overviewFilterField.value;
+        this.updateOverviewFilterValues();
+        this.renderAppsOverviewTable();
+      });
+    }
+    
+    if (overviewFilterValue) {
+      overviewFilterValue.addEventListener('change', () => {
+        this.currentOverviewFilters.value = overviewFilterValue.value;
+        this.renderAppsOverviewTable();
+      });
+    }
+    
+    if (resetAppOverviewFilters) {
+      resetAppOverviewFilters.addEventListener('click', () => {
+        this.currentOverviewFilters = { field: 'all', value: 'all' };
+        if (overviewFilterField) overviewFilterField.value = 'all';
+        this.updateOverviewFilterValues();
+        if (overviewFilterValue) overviewFilterValue.value = 'all';
+        this.renderAppsOverviewTable();
+      });
+    }
+    
+    // Add sorting functionality to app overview table headers
+    const headers = document.querySelectorAll('#appsOverviewTable th');
+    headers.forEach((header, index) => {
+      header.addEventListener('click', () => {
+        const columnName = header.textContent.trim();
+        this.sortAppsOverview(columnName, index);
+      });
+    });
+    
+    // Initialize sort and filters
+    this.currentOverviewFilters = { field: 'all', value: 'all' };
+    this.currentSort = { column: null, direction: 'asc' };
+    
+    // Settings
+    document.querySelector('#exportAdminJSON').addEventListener('click', () => this.exportConfig());
+    document.querySelector('#importAdminJSON').addEventListener('change', (e) => this.importConfig(e));
+    document.querySelector('#showAuditTrailBtn').addEventListener('click', () => this.showAuditTrail());
+    document.querySelector('#clearAllDataBtn').addEventListener('click', () => this.clearAllData());
+    
+    // Whitelabel
+    this.setupWhitelabelListeners();
+  },
+  
+  setupWhitelabelListeners() {
+    // Left logo
+    document.querySelector('#leftLogoBrowseBtn').addEventListener('click', () => {
+      document.querySelector('#leftLogoInput').click();
+    });
+    document.querySelector('#leftLogoInput').addEventListener('change', (e) => {
+      this.handleLogoUpload(e, 'left');
+    });
+    document.querySelector('#leftLogoClearBtn').addEventListener('click', () => {
+      this.clearLogo('left');
+    });
+    
+    // Right logo
+    document.querySelector('#rightLogoBrowseBtn').addEventListener('click', () => {
+      document.querySelector('#rightLogoInput').click();
+    });
+    document.querySelector('#rightLogoInput').addEventListener('change', (e) => {
+      this.handleLogoUpload(e, 'right');
+    });
+    document.querySelector('#rightLogoClearBtn').addEventListener('click', () => {
+      this.clearLogo('right');
+    });
+    
+    // Title inputs - update preview in real time (NO defaults - only what user enters)
+    document.querySelector('#wl-mainTitle').addEventListener('input', (e) => {
+      document.querySelector('#previewMainTitle').textContent = e.target.value;
+    });
+    document.querySelector('#wl-subtitle').addEventListener('input', (e) => {
+      document.querySelector('#previewSubtitle').textContent = e.target.value;
+    });
+    
+    // Save and reset buttons
+    document.querySelector('#wl-saveBtn').addEventListener('click', () => this.saveWhitelabelConfig());
+    document.querySelector('#wl-resetBtn').addEventListener('click', () => this.resetWhitelabelDefaults());
+    
+    // Load current whitelabel config on tab open
+    this.loadWhitelabelConfig();
+  },
+  
+  handleLogoUpload(event, side) {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const dataUrl = e.target.result;
+      const preview = document.querySelector(side === 'left' ? '#leftLogoPreview' : '#rightLogoPreview');
+      const previewDisplay = document.querySelector(side === 'left' ? '#previewLogoLeft' : '#previewLogoRight');
+      
+      // Clear existing content and add image
+      preview.innerHTML = `<img src="${dataUrl}" alt="Logo"/>`;
+      previewDisplay.innerHTML = `<img src="${dataUrl}" alt="Logo"/>`;
+      
+      // Store the data URL
+      if (side === 'left') {
+        localStorage.setItem('wl_leftLogo', dataUrl);
+      } else {
+        localStorage.setItem('wl_rightLogo', dataUrl);
+      }
+    };
+    reader.readAsDataURL(file);
+  },
+  
+  clearLogo(side) {
+    const preview = document.querySelector(side === 'left' ? '#leftLogoPreview' : '#rightLogoPreview');
+    const previewDisplay = document.querySelector(side === 'left' ? '#previewLogoLeft' : '#previewLogoRight');
+    
+    preview.innerHTML = '<span class="logo-placeholder">📷 ' + (side === 'left' ? 'Left' : 'Right') + ' Logo</span>';
+    previewDisplay.innerHTML = '<span>' + (side === 'left' ? 'Logo' : 'Logo') + '</span>';
+    
+    if (side === 'left') {
+      localStorage.removeItem('wl_leftLogo');
+      document.querySelector('#leftLogoInput').value = '';
+    } else {
+      localStorage.removeItem('wl_rightLogo');
+      document.querySelector('#rightLogoInput').value = '';
+    }
+  },
+  
+  loadWhitelabelConfig() {
+    // Load titles (no defaults, only if they exist)
+    const mainTitle = localStorage.getItem('wl_mainTitle');
+    const subtitle = localStorage.getItem('wl_subtitle');
+    
+    const mainTitleInput = document.querySelector('#wl-mainTitle');
+    const subtitleInput = document.querySelector('#wl-subtitle');
+    const previewMainTitle = document.querySelector('#previewMainTitle');
+    const previewSubtitle = document.querySelector('#previewSubtitle');
+    
+    if (mainTitle !== null) {
+      mainTitleInput.value = mainTitle;
+      previewMainTitle.textContent = mainTitle;
+    } else {
+      mainTitleInput.value = '';
+      previewMainTitle.textContent = '';
+    }
+    
+    if (subtitle !== null) {
+      subtitleInput.value = subtitle;
+      previewSubtitle.textContent = subtitle;
+    } else {
+      subtitleInput.value = '';
+      previewSubtitle.textContent = '';
+    }
+    
+    // Load logos
+    const leftLogo = localStorage.getItem('wl_leftLogo');
+    const rightLogo = localStorage.getItem('wl_rightLogo');
+    
+    if (leftLogo) {
+      const leftPreview = document.querySelector('#leftLogoPreview');
+      leftPreview.innerHTML = `<img src="${leftLogo}" alt="Left Logo"/>`;
+      const leftDisplay = document.querySelector('#previewLogoLeft');
+      leftDisplay.innerHTML = `<img src="${leftLogo}" alt="Left Logo"/>`;
+    }
+    
+    if (rightLogo) {
+      const rightPreview = document.querySelector('#rightLogoPreview');
+      rightPreview.innerHTML = `<img src="${rightLogo}" alt="Right Logo"/>`;
+      const rightDisplay = document.querySelector('#previewLogoRight');
+      rightDisplay.innerHTML = `<img src="${rightLogo}" alt="Right Logo"/>`;
+    }
+  },
+  
+  saveWhitelabelConfig() {
+    const mainTitle = document.querySelector('#wl-mainTitle').value;
+    const subtitle = document.querySelector('#wl-subtitle').value;
+    
+    // Only save if values are provided (no defaults)
+    if (mainTitle) {
+      localStorage.setItem('wl_mainTitle', mainTitle);
+    } else {
+      localStorage.removeItem('wl_mainTitle');
+    }
+    
+    if (subtitle) {
+      localStorage.setItem('wl_subtitle', subtitle);
+    } else {
+      localStorage.removeItem('wl_subtitle');
+    }
+    
+    // Apply changes dynamically to H1 and subtitle
+    applyWhitelabelTitles();
+    
+    alert('✅ Whitelabel configuration saved successfully!');
+    console.log('Whitelabel config saved:', { mainTitle, subtitle });
+  },
+  
+  resetWhitelabelDefaults() {
+    if (!confirm('Are you sure you want to reset all whitelabel settings to defaults?')) return;
+    
+    localStorage.removeItem('wl_mainTitle');
+    localStorage.removeItem('wl_subtitle');
+    localStorage.removeItem('wl_leftLogo');
+    localStorage.removeItem('wl_rightLogo');
+    
+    // Clear UI
+    document.querySelector('#wl-mainTitle').value = '';
+    document.querySelector('#wl-subtitle').value = '';
+    this.clearLogo('left');
+    this.clearLogo('right');
+    this.loadWhitelabelConfig();
+    
+    alert('✅ Whitelabel settings reset to defaults');
+  },
+  
+  openModal() {
+    document.querySelector('#adminModal').classList.add('active');
+    this.renderBUList();
+    this.renderBUFilter();
+    
+    // Si hay una BU seleccionada, actualizar el dropdown para reflejarla
+    if (this.currentBUId) {
+      const buFilter = document.querySelector('#appBUFilter');
+      buFilter.value = this.currentBUId;
+      
+      // También marcar la tarjeta correspondiente como seleccionada
+      const buCards = document.querySelectorAll('.bu-card');
+      buCards.forEach(card => {
+        const buId = parseInt(card.getAttribute('data-bu-id') || '0');
+        if (buId === this.currentBUId) {
+          card.classList.add('selected');
+        }
+      });
+      
+      // Actualizar la vista de aplicaciones
+      this.renderAppsEditor();
+    }
+    
+    // Reset modal to default size
+    const modalContent = document.querySelector('.modal-content');
+    modalContent.style.maxWidth = '900px';
+    modalContent.style.width = '90%';
+    
+    // Setup column sorting event listeners for apps overview
+    setTimeout(() => {
+      const headers = document.querySelectorAll('#appsOverviewTable th');
+      headers.forEach((header, index) => {
+        header.addEventListener('click', () => {
+          const columnName = header.textContent.trim();
+          this.sortAppsOverview(columnName, index);
+        });
+      });
+    }, 100);
+  },
+  
+  closeModal() {
+    document.querySelector('#adminModal').classList.remove('active');
+  },
+  
+  switchTab(tabName) {
+    Array.from(document.querySelectorAll('.modal-tab')).forEach(t => t.classList.remove('active'));
+    Array.from(document.querySelectorAll('.modal-tabpanel')).forEach(p => p.classList.remove('active'));
+    document.querySelector('[data-tab="' + tabName + '"]').classList.add('active');
+    document.querySelector('#tab-' + tabName).classList.add('active');
+    
+    // All tabs use the same default width now
+    const modalContent = document.querySelector('.modal-content');
+    modalContent.style.maxWidth = '900px';
+    modalContent.style.width = '90%';
+    
+    // Initialize specific tab content
+    if (tabName === 'app-overview') {
+      console.log('Switching to Applications Overview tab');
+      // Initialize filters and render table
+      this.currentOverviewFilters = { field: 'all', value: 'all' };
+      const filterField = document.querySelector('#overviewFilterField');
+      if (filterField) filterField.value = 'all';
+      const filterValue = document.querySelector('#overviewFilterValue');
+      if (filterValue) filterValue.value = 'all';
+    } else if (tabName === 'formulas') {
+      console.log('Switching to Calculation Formulas tab');
+      // Load formula configuration
+      this.loadFormulaConfig();
+    }
+    
+    // Solo renderizar la vista de aplicaciones si estamos en esa pestaña
+    if (tabName === 'app-overview') {
+      this.renderAppsOverview();
+    }
+  },
+  
+  renderBUList() {
+    const buses = Dashboard.StorageManager.getBUs();
+    const container = document.querySelector('#buList');
+    container.innerHTML = '';
+    
+    buses.forEach(bu => {
+      const apps = Dashboard.StorageManager.getAppsByBU(bu.id);
+      const progress = Dashboard.ProgressCalculator.calculateBUProgress(bu.id);
+      const card = document.createElement('div');
+      card.className = 'bu-card';
+      // Añadir data-bu-id para facilitar la selección al reabrir el modal
+      card.setAttribute('data-bu-id', bu.id);
+      // Add a class if the BU has no apps
+      if (apps.length === 0) {
+        card.classList.add('empty');
+      }
+      // Marcar como seleccionada si coincide con currentBUId
+      if (this.currentBUId === bu.id) {
+        card.classList.add('selected');
+      }
+
+      // Calculate the number of apps by status
+      const appsDone = apps.filter(app => app.progress === 100 || app.status === 'CLO').length;
+      const appsWIP = apps.filter(app => app.progress > 0 && app.progress < 100 && app.status !== 'CLO').length;
+      const appsTodo = apps.filter(app => app.progress === 0 || app.status === 'TBS').length;
+      
+      // Get color based on progress
+      const getColor = (p) => {
+        if (p === 100) return 'var(--ok)';
+        if (p === 0) return 'var(--danger)';
+        if (p >= 50) return 'var(--warn)';
+        return 'var(--low)';
+      };
+      
+      card.innerHTML = `
+        <div class="bu-card-actions">
+          <button class="bu-card-btn edit-bu-btn" title="Edit" data-buid="${bu.id}">✏️</button>
+          <button class="bu-card-btn delete-bu-btn" title="Delete" data-buid="${bu.id}">🗑️</button>
+        </div>
+        <div class="bu-card-name">
+          <span class="bu-card-icon" style="background:${getColor(progress)};color:#fff;border-radius:4px;">${bu.domain.charAt(0)}</span>
+          ${bu.name} ${apps.length === 0 ? '<span class="bu-empty-badge">Empty</span>' : ''}
+        </div>
+        <div class="bu-card-meta"><span class="bu-card-icon" title="Domain">🏢</span>${bu.domain} · ${bu.fullname}</div>
+        <div class="bu-card-meta">
+          <span class="bu-card-icon" title="Applications">📱</span>Apps: ${apps.length} 
+          ${apps.length > 0 ? `<span title="Completed">✅ ${appsDone}</span> <span title="In Progress">⏳ ${appsWIP}</span> <span title="To Start">🔜 ${appsTodo}</span>` : ''}
+        </div>
+        <div class="bu-card-progress">
+          <div class="bu-card-progress-bar" style="width:${progress}%; background:${getColor(progress)}"></div>
+        </div>
+        <div class="bu-card-meta"><span class="bu-card-icon" title="Progress">📊</span>Progress: <strong>${progress.toFixed(1)}%</strong></div>
+      `;
+      // Add click event for selecting the BU
+      card.addEventListener('click', (e) => {
+        // Don't select if clicking on the action buttons
+        if (!e.target.closest('.bu-card-btn')) {
+          this.selectBU(bu.id, card);
+        }
+      });
+      
+      // Add event handlers for edit and delete buttons
+      const editBtn = card.querySelector('.edit-bu-btn');
+      const deleteBtn = card.querySelector('.delete-bu-btn');
+      
+      editBtn.addEventListener('click', (e) => {
+        e.stopPropagation(); // Prevent BU selection
+        this.editBU(bu.id);
+      });
+      
+      deleteBtn.addEventListener('click', (e) => {
+        e.stopPropagation(); // Prevent BU selection
+        this.deleteBU(bu.id);
+      });
+      container.appendChild(card);
+    });
+  },
+  
+  selectBU(buId, element) {
+    Array.from(document.querySelectorAll('.bu-card')).forEach(c => c.classList.remove('selected'));
+    element.classList.add('selected');
+    this.currentBUId = buId;
+  },
+  
+  newBU() {
+    this.openBUEditorModal();
+  },
+  
+  openBUEditorModal(buId = null) {
+    // Get BU data if editing, or set defaults for new BU
+    const isNewBU = buId === null;
+    let bu = { 
+      name: '', 
+      domain: '', 
+      fullname: '', 
+      manager: '',
+      color: '#5b9dff'
+    };
+    
+    if (!isNewBU) {
+      bu = Dashboard.StorageManager.getBUById(buId);
+      if (!bu) return;
+      
+      // Set default values if they're missing
+      if (!bu.color) bu.color = '#5b9dff';
+      if (!bu.manager) bu.manager = '';
+    }
+    
+    // Set the modal title and adjust style based on operation
+    const buEditorTitle = document.getElementById('buEditorTitle');
+    buEditorTitle.textContent = isNewBU ? '✨ Create New Business Unit' : '✏️ Edit Business Unit';
+    
+    // Set form values
+    document.getElementById('buNameInput').value = bu.name;
+    document.getElementById('buDomainInput').value = bu.domain;
+    document.getElementById('buFullnameInput').value = bu.fullname;
+    
+    // Set color and manager if available
+    const colorInput = document.getElementById('buColorInput');
+    colorInput.value = bu.color || '#5b9dff';
+    document.getElementById('colorPreview').style.backgroundColor = colorInput.value;
+    
+    // Manager field (might be new)
+    const managerInput = document.getElementById('buManagerInput');
+    if (managerInput) managerInput.value = bu.manager || '';
+    
+    // Setup color picker interaction
+    colorInput.addEventListener('input', function() {
+      document.getElementById('colorPreview').style.backgroundColor = this.value;
+    });
+    
+    // Show statistics if editing an existing BU
+    if (!isNewBU) {
+      const apps = Dashboard.StorageManager.getAppsByBU(buId);
+      const progress = Dashboard.ProgressCalculator.calculateBUProgress(buId);
+      
+      // Calculate apps by status
+      const appsDone = apps.filter(app => app.progress === 100 || app.status === 'CLO').length;
+      const appsWIP = apps.filter(app => app.progress > 0 && app.progress < 100 && app.status !== 'CLO').length;
+      const appsTodo = apps.filter(app => app.progress === 0 || app.status === 'TBS').length;
+      
+      const statsDiv = document.getElementById('buEditorStats');
+      
+      statsDiv.innerHTML = `
+        <div class="form-stats">
+          <div class="form-stats-title">Business Unit Statistics</div>
+          <div class="form-stats-item">
+            <span>Applications Total:</span>
+            <span><strong>${apps.length}</strong></span>
+          </div>
+          <div class="form-stats-item">
+            <span>Applications by Status:</span>
+            <span>
+              <span title="Completed" style="margin-right:8px">✅ ${appsDone}</span>
+              <span title="In Progress" style="margin-right:8px">⏳ ${appsWIP}</span>
+              <span title="To Start">🔜 ${appsTodo}</span>
+            </span>
+          </div>
+          <div class="form-stats-item">
+            <span>Overall Progress:</span>
+            <span>
+              <div style="width:100px;height:10px;background:var(--ring);border-radius:5px;overflow:hidden;display:inline-block;vertical-align:middle;margin-right:8px">
+                <div style="height:100%;background:${this.getProgressColor(progress)};width:${progress}%"></div>
+              </div>
+              <strong>${progress.toFixed(1)}%</strong>
+            </span>
+          </div>
+          <div class="form-stats-item">
+            <span>Status:</span>
+            <span>${progress === 100 ? 
+              '<span style="color:var(--ok)">✅ Complete</span>' : 
+              progress > 0 ? '<span style="color:var(--warn)">🚧 In Progress</span>' : 
+              '<span style="color:var(--danger)">🔜 Not Started</span>'
+            }</span>
+          </div>
+        </div>
+      `;
+    } else {
+      document.getElementById('buEditorStats').innerHTML = '';
+    }
+    
+    // Show the modal with animation
+    const modal = document.getElementById('buEditorModal');
+    modal.classList.add('active');
+    
+    // Focus on the first input with delay to allow animation to complete
+    setTimeout(() => document.getElementById('buNameInput').focus(), 300);
+    
+    // Setup form validation and submission
+    const form = document.getElementById('buEditorForm');
+    
+    // Remove any existing event listeners
+    const newForm = form.cloneNode(true);
+    form.parentNode.replaceChild(newForm, form);
+    
+    // Set up real-time validation
+    const nameInput = document.getElementById('buNameInput');
+    const domainInput = document.getElementById('buDomainInput');
+    const fullnameInput = document.getElementById('buFullnameInput');
+    
+    // Validate name field
+    nameInput.addEventListener('input', () => {
+      const name = nameInput.value.trim();
+      const nameError = document.getElementById('buNameError');
+      
+      if (name.length === 0) {
+        nameError.textContent = "Business Unit name is required";
+      } else if (name.length < 2) {
+        nameError.textContent = "Name must be at least 2 characters";
+      } else {
+        nameError.textContent = "";
+      }
+    });
+    
+    // Validate domain field
+    domainInput.addEventListener('input', () => {
+      const domain = domainInput.value.trim();
+      const domainError = document.getElementById('buDomainError');
+      
+      if (domain.length === 0) {
+        domainError.textContent = "Domain code is required";
+      } else if (!/^[A-Z0-9]{1,4}$/.test(domain)) {
+        domainError.textContent = "Domain must be 1-4 uppercase letters/numbers";
+        domainInput.value = domain.toUpperCase(); // Auto convert to uppercase
+      } else {
+        domainError.textContent = "";
+      }
+    });
+    
+    // Validate fullname field
+    fullnameInput.addEventListener('input', () => {
+      const fullname = fullnameInput.value.trim();
+      const fullnameError = document.getElementById('buFullnameError');
+      
+      if (fullname.length === 0) {
+        fullnameError.textContent = "Full name is required";
+      } else if (fullname.length < 4) {
+        fullnameError.textContent = "Full name must be at least 4 characters";
+      } else {
+        fullnameError.textContent = "";
+      }
+    });
+    
+    // Add submit event listener with validation
+    newForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      
+      // Get form values
+      const name = nameInput.value.trim();
+      const domain = domainInput.value.trim();
+      const fullname = fullnameInput.value.trim();
+      const color = colorInput.value;
+      const manager = document.getElementById('buManagerInput')?.value?.trim() || '';
+      
+      // Validate all fields
+      let isValid = true;
+      
+      // Name validation
+      if (name.length === 0) {
+        document.getElementById('buNameError').textContent = "Business Unit name is required";
+        isValid = false;
+      } else if (name.length < 2) {
+        document.getElementById('buNameError').textContent = "Name must be at least 2 characters";
+        isValid = false;
+      } else {
+        document.getElementById('buNameError').textContent = "";
+      }
+      
+      // Domain validation
+      if (domain.length === 0) {
+        document.getElementById('buDomainError').textContent = "Domain code is required";
+        isValid = false;
+      } else if (!/^[A-Z0-9]{1,4}$/.test(domain)) {
+        document.getElementById('buDomainError').textContent = "Domain must be 1-4 uppercase letters/numbers";
+        isValid = false;
+      } else {
+        document.getElementById('buDomainError').textContent = "";
+      }
+      
+      // Fullname validation
+      if (fullname.length === 0) {
+        document.getElementById('buFullnameError').textContent = "Full name is required";
+        isValid = false;
+      } else if (fullname.length < 4) {
+        document.getElementById('buFullnameError').textContent = "Full name must be at least 4 characters";
+        isValid = false;
+      } else {
+        document.getElementById('buFullnameError').textContent = "";
+      }
+      
+      if (!isValid) {
+        return; // Stop submission if any validation fails
+      }
+      
+      // Update or create BU with all fields
+      if (isNewBU) {
+        Dashboard.StorageManager.addBU({
+          key: domain,
+          name,
+          domain,
+          fullname,
+          color,
+          manager
+        });
+      } else {
+        Dashboard.StorageManager.updateBU(buId, {
+          key: domain,
+          name,
+          domain,
+          fullname,
+          color,
+          manager
+        });
+      }
+      
+      // Show success message with animation
+      const successMessage = document.createElement('div');
+      successMessage.className = 'form-success';
+      successMessage.textContent = `Business Unit ${isNewBU ? 'created' : 'updated'} successfully!`;
+      newForm.appendChild(successMessage);
+      
+      // Close modal with a small delay to show success message
+      setTimeout(() => {
+        this.closeBUEditorModal();
+        
+        // Refresh UI
+        this.renderBUList();
+        this.renderBUFilter();
+        
+        // If apps tab is visible and this BU is selected, refresh the apps editor
+        if (!isNewBU && this.currentBUId === buId && document.querySelector('#tab-apps.active')) {
+          this.renderAppsEditor();
+        }
+        
+        // Refresh the UI controller to update visualizations
+        Dashboard.UIController.apply();
+      }, 800);
+    });
+    
+    // Setup cancel button
+    document.getElementById('buEditorCancel').addEventListener('click', () => {
+      this.closeBUEditorModal();
+    });
+    
+    // Setup close button
+    document.getElementById('closeBUEditorModal').addEventListener('click', () => {
+      this.closeBUEditorModal();
+    });
+  },
+  
+  // Helper function to get color based on progress
+  getProgressColor(progress) {
+    if (progress === 100) return 'var(--ok)';
+    if (progress === 0) return 'var(--danger)';
+    if (progress >= 50) return 'var(--warn)';
+    return 'var(--low)';
+  },
+  
+  closeBUEditorModal() {
+    document.getElementById('buEditorModal').classList.remove('active');
+  },
+  
+  editBU(buId) {
+    this.openBUEditorModal(buId);
+  },
+  
+  deleteBU(buId) {
+    const bu = Dashboard.StorageManager.getBUById(buId);
+    if (!bu) return;
+    
+    const apps = Dashboard.StorageManager.getAppsByBU(buId);
+    
+    // Confirm deletion
+    const message = apps.length > 0 ? 
+      `Are you sure you want to delete the Business Unit "${bu.name}" and all its ${apps.length} applications?` :
+      `Are you sure you want to delete the Business Unit "${bu.name}"?`;
+      
+    if (!confirm(message)) return;
+    
+    // Delete the BU
+    Dashboard.StorageManager.deleteBU(buId);
+    
+    // Reset current BU ID if it was deleted
+    if (this.currentBUId === buId) {
+      this.currentBUId = null;
+    }
+    
+    // Refresh the BU list
+    this.renderBUList();
+    
+    // Refresh BU filter in apps tab
+    this.renderBUFilter();
+    
+    // Clear apps editor if this BU was selected
+    if (document.querySelector('#tab-apps.active')) {
+      const container = document.querySelector('#appEditorContainer');
+      container.innerHTML = '<p>Please select a Business Unit</p>';
+    }
+  },
+  
+  renderBUFilter() {
+    const buses = Dashboard.StorageManager.getBUs();
+    const select = document.querySelector('#appBUFilter');
+    select.innerHTML = '<option value="">-- Select BU --</option>';
+    buses.forEach(bu => {
+      const opt = document.createElement('option');
+      opt.value = bu.id;
+      opt.textContent = bu.name;
+      select.appendChild(opt);
+    });
+  },
+  
+  renderAppsEditor() {
+    if (!this.currentBUId) return;
+    const bu = Dashboard.StorageManager.getBUs().find(b => b.id === this.currentBUId);
+    const apps = Dashboard.StorageManager.getAppsByBU(this.currentBUId);
+    const container = document.querySelector('#appEditorContainer');
+    
+    let html = `<div class="apps-editor-header">
+      <h3>${bu.name} Applications</h3>
+      <button class="btn btn-primary" onclick="Dashboard.AdminController.openAppEditorModal(${this.currentBUId})"><span class="btn-icon">✨</span> Add Application</button>
+    </div>
+    <div class="apps-table-wrapper">
+      <table class="app-table">
+        <thead>
+          <tr>
+            <th title="Application Name">App Name</th>
+            <th title="Status: TBS/WIP/CLO">Status</th>
+            <th title="Progress Percentage">Progress %</th>
+            <th title="Weight Factor">Weight</th>
+            <th title="Criticality Level">Criticality</th>
+            <th title="Business Impact">Impact</th>
+            <th title="Priority Order">Priority</th>
+            <th title="Actions">Actions</th>
+          </tr>
+        </thead>
+        <tbody>`;
+    
+    if (apps.length === 0) {
+      html += `<tr class="empty-row"><td colspan="8" style="text-align:center;padding:40px;color:var(--muted)">
+        <div style="font-size:32px;margin-bottom:8px">📭</div>
+        <div>No applications yet. <button class="link-btn" onclick="Dashboard.AdminController.openAppEditorModal(${this.currentBUId})" style="color:var(--primary);text-decoration:underline;cursor:pointer;background:none;border:none;padding:0;font:inherit">Create one now</button></div>
+      </td></tr>`;
+    } else {
+      apps.forEach(app => {
+        const statusBadge = app.status === 'CLO' ? '✅' : app.status === 'WIP' ? '🚧' : '🔜';
+        const criticalityColor = app.criticality === 'High' ? 'var(--danger)' : app.criticality === 'Medium' ? 'var(--warn)' : 'var(--ok)';
+        const impactColor = app.impact === 'High' ? 'var(--danger)' : app.impact === 'Medium' ? 'var(--warn)' : 'var(--ok)';
+        
+        html += `
+        <tr>
+          <td><input type="text" class="cell-input" value="${app.name}" onchange="Dashboard.AdminController.updateApp(${app.id}, {name: this.value})"/></td>
+          <td><select class="cell-select" onchange="Dashboard.AdminController.updateApp(${app.id}, {status: this.value})">
+            <option value="TBS" ${app.status === 'TBS' ? 'selected' : ''}>🔜 TBS</option>
+            <option value="WIP" ${app.status === 'WIP' ? 'selected' : ''}>🚧 WIP</option>
+            <option value="CLO" ${app.status === 'CLO' ? 'selected' : ''}>✅ CLO</option>
+          </select></td>
+          <td><div class="progress-cell"><input type="number" class="cell-input" min="0" max="100" value="${app.progress || 0}" onchange="Dashboard.AdminController.updateApp(${app.id}, {progress: parseInt(this.value)})"/><div class="mini-progress" style="width:${app.progress}%;background:${app.progress === 100 ? 'var(--ok)' : app.progress >= 50 ? 'var(--warn)' : 'var(--low)'}"></div></div></td>
+          <td><input type="number" class="cell-input" min="0.5" max="3" step="0.5" value="${app.weight || 1}" onchange="Dashboard.AdminController.updateApp(${app.id}, {weight: parseFloat(this.value)})"/></td>
+          <td><select class="cell-select" onchange="Dashboard.AdminController.updateApp(${app.id}, {criticality: this.value})">
+            <option value="Low" ${app.criticality === 'Low' ? 'selected' : ''}>🟢 Low</option>
+            <option value="Medium" ${app.criticality === 'Medium' ? 'selected' : ''}>🟡 Medium</option>
+            <option value="High" ${app.criticality === 'High' ? 'selected' : ''}>🔴 High</option>
+          </select></td>
+          <td><select class="cell-select" onchange="Dashboard.AdminController.updateApp(${app.id}, {impact: this.value})">
+            <option value="Low" ${app.impact === 'Low' ? 'selected' : ''}>🟢 Low</option>
+            <option value="Medium" ${app.impact === 'Medium' ? 'selected' : ''}>🟡 Medium</option>
+            <option value="High" ${app.impact === 'High' ? 'selected' : ''}>🔴 High</option>
+          </select></td>
+          <td><input type="number" class="cell-input" min="0" max="10" value="${app.order || 0}" onchange="Dashboard.AdminController.updateApp(${app.id}, {order: parseInt(this.value)})"/></td>
+          <td style="display: flex; gap: 8px;">
+            <button class="btn btn-info btn-sm" onclick="Dashboard.AdminController.openReassignModal(${app.id})">🔄 Reassign</button>
+            <button class="btn btn-danger btn-sm" onclick="Dashboard.AdminController.deleteApp(${app.id})">🗑️ Delete</button>
+          </td>
+        </tr>`;
+      });
+    }
+    
+    html += '</tbody></table></div>';
+    container.innerHTML = html;
+  },
+  
+  openAppEditorModal(buId = null) {
+    // If no buId provided, use current selected
+    if (buId === null) buId = this.currentBUId;
+    if (!buId) return;
+    
+    // Set modal title
+    document.getElementById('appEditorTitle').textContent = '✨ Create New Application';
+    
+    // Reset form
+    document.getElementById('appNameInput').value = '';
+    document.getElementById('appStatusInput').value = 'TBS';
+    document.getElementById('appProgressInput').value = 0;
+    document.getElementById('appCriticalityInput').value = 'Medium';
+    document.getElementById('appImpactInput').value = 'Medium';
+    document.getElementById('appWeightInput').value = 1;
+    document.getElementById('appWaveInput').value = 'Wave 1';
+    
+    // Clear errors
+    document.getElementById('appNameError').textContent = '';
+    
+    // Clear stats
+    document.getElementById('appEditorStats').innerHTML = '';
+    
+    // Show modal
+    const modal = document.getElementById('appEditorModal');
+    modal.classList.add('active');
+    
+    // Focus on first input
+    setTimeout(() => document.getElementById('appNameInput').focus(), 300);
+    
+    // Setup form submission
+    const form = document.getElementById('appEditorForm');
+    const newForm = form.cloneNode(true);
+    form.parentNode.replaceChild(newForm, form);
+    
+    // Real-time validation
+    document.getElementById('appNameInput').addEventListener('input', () => {
+      const name = document.getElementById('appNameInput').value.trim();
+      const nameError = document.getElementById('appNameError');
+      if (name.length === 0) {
+        nameError.textContent = "Application name is required";
+      } else if (name.length < 3) {
+        nameError.textContent = "Name must be at least 3 characters";
+      } else {
+        nameError.textContent = "";
+      }
+    });
+    
+    // Form submission
+    newForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      
+      const name = document.getElementById('appNameInput').value.trim();
+      const status = document.getElementById('appStatusInput').value;
+      const progress = parseInt(document.getElementById('appProgressInput').value) || 0;
+      const criticality = document.getElementById('appCriticalityInput').value;
+      const impact = document.getElementById('appImpactInput').value;
+      const weight = parseFloat(document.getElementById('appWeightInput').value) || 1;
+      const wave = document.getElementById('appWaveInput').value;
+      
+      // Validate
+      let isValid = true;
+      if (name.length === 0) {
+        document.getElementById('appNameError').textContent = "Application name is required";
+        isValid = false;
+      } else if (name.length < 3) {
+        document.getElementById('appNameError').textContent = "Name must be at least 3 characters";
+        isValid = false;
+      }
+      
+      if (!isValid) return;
+      
+      // Get next priority
+      const allApps = Dashboard.StorageManager.getAllApps();
+      const maxPriority = allApps.length > 0 ? Math.max(...allApps.map(app => parseInt(app.order) || 0)) : 0;
+      
+      // Create app
+      Dashboard.StorageManager.addApp({
+        buId,
+        name,
+        status,
+        progress,
+        criticality,
+        impact,
+        weight,
+        wave,
+        order: maxPriority + 1
+      });
+      
+      // Close modal
+      this.closeAppEditorModal();
+      
+      // Refresh UI
+      this.renderAppsEditor();
+      if (document.querySelector('#tab-app-overview.active')) {
+        this.renderAppsOverview();
+      }
+      
+      // Show success
+      Dashboard.UIController.apply();
+    });
+    
+    // Cancel button
+    document.getElementById('appEditorCancel').addEventListener('click', () => {
+      this.closeAppEditorModal();
+    });
+    
+    // Close button
+    document.getElementById('closeAppEditorModal').addEventListener('click', () => {
+      this.closeAppEditorModal();
+    });
+    
+    // Click outside to close
+    document.getElementById('appEditorModal').addEventListener('click', (e) => {
+      if (e.target === document.getElementById('appEditorModal')) {
+        this.closeAppEditorModal();
+      }
+    });
+  },
+  
+  closeAppEditorModal() {
+    document.getElementById('appEditorModal').classList.remove('active');
+  },
+  
+  newApp(buId) {
+    this.openAppEditorModal(buId);
+  },
+  
+  updateApp(appId, updates) {
+    Dashboard.StorageManager.updateApp(appId, updates);
+    this.renderAppsEditor();
+    // Also refresh the overview table if it's visible
+    if (document.querySelector('#tab-app-overview.active')) {
+      this.renderAppsOverview();
+    }
+  },
+  
+  deleteApp(appId) {
+    if (confirm('Delete this application?')) {
+      Dashboard.StorageManager.deleteApp(appId);
+      this.renderAppsEditor();
+      // Also refresh the overview table if it's visible
+      if (document.querySelector('#tab-app-overview.active')) {
+        this.renderAppsOverview();
+      }
+    }
+  },
+  
+  openReassignModal(appId) {
+    console.log(`🔄 Opening reassign modal for app ${appId}`);
+    
+    const config = Dashboard.StorageManager.loadConfig();
+    const app = config.apps.find(a => a.id === appId);
+    
+    if (!app) {
+      console.error(`❌ App ${appId} not found`);
+      return;
+    }
+    
+    const currentBU = config.buses.find(b => b.id === app.buId);
+    const otherBUs = config.buses.filter(b => b.id !== app.buId);
+    
+    // Create modal content
+    let html = `
+      <div style="padding: 24px;">
+        <h3 style="margin: 0 0 16px 0; color: var(--text);">🔄 Reassign Application</h3>
+        <div style="background: var(--ring); padding: 16px; border-radius: 8px; margin-bottom: 20px;">
+          <p style="margin: 0 0 8px 0;"><strong>App:</strong> ${app.name}</p>
+          <p style="margin: 0 0 8px 0;"><strong>Current BU:</strong> ${currentBU?.name || 'Unknown'}</p>
+          <p style="margin: 0;"><strong>Status:</strong> ${app.status} (${app.progress}%)</p>
+        </div>
+        <div style="margin-bottom: 20px;">
+          <label style="display: block; margin-bottom: 12px; color: var(--text); font-weight: 600;">Assign to Business Unit:</label>
+          <div style="display: grid; grid-template-columns: 1fr; gap: 8px;">
+    `;
+    
+    otherBUs.forEach(bu => {
+      const buApps = config.apps.filter(a => a.buId === bu.id).length;
+      html += `
+        <button onclick="Dashboard.AdminController.confirmReassign(${appId}, ${bu.id})" 
+                style="padding: 12px; background: var(--panel); border: 1px solid var(--ring); color: var(--text); border-radius: 8px; cursor: pointer; text-align: left; transition: all 0.3s;">
+          <strong>${bu.name}</strong> <span style="float: right; opacity: 0.6;">${buApps} apps</span>
+        </button>
+      `;
+    });
+    
+    html += `
+          </div>
+        </div>
+      </div>
+    `;
+    
+    // Insert into modal
+    const modalContent = document.querySelector('.nested-modal-content');
+    if (modalContent) {
+      modalContent.innerHTML = html;
+      document.querySelector('.nested-modal').classList.add('active');
+    }
+  },
+  
+  confirmReassign(appId, newBuId) {
+    console.log(`✅ Confirming reassign: app ${appId} → BU ${newBuId}`);
+    
+    const success = Dashboard.StorageManager.reassignApp(appId, newBuId);
+    
+    if (success) {
+      // Close modal
+      document.querySelector('.nested-modal').classList.remove('active');
+      
+      // Refresh UI
+      this.renderAppsEditor();
+      Dashboard.UIController.apply();
+      
+      // Show notification
+      alert(`✅ App reassigned successfully`);
+    } else {
+      alert('❌ Failed to reassign app');
+    }
+  },
+  
+  showAuditTrail() {
+    console.log('📋 Opening audit trail');
+    
+    const trail = Dashboard.StorageManager.getAuditTrail();
+    
+    let html = `
+      <div style="padding: 24px;">
+        <h3 style="margin: 0 0 16px 0; color: var(--text);">📋 Audit Trail</h3>
+        <div style="max-height: 400px; overflow-y: auto;">
+    `;
+    
+    if (trail.length === 0) {
+      html += '<p style="color: var(--text); opacity: 0.7;">No audit entries yet</p>';
+    } else {
+      trail.forEach(entry => {
+        html += `
+          <div style="background: var(--ring); padding: 12px; border-radius: 8px; margin-bottom: 12px;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+              <strong style="color: var(--primary);">${entry.action}</strong>
+              <span style="opacity: 0.6; font-size: 12px;">${new Date(entry.timestamp).toLocaleString()}</span>
+            </div>
+            <div style="opacity: 0.8; font-size: 14px;">
+              <p style="margin: 4px 0;">📱 App: <strong>${entry.appName}</strong> (${entry.status}, ${entry.progress}%)</p>
+              <p style="margin: 4px 0;">🔄 ${entry.fromBuName} → ${entry.toBuName}</p>
+            </div>
+          </div>
+        `;
+      });
+    }
+    
+    html += `
+        </div>
+        <div style="display: flex; gap: 8px; margin-top: 16px;">
+          <button class="btn btn-danger btn-sm" onclick="Dashboard.StorageManager.clearAuditTrail(); Dashboard.AdminController.showAuditTrail();">Clear Audit Trail</button>
+          <button class="btn btn-secondary" onclick="document.querySelector('.nested-modal').classList.remove('active')">Close</button>
+        </div>
+      </div>
+    `;
+    
+    const modalContent = document.querySelector('.nested-modal-content');
+    if (modalContent) {
+      modalContent.innerHTML = html;
+      document.querySelector('.nested-modal').classList.add('active');
+    }
+  },
+  
+  exportConfig() {
+    const config = Dashboard.StorageManager.loadConfig();
+    
+    // Build whitelabel object only if values exist
+    const whitelabel = {};
+    const mainTitle = localStorage.getItem('wl_mainTitle');
+    const subtitle = localStorage.getItem('wl_subtitle');
+    const leftLogo = localStorage.getItem('wl_leftLogo');
+    const rightLogo = localStorage.getItem('wl_rightLogo');
+    
+    if (mainTitle !== null) whitelabel.mainTitle = mainTitle;
+    if (subtitle !== null) whitelabel.subtitle = subtitle;
+    if (leftLogo !== null) whitelabel.leftLogo = leftLogo;
+    if (rightLogo !== null) whitelabel.rightLogo = rightLogo;
+    
+    // Build formula configuration object
+    const formulaConfigStr = localStorage.getItem('dashboard_formula_config');
+    const formulaConfig = {};
+    if (formulaConfigStr) {
+      try {
+        Object.assign(formulaConfig, JSON.parse(formulaConfigStr));
+      } catch (err) {
+        console.warn('Could not parse formula config during export:', err);
+      }
+    }
+    
+    // Enrich buses with calculated progress
+    const enrichedConfig = {
+      ...config,
+      ...(Object.keys(whitelabel).length > 0 && { whitelabel }),
+      ...(Object.keys(formulaConfig).length > 0 && { formulaConfig }),
+      buses: config.buses.map(bu => ({
+        ...bu,
+        calculatedProgress: Dashboard.ProgressCalculator.calculateBUProgress(bu.id),
+        appCount: config.apps.filter(app => app.buId === bu.id).length,
+        weightedMetrics: this.calculateBUWeightedMetrics(bu.id)
+      })),
+      apps: config.apps.map(app => ({
+        ...app,
+        buName: config.buses.find(b => b.id === app.buId)?.name || 'Unknown',
+        calculatedWeight: app.weight || 1,
+        calculatedProgress: app.progress || 0
+      })),
+      exportMetadata: {
+        exportedAt: new Date().toISOString(),
+        version: '2.1',
+        schema: 'dashboard_config_v1_enriched_with_formulas',
+        totalBUs: config.buses.length,
+        totalApps: config.apps.length,
+        totalWaves: config.waves.length,
+        includesFormulaConfig: Object.keys(formulaConfig).length > 0,
+        includesWhitelabelConfig: Object.keys(whitelabel).length > 0
+      }
+    };
+    
+    const json = JSON.stringify(enrichedConfig, null, 2);
+    const blob = new Blob([json], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'dashboard_config_' + new Date().toISOString().slice(0, 10) + '.json';
+    a.click();
+    URL.revokeObjectURL(url);
+    
+    console.log('✅ Configuration exported successfully with formula settings');
+  },
+  
+  calculateBUWeightedMetrics(buId) {
+    const apps = Dashboard.StorageManager.getAppsByBU(buId);
+    if (apps.length === 0) return { totalWeight: 0, weightedSum: 0, averageProgress: 0 };
+    
+    const totalWeight = apps.reduce((sum, app) => sum + (app.weight || 1), 0);
+    const weightedSum = apps.reduce((sum, app) => sum + ((app.progress || 0) * (app.weight || 1)), 0);
+    const averageProgress = totalWeight > 0 ? Math.round((weightedSum / totalWeight) * 100) / 100 : 0;
+    
+    return {
+      totalWeight,
+      weightedSum,
+      averageProgress
+    };
+  },
+  
+  // Applications Overview Tab Functionality
+  renderAppsOverview() {
+    // When switching to the apps overview tab
+    this.initAppOverviewFilters();
+    this.renderAppsOverviewTable();
+  },
+  
+  initAppOverviewFilters() {
+    // Initialize filter dropdown options
+    const filterField = document.querySelector('#overviewFilterField');
+    const filterValue = document.querySelector('#overviewFilterValue');
+    
+    if (filterField && filterValue) {
+      // Reset current filters
+      this.currentOverviewFilters = { field: filterField.value, value: 'all' };
+      
+      // Update filter values based on selected field
+      this.updateOverviewFilterValues();
+    }
+  },
+  
+  updateOverviewFilterValues() {
+    const filterField = document.querySelector('#overviewFilterField');
+    const filterValue = document.querySelector('#overviewFilterValue');
+    
+    if (!filterField || !filterValue) return;
+    
+    // Get selected field
+    const field = filterField.value;
+    this.currentOverviewFilters.field = field;
+    
+    // Clear current options
+    filterValue.innerHTML = '<option value="all">All Values</option>';
+    
+    // Map field names to app properties
+    const fieldToProperty = {
+      'status': 'status',
+      'criticality': 'criticality',
+      'wave': 'wave',
+      'buId': 'buId'
+    };
+    
+    // Get property name based on selected field
+    const propertyName = fieldToProperty[field] || field;
+    
+    // Get all apps
+    const allApps = Dashboard.StorageManager.getAllApps();
+    
+    if (field === 'all') {
+      // Don't add any values if "All" is selected
+      filterValue.disabled = true;
+      this.currentOverviewFilters.value = 'all';
+    } else {
+      filterValue.disabled = false;
+      
+      // Get unique values for the selected field
+      const uniqueValues = new Set();
+      
+      if (field === 'buId') {
+        // For BU, show names instead of IDs
+        const buses = Dashboard.StorageManager.getBUs();
+        buses.forEach(bu => {
+          filterValue.innerHTML += `<option value="${bu.id}">${bu.name}</option>`;
+        });
+      } else {
+        // Get unique values from apps
+        allApps.forEach(app => {
+          const value = app[propertyName];
+          if (value && !uniqueValues.has(value)) {
+            uniqueValues.add(value);
+            filterValue.innerHTML += `<option value="${value}">${value}</option>`;
+          }
+        });
+      }
+    }
+  },
+  
+  renderAppsOverviewTable() {
+    const tableBody = document.querySelector('#appsOverviewTableBody');
+    if (!tableBody) return;
+    
+    console.log('Rendering applications overview table');
+    
+    // Get all apps
+    let apps = Dashboard.StorageManager.getAllApps();
+    console.log(`Total apps: ${apps.length}`);
+    
+    // Map field names to app properties for filtering
+    const fieldToProperty = {
+      'status': 'status',
+      'criticality': 'criticality',
+      'wave': 'wave',
+      'buId': 'buId'
+    };
+    
+    // Apply filters
+    if (this.currentOverviewFilters.field !== 'all' && this.currentOverviewFilters.value !== 'all') {
+      const field = fieldToProperty[this.currentOverviewFilters.field] || this.currentOverviewFilters.field;
+      const value = this.currentOverviewFilters.value;
+      
+      console.log(`Filtering by ${field} = ${value}`);
+      apps = apps.filter(app => String(app[field]) === String(value)); // Convert both to string for comparison
+      console.log(`Filtered apps: ${apps.length}`);
+    }
+    
+    // Sort if applicable
+    if (this.currentSort.column) {
+      const { column, direction } = this.currentSort;
+      
+      // Map column names to actual properties (using friendly column names)
+      const columnToProperty = {
+        'ID': 'id',
+        'BU': 'buId',
+        'Wave': 'wave',
+        'App Name': 'name',
+        'Priority': 'order',
+        'Criticality': 'criticality',
+        'Business Impact': 'impact',
+        'Completion': 'progress',
+        'Status': 'status'
+      };
+      
+      const propertyName = columnToProperty[column] || column.toLowerCase();
+      console.log(`Sorting by property: ${propertyName}`);
+      
+      apps.sort((a, b) => {
+        const aValue = a[propertyName] || '';
+        const bValue = b[propertyName] || '';
+        
+        if (propertyName === 'progress' || propertyName === 'order' || propertyName === 'id' || propertyName === 'buId') {
+          // Numeric sort
+          const aNum = parseInt(aValue) || 0;
+          const bNum = parseInt(bValue) || 0;
+          return direction === 'asc' ? (aNum - bNum) : (bNum - aNum);
+        } else {
+          // String sort
+          return direction === 'asc' ? 
+            aValue.toString().localeCompare(bValue.toString()) : 
+            bValue.toString().localeCompare(aValue.toString());
+        }
+      });
+    }
+    
+    // Generate table rows
+    let html = '';
+    
+    // First make sure apps is actually an array
+    if (!Array.isArray(apps)) {
+      apps = [];
+    }
+    
+    // Remove any non-object items from the apps array
+    apps = apps.filter(app => app !== null && app !== undefined && typeof app === 'object');
+    
+    if (apps.length === 0) {
+      html = '<tr><td colspan="9" style="text-align:center;padding:20px;">No applications found</td></tr>';
+    } else {
+      // Filter out any potential invalid or blank app entries
+      // Make sure all required properties exist and are valid
+      const validApps = apps.filter(app => 
+        app.id && 
+        app.name && 
+        app.buId && 
+        app.buId !== undefined && 
+        app.buId !== null &&
+        app.name.trim() !== '' // Make sure name is not empty string
+      );
+      
+      validApps.forEach(app => {
+        const bu = Dashboard.StorageManager.getBUById(app.buId);
+        const buName = bu ? bu.name : app.buId;
+        const rowClass = app.criticality === 'High' ? 'high' : (app.criticality === 'Critical' ? 'critical' : '');
+        
+        // Ensure priority order is definitely displayed as a number
+        const priorityValue = typeof app.order === 'number' ? app.order : 
+                           (parseInt(app.order) || 0);
+                           
+        // Create row without line breaks or unnecessary whitespace
+        html += `<tr class="${rowClass}"><td>${app.id}</td><td title="${buName}">${buName}</td><td>${app.wave || '-'}</td><td>${app.name}</td><td>${priorityValue}</td><td>${app.criticality || 'Medium'}</td><td>${app.impact || 'Medium'}</td><td class="progress-cell"><div class="progress-text">${app.progress || 0}%</div><div class="progress-bar"><div class="progress-value" style="width: ${app.progress || 0}%"></div></div></td><td>${app.status || 'TBS'}</td></tr>`;
+      });
+    }
+    
+    // Set the HTML directly without any extraneous whitespace
+    tableBody.innerHTML = html;
+    
+    // Remove any empty text nodes that might cause spacing issues
+    Array.from(tableBody.childNodes).forEach(node => {
+      if (node.nodeType === 3 && node.textContent.trim() === '') {
+        tableBody.removeChild(node);
+      }
+    });
+    
+    console.log(`Rendered ${apps.length} applications in table`);
+  },
+  
+  sortAppsOverview(columnName, columnIndex) {
+    // Find all header elements
+    const headers = document.querySelectorAll('#appsOverviewTable th');
+    
+    // Remove sort classes from all headers
+    headers.forEach(header => {
+      header.classList.remove('sort-asc', 'sort-desc');
+    });
+    
+    // Set the new sort direction
+    if (this.currentSort.column === columnName) {
+      // Toggle direction if clicking the same column
+      this.currentSort.direction = this.currentSort.direction === 'asc' ? 'desc' : 'asc';
+    } else {
+      // Default to ascending for a new column
+      this.currentSort.column = columnName;
+      this.currentSort.direction = 'asc';
+    }
+    
+    // Add the appropriate class to the header
+    headers[columnIndex].classList.add(
+      this.currentSort.direction === 'asc' ? 'sort-asc' : 'sort-desc'
+    );
+    
+    console.log(`Sorting by ${columnName} (${this.currentSort.direction})`);
+    
+    // Re-render the table with the new sort
+    this.renderAppsOverviewTable();
+  },
+  
+  importConfig(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const importedConfig = JSON.parse(e.target.result);
+        
+        // Validate schema
+        if (!importedConfig.buses || !importedConfig.apps || !importedConfig.waves) {
+          throw new Error('Invalid configuration schema. Missing required fields: buses, apps, or waves');
+        }
+        
+        // Extract and restore whitelabel config if present (only if values exist)
+        if (importedConfig.whitelabel) {
+          if (importedConfig.whitelabel.mainTitle) {
+            localStorage.setItem('wl_mainTitle', importedConfig.whitelabel.mainTitle);
+          }
+          if (importedConfig.whitelabel.subtitle) {
+            localStorage.setItem('wl_subtitle', importedConfig.whitelabel.subtitle);
+          }
+          if (importedConfig.whitelabel.leftLogo) {
+            localStorage.setItem('wl_leftLogo', importedConfig.whitelabel.leftLogo);
+          }
+          if (importedConfig.whitelabel.rightLogo) {
+            localStorage.setItem('wl_rightLogo', importedConfig.whitelabel.rightLogo);
+          }
+        }
+        
+        // Extract and restore formula config if present
+        let formulaConfigImported = false;
+        if (importedConfig.formulaConfig) {
+          try {
+            // Validate formula config structure
+            const fc = importedConfig.formulaConfig;
+            if (fc.progressMethod && fc.weights && fc.criticalityMultipliers) {
+              localStorage.setItem('dashboard_formula_config', JSON.stringify({
+                progressMethod: fc.progressMethod,
+                globalMethod: fc.globalMethod || 'weighted',
+                statusInclusion: fc.statusInclusion !== undefined ? fc.statusInclusion : true,
+                weights: fc.weights,
+                criticalityMultipliers: fc.criticalityMultipliers,
+                timestamp: new Date().toISOString()
+              }));
+              formulaConfigImported = true;
+              console.log('✅ Formula configuration imported successfully');
+            } else {
+              console.warn('⚠️ Formula config is incomplete, skipping import');
+            }
+          } catch (fcErr) {
+            console.warn('⚠️ Could not import formula config:', fcErr.message);
+          }
+        }
+        
+        // Extract only the essential data (remove calculated fields)
+        const cleanConfig = {
+          buses: importedConfig.buses.map(bu => ({
+            id: bu.id,
+            key: bu.key,
+            name: bu.name,
+            domain: bu.domain,
+            fullname: bu.fullname,
+            color: bu.color || '#5b9dff',
+            manager: bu.manager || ''
+          })),
+          apps: importedConfig.apps.map(app => ({
+            id: app.id,
+            buId: app.buId,
+            name: app.name,
+            status: app.status || 'TBS',
+            progress: app.progress || 0,
+            weight: app.weight || 1,
+            criticality: app.criticality || 'Medium'
+          })),
+          waves: importedConfig.waves.map(wave => ({
+            id: wave.id,
+            name: wave.name
+          }))
+        };
+        
+        // Validate data integrity
+        const appBUIds = new Set(cleanConfig.apps.map(a => a.buId));
+        const buIds = new Set(cleanConfig.buses.map(b => b.id));
+        
+        for (let buId of appBUIds) {
+          if (!buIds.has(buId)) {
+            throw new Error(`Invalid reference: app references non-existent Business Unit ID ${buId}`);
+          }
+        }
+        
+        // Save configuration
+        Dashboard.StorageManager.saveConfig(cleanConfig);
+        
+        // Verify import
+        const verifyConfig = Dashboard.StorageManager.loadConfig();
+        const importSummary = {
+          busesCount: verifyConfig.buses.length,
+          appsCount: verifyConfig.apps.length,
+          wavesCount: verifyConfig.waves.length,
+          formulaConfigImported
+        };
+        
+        console.log('✅ Configuration imported successfully', importSummary);
+        
+        let alertMsg = '✅ Configuration imported successfully:\n\n' +
+              `  • Business Units: ${verifyConfig.buses.length}\n` +
+              `  • Applications: ${verifyConfig.apps.length}\n` +
+              `  • Waves: ${verifyConfig.waves.length}`;
+        
+        if (formulaConfigImported) {
+          alertMsg += '\n  • Formula Config: Imported ✓';
+        }
+        
+        alert(alertMsg);
+        
+        location.reload();
+      } catch (err) {
+        console.error('Import error:', err);
+        alert('❌ Import failed:\n\n' + err.message);
+      }
+    };
+    reader.readAsText(file);
+  },
+  
+  saveAndClose() {
+    this.closeModal();
+    Dashboard.UIController.apply();
+    alert('✅ Changes saved');
+  },
+  
+  clearAllData() {
+    console.log('🔍 [clearAllData] Iniciando proceso de borrado de datos');
+    
+    // Double confirmation to prevent accidents
+    const confirmed = confirm('⚠️ DANGER ZONE ⚠️\n\nThis will permanently delete ALL data:\n• Business Units\n• Applications\n• Waves\n\nThis action CANNOT be undone.\n\nAre you sure?');
+    
+    if (!confirmed) {
+      console.log('❌ [clearAllData] Usuario canceló la primera confirmación');
+      return;
+    }
+    
+    const secondConfirmation = confirm('⚠️ FINAL WARNING ⚠️\n\nType OK to confirm deletion of all data.');
+    if (secondConfirmation === false) {
+      console.log('❌ [clearAllData] Usuario canceló la segunda confirmación');
+      return;
+    }
+    
+    try {
+      console.log('🧹 [clearAllData] INICIANDO BORRADO COMPLETO DE DATOS');
+      
+      // Diagnóstico pre-borrado
+      console.log('📊 [DIAGNÓSTICO PRE-BORRADO]', {
+        localStorage_STORAGE_KEY: localStorage.getItem(Dashboard.StorageManager.STORAGE_KEY),
+        localStorage_Keys: Object.keys(localStorage),
+        Dashboard_DATA: JSON.stringify(Dashboard.DATA),
+        sessionStorage_CLEARED_FLAG: sessionStorage.getItem(Dashboard.StorageManager.CLEARED_FLAG)
+      });
+      
+      // 1. Mark as cleared BEFORE deletion - CRITICAL STEP
+      Dashboard.StorageManager.markAsCleared();
+      
+      // 2. Clear localStorage completely
+      localStorage.clear(); // Borrar TODO, no solo la clave específica
+      
+      // 3. Verificación múltiple
+      const verification1 = localStorage.getItem(Dashboard.StorageManager.STORAGE_KEY);
+      const verification2 = Object.keys(localStorage).length;
+      
+      console.log('📊 [VERIFICACIÓN POST-BORRADO]:', { 
+        configDataExists: verification1 !== null, 
+        remainingStorageItems: verification2,
+        clearedFlag: sessionStorage.getItem(Dashboard.StorageManager.CLEARED_FLAG)
+      });
+      
+      if (verification1 !== null) {
+        throw new Error('Failed to clear dashboard data - configuration still exists');
+      }
+      
+      // 4. CRUCIAL: Resetear el arreglo DATA hardcodeado
+      console.log('🔄 [clearAllData] Reseteando DATA hardcodeado...');
+      // Vaciar el arreglo manteniendo la referencia
+      while (DATA.length > 0) {
+        DATA.pop();
+      }
+      
+      // Vaciar también la copia en el namespace Dashboard
+      if (window.Dashboard && window.Dashboard.DATA) {
+        while (window.Dashboard.DATA.length > 0) {
+          window.Dashboard.DATA.pop();
+        }
+      }
+      
+      console.log('✅ [clearAllData] DATA hardcodeado reseteado:', DATA);
+      
+      // 5. Resetear variables de estado
+      this.currentBUId = null;
+      
+      // 6. Crear un objeto vacío para usar después de la recarga
+      const emptyConfig = { buses: [], apps: [], waves: [] };
+      localStorage.setItem('temp_empty_dashboard_config', JSON.stringify(emptyConfig));
+      
+      console.log('✅ [clearAllData] BORRADO COMPLETO EXITOSO - Dashboard reiniciado');
+      
+      // 8. Reload after showing success message (no hardcoded UI messages)
+      location.reload();
+    } catch (err) {
+      console.error('Clear All Data Error:', err);
+      // No hardcoded UI messages - just log to console
+    }
+  },
+  
+  // Formula Config Management Functions
+  saveFormulaConfig() {
+    console.log('Saving formula configuration');
+    
+    // Collect all settings from form inputs
+    const formulaConfig = {
+      progressMethod: document.getElementById('formula-progress-method').value,
+      globalMethod: document.getElementById('formula-global-method').value,
+      statusInclusion: {
+        TBS: document.getElementById('include-status-tbs').checked,
+        WIP: document.getElementById('include-status-wip').checked,
+        CLO: document.getElementById('include-status-clo').checked
+      },
+      weights: {
+        min: parseFloat(document.getElementById('weight-min').value),
+        max: parseFloat(document.getElementById('weight-max').value),
+        default: parseFloat(document.getElementById('weight-default').value)
+      },
+      criticalityMultipliers: {
+        low: parseFloat(document.getElementById('crit-low').value),
+        medium: parseFloat(document.getElementById('crit-medium').value),
+        high: parseFloat(document.getElementById('crit-high').value)
+      },
+      timestamp: new Date().toISOString()
+    };
+    
+    // Save to localStorage
+    localStorage.setItem('dashboard_formula_config', JSON.stringify(formulaConfig));
+    
+    // Show confirmation
+    alert('✅ Formula configuration saved successfully');
+    
+    // Apply changes
+    Dashboard.UIController.apply();
+  },
+  
+  resetFormulaConfig() {
+    console.log('Resetting formula configuration to defaults');
+    
+    // Default configuration
+    const defaultConfig = {
+      progressMethod: 'weighted',
+      globalMethod: 'weighted',
+      statusInclusion: {
+        TBS: false,
+        WIP: true,
+        CLO: true
+      },
+      weights: {
+        min: 0.5,
+        max: 3.0,
+        default: 1.0
+      },
+      criticalityMultipliers: {
+        low: 1.0,
+        medium: 1.0,
+        high: 1.2
+      },
+      timestamp: new Date().toISOString()
+    };
+    
+    // Reset form values
+    document.getElementById('formula-progress-method').value = defaultConfig.progressMethod;
+    document.getElementById('formula-global-method').value = defaultConfig.globalMethod;
+    document.getElementById('include-status-tbs').checked = defaultConfig.statusInclusion.TBS;
+    document.getElementById('include-status-wip').checked = defaultConfig.statusInclusion.WIP;
+    document.getElementById('include-status-clo').checked = defaultConfig.statusInclusion.CLO;
+    document.getElementById('weight-min').value = defaultConfig.weights.min;
+    document.getElementById('weight-max').value = defaultConfig.weights.max;
+    document.getElementById('weight-default').value = defaultConfig.weights.default;
+    document.getElementById('crit-low').value = defaultConfig.criticalityMultipliers.low;
+    document.getElementById('crit-medium').value = defaultConfig.criticalityMultipliers.medium;
+    document.getElementById('crit-high').value = defaultConfig.criticalityMultipliers.high;
+    
+    // Save to localStorage
+    localStorage.setItem('dashboard_formula_config', JSON.stringify(defaultConfig));
+    
+    // Show confirmation
+    alert('⚠️ Formula configuration reset to defaults');
+    
+    // Show/hide appropriate formula labels
+    this.updateFormulaLabels();
+  },
+  
+  testFormulaConfig() {
+    console.log('Testing formula configuration');
+    
+    // Get current configuration from form
+    const formulaConfig = {
+      progressMethod: document.getElementById('formula-progress-method').value,
+      globalMethod: document.getElementById('formula-global-method').value,
+      statusInclusion: {
+        TBS: document.getElementById('include-status-tbs').checked,
+        WIP: document.getElementById('include-status-wip').checked,
+        CLO: document.getElementById('include-status-clo').checked
+      }
+    };
+    
+    // Get data
+    const buses = Dashboard.StorageManager.getBUs();
+    const apps = Dashboard.StorageManager.getAllApps();
+    
+    // Generate test results
+    let results = '<div style="padding: 16px; max-height: 500px; overflow-y: auto;">';
+    results += '<h3>Formula Test Results</h3>';
+    results += '<p>Testing calculation with current configuration:</p>';
+    results += '<ul>';
+    results += `<li>Progress Method: <strong>${formulaConfig.progressMethod}</strong></li>`;
+    results += `<li>Global Method: <strong>${formulaConfig.globalMethod}</strong></li>`;
+    results += `<li>Include TBS: <strong>${formulaConfig.statusInclusion.TBS}</strong></li>`;
+    results += `<li>Include WIP: <strong>${formulaConfig.statusInclusion.WIP}</strong></li>`;
+    results += `<li>Include CLO: <strong>${formulaConfig.statusInclusion.CLO}</strong></li>`;
+    results += '</ul>';
+    
+    // Calculate for each BU
+    results += '<table style="width:100%; border-collapse: collapse; margin-top: 16px;">';
+    results += '<thead><tr style="background: var(--ring);"><th style="text-align:left; padding: 8px;">Business Unit</th><th style="text-align:center; padding: 8px;">Apps</th><th style="text-align:center; padding: 8px;">Progress</th></tr></thead>';
+    results += '<tbody>';
+    
+    let totalApps = 0;
+    let weightedSum = 0;
+    let buSum = 0;
+    
+    buses.forEach(bu => {
+      const buApps = apps.filter(app => app.buId === bu.id);
+      const buAppCount = buApps.length;
+      totalApps += buAppCount;
+      
+      // Only include statuses based on configuration
+      const filteredApps = buApps.filter(app => {
+        if (app.status === 'TBS' && !formulaConfig.statusInclusion.TBS) return false;
+        if (app.status === 'WIP' && !formulaConfig.statusInclusion.WIP) return false;
+        if (app.status === 'CLO' && !formulaConfig.statusInclusion.CLO) return false;
+        return true;
+      });
+      
+      // Calculate BU progress based on selected method
+      let buProgress = 0;
+      
+      if (filteredApps.length > 0) {
+        if (formulaConfig.progressMethod === 'weighted') {
+          const totalWeight = filteredApps.reduce((sum, app) => sum + (app.weight || 1), 0);
+          const weightedSum = filteredApps.reduce((sum, app) => sum + ((app.progress || 0) * (app.weight || 1)), 0);
+          buProgress = totalWeight > 0 ? Math.round(weightedSum / totalWeight) : 0;
+        } else if (formulaConfig.progressMethod === 'simple') {
+          buProgress = Math.round(filteredApps.reduce((sum, app) => sum + (app.progress || 0), 0) / filteredApps.length);
+        } else if (formulaConfig.progressMethod === 'minimum') {
+          buProgress = Math.min(...filteredApps.map(app => app.progress || 0));
+        }
+      }
+      
+      weightedSum += buProgress * buAppCount;
+      buSum += buProgress;
+      
+      // Set background color based on progress
+      const bgColor = buProgress === 100 ? 'rgba(50, 230, 133, 0.15)' : 
+                     buProgress >= 50 ? 'rgba(255, 209, 102, 0.15)' : 
+                     'rgba(255, 95, 122, 0.15)';
+      
+      results += `<tr style="background: ${bgColor}; border-bottom: 1px solid var(--ring);">
+                   <td style="padding: 8px;">${bu.name}</td>
+                   <td style="text-align:center; padding: 8px;">${buAppCount}</td>
+                   <td style="text-align:center; padding: 8px;">${buProgress}%</td>
+                 </tr>`;
+    });
+    
+    results += '</tbody></table>';
+    
+    // Calculate global progress
+    const globalProgress = formulaConfig.globalMethod === 'weighted' 
+      ? (totalApps > 0 ? Math.round(weightedSum / totalApps) : 0)
+      : (buses.length > 0 ? Math.round(buSum / buses.length) : 0);
+    
+    results += `<div style="margin-top: 24px; background: var(--ring); padding: 16px; border-radius: 8px;">
+                 <h4 style="margin-top:0;">Global Progress: ${globalProgress}%</h4>
+                 <p>Calculated using: ${formulaConfig.globalMethod === 'weighted' ? 'Weighted by BU Size' : 'Simple BU Average'}</p>
+                 <div style="background: var(--panel); height: 24px; width: 100%; border-radius: 12px; overflow: hidden; margin-top: 8px;">
+                   <div style="background: ${globalProgress === 100 ? 'var(--ok)' : globalProgress >= 50 ? 'var(--warn)' : 'var(--danger)'}; 
+                               height: 100%; width: ${globalProgress}%"></div>
+                 </div>
+               </div>`;
+    
+    results += '</div>';
+    
+    // Show results in modal
+    const nestedModal = document.querySelector('.nested-modal') || document.createElement('div');
+    nestedModal.className = 'nested-modal';
+    nestedModal.style.opacity = '1';
+    nestedModal.style.pointerEvents = 'auto';
+    
+    nestedModal.innerHTML = `
+      <div class="nested-modal-content" style="background: var(--panel); border: 1px solid var(--ring); 
+          width: 80%; max-width: 800px; border-radius: var(--radius); box-shadow: 0 10px 50px rgba(0,0,0,0.5);">
+        ${results}
+        <div style="padding: 16px; display: flex; justify-content: flex-end;">
+          <button class="btn btn-secondary" onclick="document.querySelector('.nested-modal').style.opacity='0'; document.querySelector('.nested-modal').style.pointerEvents='none';">
+            Close
+          </button>
+        </div>
+      </div>
+    `;
+    
+    if (!document.body.contains(nestedModal)) {
+      document.body.appendChild(nestedModal);
+    }
+    
+    nestedModal.style.opacity = '1';
+    nestedModal.style.pointerEvents = 'auto';
+  },
+  
+  loadFormulaConfig() {
+    console.log('Loading formula configuration from localStorage');
+    
+    // Try to get saved configuration from localStorage
+    const savedConfigStr = localStorage.getItem('dashboard_formula_config');
+    
+    // If no saved config, just load empty form (don't reset to defaults)
+    if (!savedConfigStr) {
+      console.log('No saved formula configuration found, showing empty form');
+      // Do NOT call resetFormulaConfig() here - let user decide via UI button
+      this.initializeEmptyFormulaForm();
+      return;
+    }
+    
+    try {
+      // Parse saved configuration
+      const config = JSON.parse(savedConfigStr);
+      
+      // Apply to form inputs
+      document.getElementById('formula-progress-method').value = config.progressMethod || 'weighted';
+      document.getElementById('formula-global-method').value = config.globalMethod || 'weighted';
+      
+      // Status inclusion
+      if (config.statusInclusion) {
+        document.getElementById('include-status-tbs').checked = config.statusInclusion.TBS || false;
+        document.getElementById('include-status-wip').checked = config.statusInclusion.WIP !== undefined ? config.statusInclusion.WIP : true;
+        document.getElementById('include-status-clo').checked = config.statusInclusion.CLO !== undefined ? config.statusInclusion.CLO : true;
+      }
+      
+      // Weights
+      if (config.weights) {
+        document.getElementById('weight-min').value = config.weights.min || 0.5;
+        document.getElementById('weight-max').value = config.weights.max || 3.0;
+        document.getElementById('weight-default').value = config.weights.default || 1.0;
+      }
+      
+      // Criticality multipliers
+      if (config.criticalityMultipliers) {
+        document.getElementById('crit-low').value = config.criticalityMultipliers.low || 1.0;
+        document.getElementById('crit-medium').value = config.criticalityMultipliers.medium || 1.0;
+        document.getElementById('crit-high').value = config.criticalityMultipliers.high || 1.2;
+      }
+      
+      // Update formula displays
+      this.updateFormulaLabels();
+      
+      console.log('✅ Formula configuration loaded successfully');
+    } catch (err) {
+      console.error('Failed to load formula configuration:', err);
+      // On error, show empty form - don't auto-reset
+      this.initializeEmptyFormulaForm();
+    }
+  },
+
+  initializeEmptyFormulaForm() {
+    console.log('Initializing empty formula form');
+    
+    // Set form to empty state (NOT defaults)
+    document.getElementById('formula-progress-method').value = 'weighted';
+    document.getElementById('formula-global-method').value = 'weighted';
+    document.getElementById('include-status-tbs').checked = false;
+    document.getElementById('include-status-wip').checked = true;
+    document.getElementById('include-status-clo').checked = true;
+    document.getElementById('weight-min').value = '0.5';
+    document.getElementById('weight-max').value = '3.0';
+    document.getElementById('weight-default').value = '1.0';
+    document.getElementById('crit-low').value = '1.0';
+    document.getElementById('crit-medium').value = '1.0';
+    document.getElementById('crit-high').value = '1.2';
+    
+    // Update labels
+    this.updateFormulaLabels();
+  },
+  
+  updateFormulaLabels() {
+    // Show/hide appropriate formula labels based on selected method
+    const progressMethod = document.getElementById('formula-progress-method').value;
+    const globalMethod = document.getElementById('formula-global-method').value;
+    
+    // Update progress method formula labels
+    document.querySelectorAll('.math-formula.weighted, .math-formula.simple, .math-formula.minimum').forEach(el => {
+      el.style.display = 'none';
+    });
+    document.querySelector('.math-formula.' + progressMethod).style.display = 'block';
+    
+    // Update global method formula labels
+    document.querySelectorAll('.math-formula.global-weighted, .math-formula.global-simple').forEach(el => {
+      el.style.display = 'none';
+    });
+    document.querySelector('.math-formula.global-' + globalMethod).style.display = 'block';
+  }
+}
+
+// Export module for namespace compatibility
+if (!window.Dashboard) window.Dashboard = {};
+window.Dashboard.AdminController = AdminController;
+
+
+/* StorageManager is the ONLY source of truth *//* Main entry point */
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize StorageManager FIRST to detect cleared state
+    Dashboard.StorageManager.init();
+    
+    // Initialize other modules in the correct order
+    Dashboard.AdminController.init();
+    Dashboard.UIController.init();
+});
+</script>
+</body>
+</html>
