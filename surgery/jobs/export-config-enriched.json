@@ -1,0 +1,12 @@
+{
+  "file": "dist/dashboard_enhanced.html",
+  "description": "Enhance export config to include calculated progress, metrics, and metadata",
+  "operation": "replace",
+  "selector": {
+    "type": "regex",
+    "pattern": "exportConfig\\(\\) \\{[\\s\\S]*?URL\\.revokeObjectURL\\(url\\);\\s*\\},"
+  },
+  "fragment_file": "surgery/fragments/export-config-enriched.js",
+  "enable_rollback": true,
+  "enable_testing": true
+}

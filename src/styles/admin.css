@@ -1,0 +1,113 @@
+/* Admin Panel Styles */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;z-index:9999;backdrop-filter:blur(2px)}
+.modal-overlay.active{display:flex}
+.modal-content{background:linear-gradient(180deg,var(--glass),transparent),var(--panel);border:1px solid var(--ring);border-radius:var(--radius);box-shadow:var(--shadow);max-width:1200px;width:95%;min-width:320px;height:auto;min-height:300px;max-height:90vh;overflow-y:auto;padding:24px;position:relative;animation:slideIn .3s ease;margin:16px}
+
+@media (min-width: 1400px) {
+  .modal-content{max-width:1400px;width:80%}
+}
+@media (max-width: 768px) {
+  .modal-content{width:98%;padding:16px}
+}
+@keyframes slideIn{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}
+.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding-bottom:12px;border-bottom:1px solid var(--ring)}
+.modal-header h2{margin:0;font-size:18px;color:var(--text)}
+.modal-close{appearance:none;background:none;border:none;color:var(--muted);font-size:24px;cursor:pointer;padding:0;width:32px;height:32px;display:flex;align-items:center;justify-content:center}
+.modal-close:hover{color:var(--text)}
+.modal-tabs{display:flex;gap:8px;margin-bottom:20px;border-bottom:1px solid var(--ring);padding-bottom:12px}
+.modal-tab{appearance:none;background:none;border:none;color:var(--muted);padding:8px 12px;cursor:pointer;border-bottom:2px solid transparent;font-size:14px;transition:.2s}
+.modal-tab.active{color:var(--primary);border-bottom-color:var(--primary)}
+.modal-tab:hover{color:var(--text)}
+.modal-tabpanel{display:none}
+.modal-tabpanel.active{display:block}
+.bu-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px}
+.bu-card{padding:16px;border:1px solid var(--ring);border-radius:10px;background:var(--bg-2);cursor:pointer;transition:.2s;position:relative}
+.bu-card:hover{background:var(--ring);border-color:var(--primary)}
+.bu-card.selected{border-color:var(--primary);background:var(--ring)}
+
+@media (min-width: 1200px) {
+  .bu-list{grid-template-columns:repeat(auto-fill,minmax(250px,1fr))}
+}
+.bu-card-name{font-weight:700;margin-bottom:4px}
+.bu-card-meta{font-size:12px;color:var(--muted)}
+.bu-card-actions{position:absolute;top:8px;right:8px;display:flex;gap:4px}
+.bu-card-btn{appearance:none;background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:0;width:24px;height:24px;display:flex;align-items:center;justify-content:center}
+.bu-card-btn:hover{color:var(--primary)}
+.app-table{width:100%;border-collapse:collapse;margin-top:16px;table-layout:auto}
+.app-table th{text-align:left;padding:12px 8px;border-bottom:1px solid var(--ring);font-size:13px;color:var(--muted);font-weight:700}
+.app-table td{padding:12px 8px;border-bottom:1px solid var(--ring);font-size:14px}
+.app-table tr:hover{background:var(--ring)}
+.app-table input[type=text],.app-table input[type=number],.app-table select{appearance:none;background:var(--bg-2);border:1px solid var(--ring);color:var(--text);padding:6px 8px;border-radius:6px;font-size:13px;width:100%}
+.app-table input:focus,.app-table select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 8px rgba(91,157,255,.3)}
+
+/* Responsive table */
+@media (min-width: 1200px) {
+  .app-table th, .app-table td {padding: 14px 12px}
+}
+@media (max-width: 768px) {
+  .app-table {display: block; overflow-x: auto}
+}
+.form-group{margin-bottom:16px}
+.form-group label{display:block;margin-bottom:6px;font-size:12px;color:var(--muted);font-weight:600}
+
+/* ========== Automatic Weight Styling ========== */
+.auto-weight {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--primary), var(--ok));
+    color: white;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.85em;
+    text-align: center;
+    min-width: 36px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Enhanced table styling for new columns */
+.app-table th:nth-child(4),
+.app-table th:nth-child(5),
+.app-table th:nth-child(6),
+.app-table th:nth-child(7) {
+    min-width: 100px;
+}
+
+.app-table td:nth-child(4) {
+    text-align: center;
+}
+
+.app-table select {
+    min-width: 80px;
+}
+
+/* Responsive table improvements */
+@media (max-width: 1200px) {
+    .app-table {
+        font-size: 0.9em;
+    }
+    
+    .app-table th,
+    .app-table td {
+        padding: 8px 4px;
+    }
+}
+.form-group input,.form-group select,.form-group textarea{appearance:none;background:var(--bg-2);border:1px solid var(--ring);color:var(--text);padding:8px 10px;border-radius:8px;font-size:13px;width:100%;font-family:inherit}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:var(--primary);box-shadow:0 0 8px rgba(91,157,255,.3)}
+.form-row{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.status-badge{display:inline-block;padding:3px 8px;border-radius:4px;font-size:11px;font-weight:600;text-transform:uppercase}
+.status-tbs{background:rgba(255,95,122,.2);color:var(--danger)}
+.status-wip{background:rgba(255,209,102,.2);color:var(--warn)}
+.status-clo{background:rgba(50,230,133,.2);color:var(--ok)}
+.btn-group{display:flex;gap:12px;margin-top:24px;flex-wrap:wrap}
+.btn-primary{appearance:none;background:var(--primary);border:none;color:white;padding:12px 20px;border-radius:8px;cursor:pointer;font-weight:600;font-size:14px;transition:.2s}
+.btn-primary:hover{filter:brightness(1.1)}
+.btn-secondary{appearance:none;background:var(--bg-2);border:1px solid var(--ring);color:var(--text);padding:12px 20px;border-radius:8px;cursor:pointer;font-weight:600;font-size:14px;transition:.2s}
+.btn-secondary:hover{background:var(--ring)}
+.btn-danger{appearance:none;background:var(--danger);border:none;color:white;padding:12px 20px;border-radius:8px;cursor:pointer;font-weight:600;font-size:14px;transition:.2s}
+.btn-danger:hover{filter:brightness(1.1)}
+.btn-sm{padding:6px 10px;font-size:12px}
+
+@media (max-width: 768px) {
+  .btn-group {justify-content: center; gap: 8px}
+  .btn-primary, .btn-secondary, .btn-danger {width: 100%; padding: 10px 16px; font-size: 13px}
+}

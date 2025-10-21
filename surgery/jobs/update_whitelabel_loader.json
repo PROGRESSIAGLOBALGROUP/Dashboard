@@ -1,0 +1,44 @@
+{
+  "title": "Update Whitelabel Loader Function - No Defaults",
+  "description": "Replace the applyWhitelabelTitles() function to use the new empty placeholder IDs (mainTitleDisplay, subtitleDisplay) and ensure it's called properly on init and after every update",
+  "targetFile": "dist/dashboard_enhanced.html",
+  "priority": "critical",
+  "reasoning": [
+    "Function needs to target new placeholder IDs instead of old .h-title selectors",
+    "Must ensure function is called early and often",
+    "NO fallback defaults - only show if value exists in localStorage"
+  ],
+  "changes": [
+    {
+      "type": "replace",
+      "targetFile": "dist/dashboard_enhanced.html",
+      "searchStrategy": "contextual",
+      "context": "/* ========== Whitelabel Dynamic Loader ========== */",
+      "oldText": "/* ========== Whitelabel Dynamic Loader ========== */\nfunction applyWhitelabelTitles() {\n  const mainTitle = localStorage.getItem('wl_mainTitle');\n  const subtitle = localStorage.getItem('wl_subtitle');\n  \n  const h1 = document.querySelector('.h-title h1');\n  const small = document.querySelector('.h-title small');\n  \n  // Only update if values actually exist in localStorage\n  if (mainTitle !== null && h1) {\n    h1.textContent = mainTitle;\n  }\n  if (subtitle !== null && small) {\n    small.textContent = subtitle;\n  }\n}",
+      "newText": "/* ========== Whitelabel Dynamic Loader ========== */\nfunction applyWhitelabelTitles() {\n  const mainTitle = localStorage.getItem('wl_mainTitle');\n  const subtitle = localStorage.getItem('wl_subtitle');\n  \n  const h1 = document.querySelector('#mainTitleDisplay');\n  const small = document.querySelector('#subtitleDisplay');\n  \n  // CRITICAL: Only set if values exist in localStorage\n  // NO fallbacks, NO defaults - only what's in persistent storage\n  if (mainTitle !== null && h1) {\n    h1.textContent = mainTitle;\n  }\n  if (subtitle !== null && small) {\n    small.textContent = subtitle;\n  }\n}"
+    }
+  ],
+  "validations": [
+    {
+      "type": "grep",
+      "pattern": "#mainTitleDisplay",
+      "expectedCount": 1,
+      "description": "Function should target new ID"
+    },
+    {
+      "type": "grep",
+      "pattern": "#subtitleDisplay",
+      "expectedCount": 1,
+      "description": "Function should target subtitle ID"
+    },
+    {
+      "type": "grep",
+      "pattern": "\\.h-title h1",
+      "expectedCount": 0,
+      "description": "Old selector should be removed"
+    }
+  ],
+  "enable_rollback": true,
+  "enable_testing": false,
+  "postCommand": "echo 'Whitelabel loader updated to use new placeholder IDs'"
+}

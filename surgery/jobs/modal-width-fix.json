@@ -1,0 +1,12 @@
+{
+  "file": "dist/dashboard_enhanced.html",
+  "description": "Reduce modal width to decrease horizontal space between content edges",
+  "operation": "replace",
+  "selector": {
+    "type": "regex",
+    "pattern": "\\.modal-content\\{[\\s\\S]*?margin:0;\\n\\}"
+  },
+  "fragment_file": "surgery/fragments/modal-width-fix.css",
+  "enable_rollback": true,
+  "enable_testing": true
+}

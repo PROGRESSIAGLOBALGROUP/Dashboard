@@ -1,0 +1,66 @@
+  exportConfig() {
+    const config = Dashboard.StorageManager.loadConfig();
+    
+    // Build whitelabel object only if values exist
+    const whitelabel = {};
+    const mainTitle = localStorage.getItem('wl_mainTitle');
+    const subtitle = localStorage.getItem('wl_subtitle');
+    const leftLogo = localStorage.getItem('wl_leftLogo');
+    const rightLogo = localStorage.getItem('wl_rightLogo');
+    
+    if (mainTitle !== null) whitelabel.mainTitle = mainTitle;
+    if (subtitle !== null) whitelabel.subtitle = subtitle;
+    if (leftLogo !== null) whitelabel.leftLogo = leftLogo;
+    if (rightLogo !== null) whitelabel.rightLogo = rightLogo;
+    
+    // Build formula configuration object
+    const formulaConfigStr = localStorage.getItem('dashboard_formula_config');
+    const formulaConfig = {};
+    if (formulaConfigStr) {
+      try {
+        Object.assign(formulaConfig, JSON.parse(formulaConfigStr));
+      } catch (err) {
+        console.warn('Could not parse formula config during export:', err);
+      }
+    }
+    
+    // Enrich buses with calculated progress
+    const enrichedConfig = {
+      ...config,
+      ...(Object.keys(whitelabel).length > 0 && { whitelabel }),
+      ...(Object.keys(formulaConfig).length > 0 && { formulaConfig }),
+      buses: config.buses.map(bu => ({
+        ...bu,
+        calculatedProgress: Dashboard.ProgressCalculator.calculateBUProgress(bu.id),
+        appCount: config.apps.filter(app => app.buId === bu.id).length,
+        weightedMetrics: this.calculateBUWeightedMetrics(bu.id)
+      })),
+      apps: config.apps.map(app => ({
+        ...app,
+        buName: config.buses.find(b => b.id === app.buId)?.name || 'Unknown',
+        calculatedWeight: app.weight || 1,
+        calculatedProgress: app.progress || 0
+      })),
+      exportMetadata: {
+        exportedAt: new Date().toISOString(),
+        version: '2.1',
+        schema: 'dashboard_config_v1_enriched_with_formulas',
+        totalBUs: config.buses.length,
+        totalApps: config.apps.length,
+        totalWaves: config.waves.length,
+        includesFormulaConfig: Object.keys(formulaConfig).length > 0,
+        includesWhitelabelConfig: Object.keys(whitelabel).length > 0
+      }
+    };
+    
+    const json = JSON.stringify(enrichedConfig, null, 2);
+    const blob = new Blob([json], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'dashboard_config_' + new Date().toISOString().slice(0, 10) + '.json';
+    a.click();
+    URL.revokeObjectURL(url);
+    
+    console.log('✅ Configuration exported successfully with formula settings');
+  },

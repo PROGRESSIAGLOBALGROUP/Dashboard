@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dashboard · Avance por Área (Ultra)</title>
+  <link rel="stylesheet" href="./src/styles/main.css">
+  <link rel="stylesheet" href="./src/styles/dashboard.css">
+  <link rel="stylesheet" href="./src/styles/admin.css">
+</head>
+<body>
+  <div class="wrapper">
+    <header>
+      <div class="h-title">
+        <h1>PROGRESSIA · Discord Project · [ Project Type ]</h1>
+        <small>Advance by Business Unit</small>
+      </div>
+
+      <div class="controls" role="region" aria-label="Controles">
+        <input id="q" type="search" placeholder="/ Search Business Unit… (HR, PAY, GDPA)" aria-label="Buscar" />
+        <select id="status" aria-label="Filtro de estado">
+          <option value="all">All</option>
+          <option value="done">100%</option>
+          <option value="wip">1–99%</option>
+          <option value="todo">0%</option>
+        </select>
+
+        <button class="btn pill" data-sort="name" title="Order A→Z (tecla: s)">A→Z</button>
+        <button class="btn pill" data-sort="progress" title="Order by Advance">Advance</button>
+
+        <div class="switch" title="Theme light/dark">
+          <span>🌙</span><input id="theme" class="toggle" type="checkbox" /><span>☀️</span>
+        </div>
+
+        <button id="cinema" class="btn pill" title="Cinematic Mode (key: x)">Cinematic</button>
+        <button id="exportBars" class="btn pill" title="Exportar barras PNG">Bar PNG</button>
+        <button id="exportSVG" class="btn pill" title="Exportar barras SVG">Bar SVG</button>
+        <button id="exportCSV" class="btn pill" title="Exportar CSV">CSV</button>
+        <button id="setupAdmin" class="btn pill" title="Administration">Setup</button>
+      </div>
+    </header>
+
+    <!-- FIX: botón flotante para salir del modo cinemático -->
+    <button id="exitCinema" class="btn pill exit-cinema" title="Turn off cinematic mode (Esc)">Exit</button>
+
+    <section class="grid">
+      <div class="card hero">
+        <div class="inner">
+          <h2>Progreso Global</h2>
+          <svg id="heroGauge" viewBox="0 0 360 360" width="100%" height="100%" role="img" aria-label="Medidor global"></svg>
+          <div class="val" style="inset:auto; top:50%; transform:translateY(-50%);">
+            <div class="big" id="heroPct">—%</div>
+            <div class="sub" id="heroCaption">Avg</div>
+          </div>
+          <div class="spark"></div>
+        </div>
+      </div>
+
+      <div class="card constel pad">
+        <h3>BU's Constellation</h3>
+        <div class="tiles" id="tiles"></div>
+        <p class="tip">Hover to activate spotlight · Click to lock focus · Press ESC to release</p>
+      </div>
+
+      <div class="card kpis">
+        <div class="kpi"><div class="dot" style="background:var(--ok)"></div><h4>Completed</h4><div class="num" id="kpiDone">—</div></div>
+        <div class="kpi"><div class="dot" style="background:var(--warn)"></div><h4>In Progress</h4><div class="num" id="kpiWip">—</div></div>
+        <div class="kpi"><div class="dot" style="background:var(--danger)"></div><h4>About to Start</h4><div class="num" id="kpiTodo">—</div></div>
+        <div class="kpi"><div class="dot" style="background:var(--accent)"></div><h4>Total Avg</h4><div class="num" id="kpiAvg">—%</div></div>
+      </div>
+
+      <div class="card bars pad">
+        <h3>Ranking by Advance</h3>
+        <svg id="bars" viewBox="0 0 1100 460" width="100%" height="100%" role="img" aria-label="Barras de avance"></svg>
+        <p class="tip">Use controls to order and filter · Enter to clean up Search Bar</p>
+      </div>
+    </section>
+  </div>
+
+  
+  <!-- ADMIN MODAL -->
+  <div id="adminModal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>📊 Project Administration</h2>
+        <button class="modal-close" id="closeAdminModal">✕</button>
+      </div>
+      <div class="modal-tabs">
+        <button class="modal-tab active" data-tab="buses">Business Units</button>
+        <button class="modal-tab" data-tab="apps">Applications</button>
+        <button class="modal-tab" data-tab="settings">Settings</button>
+      </div>
+      
+      <!-- TAB: BUSINESS UNITS -->
+      <div class="modal-tabpanel active" id="tab-buses">
+        <div style="margin-bottom:16px">
+          <button class="btn btn-primary" id="newBUBtn">+ New Business Unit</button>
+        </div>
+        <div class="bu-list" id="buList"></div>
+      </div>
+      
+      <!-- TAB: APPLICATIONS -->
+      <div class="modal-tabpanel" id="tab-apps">
+        <div class="form-group">
+          <label>Select Business Unit</label>
+          <select id="appBUFilter"></select>
+        </div>
+        <div id="appEditorContainer"></div>
+      </div>
+      
+      <!-- TAB: SETTINGS -->
+      <div class="modal-tabpanel" id="tab-settings">
+        <h3>Global Settings</h3>
+        <div class="form-group">
+          <label>Export Data</label>
+          <button class="btn btn-secondary" id="exportAdminJSON">📥 Export Config as JSON</button>
+        </div>
+        <div class="form-group">
+          <label>Import Data</label>
+          <input type="file" id="importAdminJSON" accept=".json" />
+        </div>
+        <div class="form-group">
+          <label>Clear All Data</label>
+          <button class="btn btn-danger" id="clearAllDataBtn">🗑️ Clear All (local storage)</button>
+        </div>
+      </div>
+      
+      <div class="btn-group" style="margin-top:24px;border-top:1px solid var(--ring);padding-top:16px">
+        <button class="btn btn-primary" id="saveAdminBtn">💾 Save & Close</button>
+        <button class="btn btn-secondary" id="cancelAdminBtn">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript Modules -->
+  <script src="./src/modules/StorageManager.js"></script>
+  <script src="./src/modules/DataProcessor.js"></script>
+  <script src="./src/modules/UIController.js"></script>
+  <script src="./src/modules/AdminPanel.js"></script>
+  <script src="./src/index.js"></script>
+</body>
+</html>

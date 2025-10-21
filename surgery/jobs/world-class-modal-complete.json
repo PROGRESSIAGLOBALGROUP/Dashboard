@@ -1,0 +1,9 @@
+{
+  "file": "dist/dashboard_enhanced.html",
+  "mode": "regex-block",
+  "start": "\\/\\* Admin Panel Styles \\*\\/",
+  "end": "\\/\\* Tab Headers \\*\\/",
+  "new_fragment_path": "surgery/fragments/world-class-modal-complete.css",
+  "enable_rollback": true,
+  "enable_testing": false
+}

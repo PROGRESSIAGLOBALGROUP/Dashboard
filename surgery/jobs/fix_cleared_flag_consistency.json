@@ -1,0 +1,75 @@
+{
+  "title": "Fix Cleared Flag Consistency - Message Only On Delete",
+  "description": "The success message 'Datos borrados exitosamente' was appearing on every page refresh instead of only when data deletion occurred. Root cause: sessionStorage flag was set to 'true' but verified against 'INTENTIONALLY_CLEARED_BY_USER'. This job makes the flag logic consistent: only set flag on successful deletion, clear it after showing message once.",
+  "targetFile": "dist/dashboard_enhanced.html",
+  "priority": "high",
+  "reasoning": [
+    "UX Issue: Success message appearing on every refresh instead of only after delete action",
+    "Logic Bug: Flag mismatch between StorageManager.init() (checks for 'INTENTIONALLY_CLEARED_BY_USER') and AdminPanel.clearAllData() (sets 'true')",
+    "Root Cause: When sessionStorage flag is checked during init, the condition is never true because flag is 'true' not 'INTENTIONALLY_CLEARED_BY_USER'",
+    "Solution: Make flag values consistent, and clear flag after showing message to prevent re-showing on refresh"
+  ],
+  "changes": [
+    {
+      "type": "replace",
+      "selector": {
+        "method": "contextual",
+        "context": "sessionStorage.setItem(this.CLEARED_FLAG, 'true');",
+        "searchDirection": "around"
+      },
+      "oldText": "      // Mark that user intentionally cleared data (before removal)\n      Dashboard.StorageManager.markAsCleared();",
+      "newText": "      // Mark that user intentionally cleared data (before removal)\n      // Use consistent flag value that will be checked during init()\n      sessionStorage.setItem(Dashboard.StorageManager.CLEARED_FLAG, 'INTENTIONALLY_CLEARED_BY_USER');"
+    },
+    {
+      "type": "replace",
+      "selector": {
+        "method": "contextual",
+        "context": "statusElement.textContent = '✅ Datos borrados exitosamente - Estado vacío';",
+        "searchDirection": "before"
+      },
+      "oldText": "      // Mostrar mensaje de confirmación\n      setTimeout(() => {\n        const statusElement = document.createElement('div');\n        statusElement.style.position = 'fixed';\n        statusElement.style.top = '10px';\n        statusElement.style.left = '50%';\n        statusElement.style.transform = 'translateX(-50%)';\n        statusElement.style.background = '#32e685';\n        statusElement.style.color = '#000';\n        statusElement.style.padding = '8px 16px';\n        statusElement.style.borderRadius = '6px';\n        statusElement.style.zIndex = '9999';\n        statusElement.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';\n        statusElement.style.opacity = '0';\n        statusElement.style.transition = 'opacity 0.3s';\n        statusElement.textContent = '✅ Datos borrados exitosamente - Estado vacío';",
+      "newText": "      // Mostrar mensaje de confirmación (solo esta vez, luego limpiar flag)\n      setTimeout(() => {\n        const statusElement = document.createElement('div');\n        statusElement.style.position = 'fixed';\n        statusElement.style.top = '10px';\n        statusElement.style.left = '50%';\n        statusElement.style.transform = 'translateX(-50%)';\n        statusElement.style.background = '#32e685';\n        statusElement.style.color = '#000';\n        statusElement.style.padding = '8px 16px';\n        statusElement.style.borderRadius = '6px';\n        statusElement.style.zIndex = '9999';\n        statusElement.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';\n        statusElement.style.opacity = '0';\n        statusElement.style.transition = 'opacity 0.3s';\n        statusElement.textContent = '✅ Datos borrados exitosamente - Estado vacío';"
+    },
+    {
+      "type": "replace",
+      "selector": {
+        "method": "contextual",
+        "context": "document.body.appendChild(statusElement);",
+        "searchDirection": "after"
+      },
+      "oldText": "        setTimeout(() => {\n          statusElement.style.opacity = '1';\n          setTimeout(() => {\n            statusElement.style.opacity = '0';\n            setTimeout(() => {\n              document.body.removeChild(statusElement);\n            }, 300);\n          }, 5000);\n        }, 100);",
+      "newText": "        setTimeout(() => {\n          statusElement.style.opacity = '1';\n          setTimeout(() => {\n            statusElement.style.opacity = '0';\n            setTimeout(() => {\n              document.body.removeChild(statusElement);\n              // Clear the flag after showing message so it doesn't appear on next refresh\n              sessionStorage.removeItem(Dashboard.StorageManager.CLEARED_FLAG);\n            }, 300);\n          }, 5000);\n        }, 100);"
+    }
+  ],
+  "testCases": [
+    {
+      "name": "Message appears only on delete, not on refresh",
+      "steps": [
+        "1. Open dashboard and confirm it has some data",
+        "2. Click admin button, go to Settings tab, click 'Clear All Data'",
+        "3. Confirm both deletion dialogs",
+        "4. Verify '✅ Datos borrados exitosamente - Estado vacío' message appears for ~5 seconds",
+        "5. Wait 5+ seconds for message to fade",
+        "6. Refresh the page (F5)",
+        "7. VERIFY: Message should NOT appear on refresh - dashboard should show empty state silently"
+      ],
+      "expectedResult": "Message only appears once after deletion, not on subsequent page loads"
+    },
+    {
+      "name": "Flag is cleared before reload",
+      "steps": [
+        "1. Open DevTools (F12) and go to Application → Storage → Session Storage",
+        "2. Look for 'dashboard_user_cleared_v1' key",
+        "3. Delete all data from admin panel",
+        "4. Watch Session Storage - key should briefly appear then disappear after message fades",
+        "5. Refresh page",
+        "6. Key should not exist in Session Storage"
+      ],
+      "expectedResult": "sessionStorage flag exists only during message display, then is removed"
+    }
+  ],
+  "rollbackPlan": "Revert to previous flag value ('true' instead of 'INTENTIONALLY_CLEARED_BY_USER') and remove the sessionStorage.removeItem call",
+  "files": [
+    "dist/dashboard_enhanced.html"
+  ]
+}

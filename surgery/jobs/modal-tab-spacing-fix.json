@@ -1,0 +1,12 @@
+{
+  "file": "dist/dashboard_enhanced.html",
+  "description": "Increase vertical spacing in modal tabs for better legibility",
+  "operation": "replace",
+  "selector": {
+    "type": "regex",
+    "pattern": "\\.modal-tabs\\{[\\s\\S]*?white-space:nowrap;\\n\\}"
+  },
+  "fragment_file": "surgery/fragments/modal-tab-spacing-fix.css",
+  "enable_rollback": true,
+  "enable_testing": true
+}

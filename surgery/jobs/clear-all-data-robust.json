@@ -1,0 +1,12 @@
+{
+  "file": "dist/dashboard_enhanced.html",
+  "description": "Implement robust Clear All Data with double confirmation, verification, and proper variable cleanup",
+  "operation": "replace",
+  "selector": {
+    "type": "regex",
+    "pattern": "clearAllDataBtn.*addEventListener.*click.*\\{[\\s\\S]*?location\\.reload\\(\\);[\\s\\S]*?\\}\\);"
+  },
+  "fragment_file": "surgery/fragments/clear-all-data-robust.js",
+  "enable_rollback": true,
+  "enable_testing": true
+}

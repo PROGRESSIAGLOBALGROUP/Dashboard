@@ -1,0 +1,48 @@
+/* ========== Automatic Weight Styling ========== */
+.auto-weight {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--primary), var(--ok));
+    color: white;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.85em;
+    text-align: center;
+    min-width: 36px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Enhanced table styling for new columns */
+.app-table th:nth-child(4),
+.app-table th:nth-child(5),
+.app-table th:nth-child(6),
+.app-table th:nth-child(7) {
+    min-width: 100px;
+}
+
+.app-table td:nth-child(4) {
+    text-align: center;
+}
+
+.app-table select {
+    min-width: 80px;
+}
+
+/* Responsive table improvements */
+@media (max-width: 1200px) {
+    .app-table {
+        font-size: 0.9em;
+    }
+    
+    .app-table th,
+    .app-table td {
+        padding: 8px 4px;
+    }
+}
+
+/* Weight calculation visual feedback */
+.auto-weight:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}

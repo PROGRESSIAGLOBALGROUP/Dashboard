@@ -1,0 +1,11 @@
+{
+  "file": "dashboard_enhanced.html",
+  "mode": "regex-block",
+  "start": "const ProgressCalculator = {",
+  "end": "\\}; *(//.*)?$",
+  "new_fragment_path": "surgery/fragments/automatic_weight_calculation.js",
+  "post_cmd": null,
+  "job_file": "surgery/jobs/implement_automatic_weight_formula.json",
+  "enable_rollback": true,
+  "enable_testing": false
+}

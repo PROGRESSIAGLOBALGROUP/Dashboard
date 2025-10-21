@@ -1,0 +1,47 @@
+{
+  "title": "Remove Hardcoded Titles - Load from localStorage Only",
+  "description": "Replace hardcoded H1 and subtitle with placeholders that are filled by applyWhitelabelTitles() from localStorage. This ensures NO hardcoded UI text - only values from persistent storage.",
+  "targetFile": "dist/dashboard_enhanced.html",
+  "priority": "critical",
+  "reasoning": [
+    "User requirement: ZERO hardcoded text in HTML",
+    "Current state: H1 shows 'PROGRESSIA · Discord Project · [ Project Type ]' and subtitle 'Advance by Business Unit' as hardcode",
+    "Problem: Even if whitelabel config in localStorage is empty, these defaults still show",
+    "Solution: Use empty placeholder divs with IDs, populated by applyWhitelabelTitles() function",
+    "Result: Only shows text if it exists in localStorage; otherwise shows nothing"
+  ],
+  "changes": [
+    {
+      "type": "replace",
+      "targetFile": "dist/dashboard_enhanced.html",
+      "searchStrategy": "contextual",
+      "context": "<div class=\"h-title\">",
+      "oldText": "            <div class=\"h-title\">\n              <h1>PROGRESSIA · Discord Project · [ Project Type ]</h1>\n              <small>Advance by Business Unit</small>\n            </div>",
+      "newText": "            <div class=\"h-title\">\n              <h1 id=\"mainTitleDisplay\"></h1>\n              <small id=\"subtitleDisplay\"></small>\n            </div>"
+    }
+  ],
+  "validations": [
+    {
+      "type": "grep",
+      "pattern": "PROGRESSIA.*Discord Project",
+      "expectedCount": 0,
+      "description": "Hardcoded title should not exist in HTML"
+    },
+    {
+      "type": "grep",
+      "pattern": "id=\"mainTitleDisplay\"",
+      "expectedCount": 1,
+      "description": "Placeholder div should exist"
+    },
+    {
+      "type": "grep",
+      "pattern": "id=\"subtitleDisplay\"",
+      "expectedCount": 1,
+      "description": "Placeholder subtitle should exist"
+    }
+  ],
+  "postValidation": "Dashboard should load with empty title/subtitle; when whitelabel config is set in Admin Panel, titles should appear",
+  "enable_rollback": true,
+  "enable_testing": false,
+  "postCommand": "echo 'Job applied: Hardcoded titles removed and replaced with empty placeholders populated by applyWhitelabelTitles()'"
+}

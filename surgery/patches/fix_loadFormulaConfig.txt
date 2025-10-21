@@ -1,0 +1,73 @@
+  loadFormulaConfig() {
+    console.log('Loading formula configuration from localStorage');
+    
+    // Try to get saved configuration from localStorage
+    const savedConfigStr = localStorage.getItem('dashboard_formula_config');
+    
+    // If no saved config, just load empty form (don't reset to defaults)
+    if (!savedConfigStr) {
+      console.log('No saved formula configuration found, showing empty form');
+      // Do NOT call resetFormulaConfig() here - let user decide via UI button
+      this.initializeEmptyFormulaForm();
+      return;
+    }
+    
+    try {
+      // Parse saved configuration
+      const config = JSON.parse(savedConfigStr);
+      
+      // Apply to form inputs
+      document.getElementById('formula-progress-method').value = config.progressMethod || 'weighted';
+      document.getElementById('formula-global-method').value = config.globalMethod || 'weighted';
+      
+      // Status inclusion
+      if (config.statusInclusion) {
+        document.getElementById('include-status-tbs').checked = config.statusInclusion.TBS || false;
+        document.getElementById('include-status-wip').checked = config.statusInclusion.WIP !== undefined ? config.statusInclusion.WIP : true;
+        document.getElementById('include-status-clo').checked = config.statusInclusion.CLO !== undefined ? config.statusInclusion.CLO : true;
+      }
+      
+      // Weights
+      if (config.weights) {
+        document.getElementById('weight-min').value = config.weights.min || 0.5;
+        document.getElementById('weight-max').value = config.weights.max || 3.0;
+        document.getElementById('weight-default').value = config.weights.default || 1.0;
+      }
+      
+      // Criticality multipliers
+      if (config.criticalityMultipliers) {
+        document.getElementById('crit-low').value = config.criticalityMultipliers.low || 1.0;
+        document.getElementById('crit-medium').value = config.criticalityMultipliers.medium || 1.0;
+        document.getElementById('crit-high').value = config.criticalityMultipliers.high || 1.2;
+      }
+      
+      // Update formula displays
+      this.updateFormulaLabels();
+      
+      console.log('✅ Formula configuration loaded successfully');
+    } catch (err) {
+      console.error('Failed to load formula configuration:', err);
+      // On error, show empty form - don't auto-reset
+      this.initializeEmptyFormulaForm();
+    }
+  },
+  
+  initializeEmptyFormulaForm() {
+    console.log('Initializing empty formula form');
+    
+    // Set form to empty state (NOT defaults)
+    document.getElementById('formula-progress-method').value = 'weighted';
+    document.getElementById('formula-global-method').value = 'weighted';
+    document.getElementById('include-status-tbs').checked = false;
+    document.getElementById('include-status-wip').checked = true;
+    document.getElementById('include-status-clo').checked = true;
+    document.getElementById('weight-min').value = '0.5';
+    document.getElementById('weight-max').value = '3.0';
+    document.getElementById('weight-default').value = '1.0';
+    document.getElementById('crit-low').value = '1.0';
+    document.getElementById('crit-medium').value = '1.0';
+    document.getElementById('crit-high').value = '1.2';
+    
+    // Update labels
+    this.updateFormulaLabels();
+  },

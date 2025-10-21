@@ -1,0 +1,26 @@
+{
+  "id": "root_cause_clear_data_fix",
+  "description": "ROOT CAUSE FIX: Replace hardcoded DATA array with dynamic storage-based DATA",
+  "file": "dist/dashboard_enhanced.html",
+  "changes": [
+    {
+      "description": "Removed hardcoded DATA array with 12 fixed entries",
+      "reason": "Hardcoded array persisted even after localStorage was cleared, causing phantom 21% value"
+    },
+    {
+      "description": "Added rebuildDATAFromStorage() function",
+      "reason": "Dynamically rebuild DATA from storage - single source of truth"
+    },
+    {
+      "description": "StorageManager.init() now calls rebuildDATAFromStorage()",
+      "reason": "Ensures DATA is empty when storage is cleared"
+    },
+    {
+      "description": "UIController.apply() now calls rebuildDATAFromStorage() first",
+      "reason": "Guarantees DATA is always in sync with storage before rendering"
+    }
+  ],
+  "enable_rollback": true,
+  "enable_testing": false,
+  "post_validation": "grep -c 'rebuildDATAFromStorage' dist/dashboard_enhanced.html"
+}

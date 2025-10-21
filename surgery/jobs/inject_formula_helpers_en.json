@@ -1,0 +1,27 @@
+{
+  "id": "inject_formula_helpers_en",
+  "title": "Inject World-Class Formula Helpers into Modal",
+  "description": "Add interactive helpers, tooltips, presets, and quick tips to the formula configuration modal in English",
+  "version": "1.0",
+  "target_file": "dist/dashboard_enhanced.html",
+  "operation": "insert_before",
+  "selector": {
+    "pattern": "<!-- Actions -->",
+    "context_before": 3,
+    "context_after": 0,
+    "description": "Insert helpers section before the Actions buttons"
+  },
+  "fragment_file": "surgery/fragments/formula_helpers_en.html",
+  "safety_checks": {
+    "no_duplicates": true,
+    "preserve_surrounding_code": true,
+    "validate_html_structure": true
+  },
+  "metadata": {
+    "author": "AI Agent",
+    "date": "2025-10-20",
+    "category": "UI Enhancement",
+    "impact": "World-class inline support for formula configuration",
+    "rollback_available": true
+  }
+}

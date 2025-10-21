@@ -1,0 +1,11 @@
+{
+  "description": "Add CSS styles for automatic weight display and enhanced table layout",
+  "file": "src/styles/styles.css",
+  "operations": [
+    {
+      "type": "append",
+      "content": "\n/* ========== Automatic Weight Styling ========== */\n.auto-weight {\n    display: inline-block;\n    background: linear-gradient(135deg, var(--primary), var(--ok));\n    color: white;\n    padding: 4px 8px;\n    border-radius: 6px;\n    font-weight: 600;\n    font-size: 0.85em;\n    text-align: center;\n    min-width: 36px;\n    box-shadow: 0 2px 4px rgba(0,0,0,0.1);\n}\n\n/* Enhanced table styling for new columns */\n.apps-table th:nth-child(4),\n.apps-table th:nth-child(5),\n.apps-table th:nth-child(6),\n.apps-table th:nth-child(7) {\n    min-width: 100px;\n}\n\n.apps-table td:nth-child(4) {\n    text-align: center;\n}\n\n.apps-table select {\n    width: 100%;\n    min-width: 80px;\n}\n\n/* Responsive table improvements */\n@media (max-width: 1200px) {\n    .apps-table {\n        font-size: 0.9em;\n    }\n    \n    .apps-table th,\n    .apps-table td {\n        padding: 8px 4px;\n    }\n}\n\n/* Weight calculation tooltip */\n.auto-weight::after {\n    content: \"Criticality × Business Impact × Priority\";\n    position: absolute;\n    background: rgba(0,0,0,0.9);\n    color: white;\n    padding: 8px 12px;\n    border-radius: 6px;\n    font-size: 0.8em;\n    white-space: nowrap;\n    opacity: 0;\n    pointer-events: none;\n    transform: translateY(-100%);\n    margin-top: -8px;\n    transition: opacity 0.3s ease;\n    z-index: 1000;\n}\n\n.auto-weight:hover::after {\n    opacity: 1;\n}",
+      "validation": "CSS styles added for automatic weight display"
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "description": "Implement automatic weight calculation based on Criticality, Business Impact, and Priority",
+  "file": "src/modules/DataProcessor.js",
+  "operations": [
+    {
+      "type": "replace",
+      "search": "const ProgressCalculator = {\n  calculateAppWeight(app) {\n    const statusWeights = { TBS: 0, WIP: 0.5, CLO: 1.0 };\n    const criticalityWeights = { Low: 1, Medium: 2, High: 3 };\n    return (statusWeights[app.status] || 0) * (criticalityWeights[app.criticality] || 1);\n  },",
+      "replace": "const ProgressCalculator = {\n  /**\n   * Calculates automatic weight based on business factors\n   * Formula: (Criticality × Business Impact × Priority) ÷ 27 * 3\n   * Range: 0.11 to 3.0 (enterprise-grade scaling)\n   */\n  calculateAppWeight(app) {\n    // Business factor weights (enterprise standard)\n    const criticalityWeights = { Low: 1, Medium: 2, High: 3 };\n    const businessImpactWeights = { Low: 1, Medium: 2, High: 3 };\n    const priorityWeights = { Low: 1, Medium: 2, High: 3 };\n    \n    // Get values with defaults\n    const criticality = criticalityWeights[app.criticality] || 2;\n    const businessImpact = businessImpactWeights[app.businessImpact] || 2;\n    const priority = priorityWeights[app.priority] || 2;\n    \n    // Automatic weight calculation: normalized to 0.11-3.0 range\n    const rawWeight = (criticality * businessImpact * priority) / 27 * 3;\n    \n    // Round to 2 decimals for precision\n    return Math.round(rawWeight * 100) / 100;\n  },",
+      "validation": "calculateAppWeight method updated with automatic calculation"
+    },
+    {
+      "type": "replace",
+      "search": "  calculateBUProgress(buId) {\n    const apps = Dashboard.StorageManager.getAppsByBU(buId);\n    if (apps.length === 0) return 0;\n    \n    const weightedSum = apps.reduce((sum, app) => {\n      const weight = app.weight || 1;\n      const progress = app.progress || 0;\n      return sum + (progress * weight);\n    }, 0);\n    \n    const totalWeight = apps.reduce((sum, app) => sum + (app.weight || 1), 0);\n    return totalWeight > 0 ? Math.round((weightedSum / totalWeight) * 100) / 100 : 0;\n  },",
+      "replace": "  calculateBUProgress(buId) {\n    const apps = Dashboard.StorageManager.getAppsByBU(buId);\n    if (apps.length === 0) return 0;\n    \n    // Filter out TBS apps (not started yet)\n    const activeApps = apps.filter(app => app.status !== 'TBS');\n    if (activeApps.length === 0) return 0;\n    \n    const weightedSum = activeApps.reduce((sum, app) => {\n      const weight = this.calculateAppWeight(app); // Use automatic weight\n      const progress = app.progress || 0;\n      return sum + (progress * weight);\n    }, 0);\n    \n    const totalWeight = activeApps.reduce((sum, app) => {\n      return sum + this.calculateAppWeight(app); // Use automatic weight\n    }, 0);\n    \n    return totalWeight > 0 ? Math.round((weightedSum / totalWeight) * 100) / 100 : 0;\n  },",
+      "validation": "BU progress calculation updated to use automatic weights"
+    }
+  ]
+}

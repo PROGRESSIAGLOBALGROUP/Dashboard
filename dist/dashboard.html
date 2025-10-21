@@ -1,0 +1,1290 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dashboard · Avance por Área (Ultra)</title>
+  
+  
+  
+<style>
+/* Admin Panel Styles */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;z-index:9999;backdrop-filter:blur(2px)}
+.modal-overlay.active{display:flex}
+.modal-content{background:linear-gradient(180deg,var(--glass),transparent),var(--panel);border:1px solid var(--ring);border-radius:var(--radius);box-shadow:var(--shadow);max-width:900px;width:90%;max-height:85vh;overflow-y:auto;padding:24px;position:relative;animation:slideIn .3s ease}
+@keyframes slideIn{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}
+.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding-bottom:12px;border-bottom:1px solid var(--ring)}
+.modal-header h2{margin:0;font-size:18px;color:var(--text)}
+.modal-close{appearance:none;background:none;border:none;color:var(--muted);font-size:24px;cursor:pointer;padding:0;width:32px;height:32px;display:flex;align-items:center;justify-content:center}
+.modal-close:hover{color:var(--text)}
+.modal-tabs{display:flex;gap:8px;margin-bottom:20px;border-bottom:1px solid var(--ring);padding-bottom:12px}
+.modal-tab{appearance:none;background:none;border:none;color:var(--muted);padding:8px 12px;cursor:pointer;border-bottom:2px solid transparent;font-size:14px;transition:.2s}
+.modal-tab.active{color:var(--primary);border-bottom-color:var(--primary)}
+.modal-tab:hover{color:var(--text)}
+.modal-tabpanel{display:none}
+.modal-tabpanel.active{display:block}
+.bu-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+.bu-card{padding:12px;border:1px solid var(--ring);border-radius:10px;background:var(--bg-2);cursor:pointer;transition:.2s;position:relative}
+.bu-card:hover{background:var(--ring);border-color:var(--primary)}
+.bu-card.selected{border-color:var(--primary);background:var(--ring)}
+.bu-card-name{font-weight:700;margin-bottom:4px}
+.bu-card-meta{font-size:12px;color:var(--muted)}
+.bu-card-actions{position:absolute;top:8px;right:8px;display:flex;gap:4px}
+.bu-card-btn{appearance:none;background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:0;width:24px;height:24px;display:flex;align-items:center;justify-content:center}
+.bu-card-btn:hover{color:var(--primary)}
+.app-table{width:100%;border-collapse:collapse;margin-top:12px}
+.app-table th{text-align:left;padding:8px;border-bottom:1px solid var(--ring);font-size:12px;color:var(--muted);font-weight:700}
+.app-table td{padding:8px;border-bottom:1px solid var(--ring);font-size:13px}
+.app-table tr:hover{background:var(--ring)}
+.app-table input[type=text],.app-table input[type=number],.app-table select{appearance:none;background:var(--bg-2);border:1px solid var(--ring);color:var(--text);padding:4px 6px;border-radius:4px;font-size:12px;width:100%}
+.app-table input:focus,.app-table select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 8px rgba(91,157,255,.3)}
+.form-group{margin-bottom:16px}
+.form-group label{display:block;margin-bottom:6px;font-size:12px;color:var(--muted);font-weight:600}
+.form-group input,.form-group select,.form-group textarea{appearance:none;background:var(--bg-2);border:1px solid var(--ring);color:var(--text);padding:8px 10px;border-radius:8px;font-size:13px;width:100%;font-family:inherit}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:var(--primary);box-shadow:0 0 8px rgba(91,157,255,.3)}
+.form-row{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.status-badge{display:inline-block;padding:3px 8px;border-radius:4px;font-size:11px;font-weight:600;text-transform:uppercase}
+.status-tbs{background:rgba(255,95,122,.2);color:var(--danger)}
+.status-wip{background:rgba(255,209,102,.2);color:var(--warn)}
+.status-clo{background:rgba(50,230,133,.2);color:var(--ok)}
+.btn-group{display:flex;gap:8px;margin-top:16px}
+.btn-primary{appearance:none;background:var(--primary);border:none;color:white;padding:10px 16px;border-radius:8px;cursor:pointer;font-weight:600;font-size:13px;transition:.2s}
+.btn-primary:hover{filter:brightness(1.1)}
+.btn-secondary{appearance:none;background:var(--bg-2);border:1px solid var(--ring);color:var(--text);padding:10px 16px;border-radius:8px;cursor:pointer;font-weight:600;font-size:13px;transition:.2s}
+.btn-secondary:hover{background:var(--ring)}
+.btn-danger{appearance:none;background:var(--danger);border:none;color:white;padding:10px 16px;border-radius:8px;cursor:pointer;font-weight:600;font-size:13px;transition:.2s}
+.btn-danger:hover{filter:brightness(1.1)}
+.btn-sm{padding:4px 8px;font-size:12px}
+
+/* Dashboard Specific Styles */
+/* --- HERO GAUGE --- */
+.hero{grid-column:span 5;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.hero .inner{width:100%;display:flex;align-items:center;justify-content:center;aspect-ratio:1/1;position:relative}
+.hero h2{position:absolute;top:16px;left:16px;margin:0;font-size:16px;color:var(--muted)}
+.hero .val{position:absolute;text-align:center;inset:auto;top:50%;transform:translateY(-50%)}
+.hero .val .big{font-size:48px;font-weight:900;letter-spacing:.5px}
+.hero .val .sub{color:var(--muted)}
+.spark{position:absolute;inset:auto 10% 6% auto;background:radial-gradient(circle at 30% 30%, #fff, #fff0 60%);filter:blur(12px);width:120px;height:120px;opacity:.2}
+
+/* --- CONSTELLATION GRID --- */
+.constel{grid-column:span 7;padding:16px}
+.constel h3{margin:0 0 8px 0;font-size:16px;color:var(--muted)}
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.tile{position:relative;padding:10px 12px 12px 12px;border-radius:14px;background:linear-gradient(160deg, var(--glass), transparent);border:1px solid var(--ring);display:flex;align-items:center;gap:12px;overflow:hidden}
+.tile .name{font-weight:700}
+.tile .meta{font-size:12px;color:var(--muted)}
+.tile .orb{width:80px;height:80px;flex:0 0 auto}
+.tile .spot{position:absolute;inset:-20% -10% auto auto;width:120px;height:120px;background:radial-gradient(closest-side, rgba(255,255,255,.12), transparent);filter:blur(8px)}
+
+/* --- RANKED BARS --- */
+.bars{grid-column:span 12;padding:16px}
+.bars h3{margin:0 0 8px 0;font-size:16px;color:var(--muted)}
+.tip{color:var(--muted);font-size:12px}
+
+/* --- KPIs STRIP --- */
+.kpis{grid-column:span 12;display:grid;grid-template-columns:repeat(4,1fr);gap:var(--gap)}
+.kpi{display:flex;align-items:center;gap:12px;padding:14px 16px;background:linear-gradient(180deg, var(--glass), transparent), var(--panel);border:1px solid var(--ring);border-radius:14px}
+.kpi .dot{width:12px;height:12px;border-radius:50%}
+.kpi h4{margin:0;font-size:12px;color:var(--muted)}
+.kpi .num{font-size:24px;font-weight:900}
+
+/* Main CSS styles */
+:root{
+  --bg:#080b13;
+  --bg-2:#0d1320;
+  --panel:#0e1627;
+  --glass:rgba(255,255,255,.06);
+
+  --text:#e9eef7;
+  --muted:#9fb0c7;
+
+  --grid:#22133d;
+  --ring:#1a2a48;
+
+  --ok:#32e685;
+  --warn:#ffd166;
+  --low:#693bff;
+  --danger:#ff5f7a;
+
+  --accent:#78bfae;
+  --primary:#5b9dff;
+
+  --white:#fff;
+  --black:#000;
+
+  --shadow:0 10px 40px rgba(0,0,0,.35);
+  --radius:16px;
+  --gap:16px;
+}
+
+[data-theme="light"]{
+  --bg:#f6f8fc;
+  --bg-2:#eef2f9;
+  --panel:#ffffff;
+  --glass:rgba(20,30,60,.08);
+
+  --text:#0e1726;
+  --muted:#4b5b78;
+
+  --grid:#d6deea;
+  --ring:#c8d4e8;
+
+  --shadow:0 10px 28px rgba(15,45,90,.12);
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  background:radial-gradient(1400px 700px at 10% -10%, #20355f00, #0b1220), var(--bg);
+  color:var(--text);
+  font-family:ui-sans-serif,system-ui,Segoe UI,Roboto,Arial;
+}
+
+.wrapper{max-width:1280px;margin:0 auto;padding:20px}
+header{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:10px}
+.h-title h1{margin:0;font-size:22px;letter-spacing:.3px}
+.h-title small{color:var(--muted)}
+
+.controls{display:flex;gap:8px;flex-wrap:wrap}
+.controls>*{
+  background:var(--panel);
+  border:1px solid var(--ring);
+  color:var(--text);
+  border-radius:10px;
+  padding:10px 12px;
+  box-shadow:var(--shadow)
+}
+.controls input[type=search]{
+  min-width:240px;background:transparent;outline:none;border:none
+}
+
+.btn{cursor:pointer;user-select:none}
+.btn:hover{filter:brightness(1.08)}
+
+.pill{border-radius:9999px;border:1px solid var(--ring);background:var(--panel);padding:6px 10px;color:var(--muted);font-size:12px}
+
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:var(--gap)}
+.card{
+  background:linear-gradient(180deg, var(--glass), transparent), var(--panel);
+  border:1px solid var(--ring);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow)
+}
+.card.pad{padding:16px}
+
+/* --- HERO GAUGE --- */
+.hero{grid-column:span 5;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.hero .inner{width:100%;display:flex;align-items:center;justify-content:center;aspect-ratio:1/1;position:relative}
+.hero h2{position:absolute;top:16px;left:16px;margin:0;font-size:16px;color:var(--muted)}
+.hero .val{position:absolute;text-align:center;inset:auto;top:50%;transform:translateY(-50%)}
+.hero .val .big{font-size:48px;font-weight:900;letter-spacing:.5px}
+.hero .val .sub{color:var(--muted)}
+.spark{position:absolute;inset:auto 10% 6% auto;background:radial-gradient(circle at 30% 30%, #fff, #fff0 60%);filter:blur(12px);width:120px;height:120px;opacity:.2}
+
+/* --- CONSTELLATION GRID --- */
+.constel{grid-column:span 7;padding:16px}
+.constel h3{margin:0 0 8px 0;font-size:16px;color:var(--muted)}
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.tile{position:relative;padding:10px 12px 12px 12px;border-radius:14px;background:linear-gradient(160deg, var(--glass), transparent);border:1px solid var(--ring);display:flex;align-items:center;gap:12px;overflow:hidden}
+.tile .name{font-weight:700}
+.tile .meta{font-size:12px;color:var(--muted)}
+.tile .orb{width:80px;height:80px;flex:0 0 auto}
+.tile .spot{position:absolute;inset:-20% -10% auto auto;width:120px;height:120px;background:radial-gradient(closest-side, rgba(255,255,255,.12), transparent);filter:blur(8px)}
+
+/* --- RANKED BARS --- */
+.bars{grid-column:span 12;padding:16px}
+.bars h3{margin:0 0 8px 0;font-size:16px;color:var(--muted)}
+.tip{color:var(--muted);font-size:12px}
+
+/* --- KPIs STRIP --- */
+.kpis{grid-column:span 12;display:grid;grid-template-columns:repeat(4,1fr);gap:var(--gap)}
+.kpi{display:flex;align-items:center;gap:12px;padding:14px 16px;background:linear-gradient(180deg, var(--glass), transparent), var(--panel);border:1px solid var(--ring);border-radius:14px}
+.kpi .dot{width:12px;height:12px;border-radius:50%}
+.kpi h4{margin:0;font-size:12px;color:var(--muted)}
+.kpi .num{font-size:24px;font-weight:900}
+
+/* --- Cinematic mode --- */
+body.cinematic .wrapper{max-width:none}
+body.cinematic .controls{display:none}
+body.cinematic header{margin-bottom:0}
+body.cinematic .grid{gap:12px}
+body.cinematic .hero{grid-column:span 7}
+body.cinematic .constel{grid-column:span 5}
+/* FIX (cinema): reduce indicador principal para evitar scroll */
+body.cinematic .hero .inner{max-width:420px}
+body.cinematic .hero .val .big{font-size:36px}
+body.cinematic .hero .val .sub{font-size:12px}
+
+/* --- Exit Cinematic floating button --- */
+.exit-cinema{position:fixed;top:16px;right:16px;z-index:10000;display:none}
+body.cinematic .exit-cinema{display:inline-flex}
+
+/* --- Theme toggle --- */
+.switch{display:inline-flex;gap:8px;align-items:center}
+.toggle{appearance:none;width:44px;height:24px;border:1px solid var(--ring);border-radius:20px;background:var(--bg-2);position:relative;outline:none;cursor:pointer}
+.toggle::after{content:"";position:absolute;inset:3px auto auto 3px;width:18px;height:18px;border-radius:50%;background:linear-gradient(180deg,#2bc3ff,#4d86ff);box-shadow:0 2px 8px rgba(0,0,0,.4);transition:transform .2s ease}
+.toggle:checked::after{transform:translateX(20px)}
+
+/* --- Accessibility helpers --- */
+.sr{position:absolute;left:-9999px}
+
+@media (max-width:1080px){
+  .hero{grid-column:span 12}
+  .constel{grid-column:span 12}
+}
+@media (max-width:720px){
+  .tiles{grid-template-columns:repeat(2,1fr)}
+  .kpis{grid-template-columns:repeat(2,1fr)}
+}
+@media (max-width:520px){
+  .tiles{grid-template-columns:1fr}
+  .kpis{grid-template-columns:1fr}
+}
+
+</style>
+</head>
+<body>
+  <div class="wrapper">
+    <header>
+      <div class="h-title">
+        <h1>PROGRESSIA · Discord Project · [ Project Type ]</h1>
+        <small>Advance by Business Unit</small>
+      </div>
+
+      <div class="controls" role="region" aria-label="Controles">
+        <input id="q" type="search" placeholder="/ Search Business Unit… (HR, PAY, GDPA)" aria-label="Buscar" />
+        <select id="status" aria-label="Filtro de estado">
+          <option value="all">All</option>
+          <option value="done">100%</option>
+          <option value="wip">1–99%</option>
+          <option value="todo">0%</option>
+        </select>
+
+        <button class="btn pill" data-sort="name" title="Order A→Z (tecla: s)">A→Z</button>
+        <button class="btn pill" data-sort="progress" title="Order by Advance">Advance</button>
+
+        <div class="switch" title="Theme light/dark">
+          <span>🌙</span><input id="theme" class="toggle" type="checkbox" /><span>☀️</span>
+        </div>
+
+        <button id="cinema" class="btn pill" title="Cinematic Mode (key: x)">Cinematic</button>
+        <button id="exportBars" class="btn pill" title="Exportar barras PNG">Bar PNG</button>
+        <button id="exportSVG" class="btn pill" title="Exportar barras SVG">Bar SVG</button>
+        <button id="exportCSV" class="btn pill" title="Exportar CSV">CSV</button>
+        <button id="setupAdmin" class="btn pill" title="Administration">Setup</button>
+      </div>
+    </header>
+
+    <!-- FIX: botón flotante para salir del modo cinemático -->
+    <button id="exitCinema" class="btn pill exit-cinema" title="Turn off cinematic mode (Esc)">Exit</button>
+
+    <section class="grid">
+      <div class="card hero">
+        <div class="inner">
+          <h2>Progreso Global</h2>
+          <svg id="heroGauge" viewBox="0 0 360 360" width="100%" height="100%" role="img" aria-label="Medidor global"></svg>
+          <div class="val" style="inset:auto; top:50%; transform:translateY(-50%);">
+            <div class="big" id="heroPct">—%</div>
+            <div class="sub" id="heroCaption">Avg</div>
+          </div>
+          <div class="spark"></div>
+        </div>
+      </div>
+
+      <div class="card constel pad">
+        <h3>BU's Constellation</h3>
+        <div class="tiles" id="tiles"></div>
+        <p class="tip">Hover to activate spotlight · Click to lock focus · Press ESC to release</p>
+      </div>
+
+      <div class="card kpis">
+        <div class="kpi"><div class="dot" style="background:var(--ok)"></div><h4>Completed</h4><div class="num" id="kpiDone">—</div></div>
+        <div class="kpi"><div class="dot" style="background:var(--warn)"></div><h4>In Progress</h4><div class="num" id="kpiWip">—</div></div>
+        <div class="kpi"><div class="dot" style="background:var(--danger)"></div><h4>About to Start</h4><div class="num" id="kpiTodo">—</div></div>
+        <div class="kpi"><div class="dot" style="background:var(--accent)"></div><h4>Total Avg</h4><div class="num" id="kpiAvg">—%</div></div>
+      </div>
+
+      <div class="card bars pad">
+        <h3>Ranking by Advance</h3>
+        <svg id="bars" viewBox="0 0 1100 460" width="100%" height="100%" role="img" aria-label="Barras de avance"></svg>
+        <p class="tip">Use controls to order and filter · Enter to clean up Search Bar</p>
+      </div>
+    </section>
+  </div>
+
+  
+  <!-- ADMIN MODAL -->
+  <div id="adminModal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>📊 Project Administration</h2>
+        <button class="modal-close" id="closeAdminModal">✕</button>
+      </div>
+      <div class="modal-tabs">
+        <button class="modal-tab active" data-tab="buses">Business Units</button>
+        <button class="modal-tab" data-tab="apps">Applications</button>
+        <button class="modal-tab" data-tab="settings">Settings</button>
+      </div>
+      
+      <!-- TAB: BUSINESS UNITS -->
+      <div class="modal-tabpanel active" id="tab-buses">
+        <div style="margin-bottom:16px">
+          <button class="btn btn-primary" id="newBUBtn">+ New Business Unit</button>
+        </div>
+        <div class="bu-list" id="buList"></div>
+      </div>
+      
+      <!-- TAB: APPLICATIONS -->
+      <div class="modal-tabpanel" id="tab-apps">
+        <div class="form-group">
+          <label>Select Business Unit</label>
+          <select id="appBUFilter"></select>
+        </div>
+        <div id="appEditorContainer"></div>
+      </div>
+      
+      <!-- TAB: SETTINGS -->
+      <div class="modal-tabpanel" id="tab-settings">
+        <h3>Global Settings</h3>
+        <div class="form-group">
+          <label>Export Data</label>
+          <button class="btn btn-secondary" id="exportAdminJSON">📥 Export Config as JSON</button>
+        </div>
+        <div class="form-group">
+          <label>Import Data</label>
+          <input type="file" id="importAdminJSON" accept=".json" />
+        </div>
+        <div class="form-group">
+          <label>Clear All Data</label>
+          <button class="btn btn-danger" id="clearAllDataBtn">🗑️ Clear All (local storage)</button>
+        </div>
+      </div>
+      
+      <div class="btn-group" style="margin-top:24px;border-top:1px solid var(--ring);padding-top:16px">
+        <button class="btn btn-primary" id="saveAdminBtn">💾 Save & Close</button>
+        <button class="btn btn-secondary" id="cancelAdminBtn">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript Modules -->
+  <script src="./src/modules/StorageManager.js"></script>
+  <script src="./src/modules/DataProcessor.js"></script>
+  <script src="./src/modules/UIController.js"></script>
+  <script src="./src/modules/AdminPanel.js"></script>
+  <script src="./src/index.js"></script>
+<script>
+/* ========== Storage Manager Module ========== */
+const StorageManager = {
+  STORAGE_KEY: 'dashboard_config_v1',
+  
+  init() {
+    // Si no hay datos en localStorage, inicializar desde DATA
+    if (!localStorage.getItem(this.STORAGE_KEY)) {
+      this.saveConfig({
+        buses: DATA.map((d, i) => ({
+          id: i + 1,
+          key: d.key,
+          name: d.name,
+          domain: 'CORF',
+          fullname: d.name + ' Department',
+          apps: []
+        })),
+        apps: [],
+        waves: [
+          { id: 1, name: 'Wave 1' },
+          { id: 2, name: 'Wave 2' },
+          { id: 3, name: 'Wave 3' }
+        ]
+      });
+    }
+  },
+  
+  loadConfig() {
+    const config = localStorage.getItem(this.STORAGE_KEY);
+    return config ? JSON.parse(config) : this.getDefaultConfig();
+  },
+  
+  saveConfig(config) {
+    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(config));
+  },
+  
+  getDefaultConfig() {
+    return { buses: [], apps: [], waves: [] };
+  },
+  
+  getBUs() {
+    return this.loadConfig().buses || [];
+  },
+  
+  getApps() {
+    return this.loadConfig().apps || [];
+  },
+  
+  getAppsByBU(buId) {
+    return this.getApps().filter(app => app.buId === buId);
+  },
+  
+  addBU(bu) {
+    const config = this.loadConfig();
+    bu.id = Math.max(...config.buses.map(b => b.id), 0) + 1;
+    config.buses.push(bu);
+    this.saveConfig(config);
+    return bu;
+  },
+  
+  updateBU(buId, updates) {
+    const config = this.loadConfig();
+    const bu = config.buses.find(b => b.id === buId);
+    if (bu) Object.assign(bu, updates);
+    this.saveConfig(config);
+  },
+  
+  deleteBU(buId) {
+    const config = this.loadConfig();
+    config.buses = config.buses.filter(b => b.id !== buId);
+    config.apps = config.apps.filter(a => a.buId !== buId);
+    this.saveConfig(config);
+  },
+  
+  addApp(app) {
+    const config = this.loadConfig();
+    app.id = Math.max(...config.apps.map(a => a.id), 0) + 1;
+    config.apps.push(app);
+    this.saveConfig(config);
+    return app;
+  },
+  
+  updateApp(appId, updates) {
+    const config = this.loadConfig();
+    const app = config.apps.find(a => a.id === appId);
+    if (app) Object.assign(app, updates);
+    this.saveConfig(config);
+  },
+  
+  deleteApp(appId) {
+    const config = this.loadConfig();
+    config.apps = config.apps.filter(a => a.id !== appId);
+    this.saveConfig(config);
+  }
+};
+
+// Export module for namespace compatibility
+(function(app) {
+  app.StorageManager = StorageManager;
+})(window.Dashboard = window.Dashboard || {});
+
+/* ========== Progress Calculator Module ========== */
+const DATA = [
+  {key:'GDPA', name:'GDPA', progress:30},
+  {key:'P&S', name:'P&S', progress:25},
+  {key:'SPP', name:'SPP', progress:20},
+  {key:'ACC', name:'ACC', progress:15},
+  {key:'SMKG', name:'SMKG', progress:9},
+  {key:'INV', name:'INV', progress:0},
+  {key:'PSC', name:'PSC', progress:0},
+  {key:'CUST I', name:'CUST I', progress:0},
+  {key:'CUST II', name:'CUST II', progress:0},
+  {key:'PAY', name:'PAY', progress:100},
+  {key:'HR', name:'HR', progress:100},
+  {key:'COMM', name:'COMM', progress:100},
+];
+
+const ProgressCalculator = {
+  calculateAppWeight(app) {
+    const statusWeights = { TBS: 0, WIP: 0.5, CLO: 1.0 };
+    const criticalityWeights = { Low: 1, Medium: 2, High: 3 };
+    return (statusWeights[app.status] || 0) * (criticalityWeights[app.criticality] || 1);
+  },
+  
+  calculateBUProgress(buId) {
+    const apps = Dashboard.StorageManager.getAppsByBU(buId);
+    if (apps.length === 0) return 0;
+    
+    const weightedSum = apps.reduce((sum, app) => {
+      const weight = app.weight || 1;
+      const progress = app.progress || 0;
+      return sum + (progress * weight);
+    }, 0);
+    
+    const totalWeight = apps.reduce((sum, app) => sum + (app.weight || 1), 0);
+    return totalWeight > 0 ? Math.round((weightedSum / totalWeight) * 100) / 100 : 0;
+  },
+  
+  recalculateAllBUsProgress() {
+    const buses = Dashboard.StorageManager.getBUs();
+    const updated = buses.map(bu => ({
+      ...bu,
+      computedProgress: this.calculateBUProgress(bu.id)
+    }));
+    return updated;
+  },
+  
+  getEnhancedDATA() {
+    // Devuelve DATA actualizado con progreso computado desde storage
+    const buses = this.recalculateAllBUsProgress();
+    return buses.map(bu => ({
+      key: bu.key,
+      name: bu.name,
+      progress: bu.computedProgress || 0
+    }));
+  }
+};
+
+// Export module for namespace compatibility
+(function(app) {
+  app.ProgressCalculator = ProgressCalculator;
+  app.DATA = DATA;
+})(window.Dashboard = window.Dashboard || {});
+
+/* ========== UI Controller Module ========== */
+const UIController = {
+  state: { q: '', status: 'all', sort: 'progress', theme: 'dark', pinned: null },
+
+  init() {
+    this.setupEventListeners();
+    this.apply();
+  },
+
+  setupEventListeners() {
+    // Controls
+    document.querySelector('#q').addEventListener('input', e => {
+      this.state.q = e.target.value;
+      this.apply();
+    });
+
+    document.querySelector('#status').addEventListener('change', e => {
+      this.state.status = e.target.value;
+      this.apply();
+    });
+
+    Array.from(document.querySelectorAll('button[data-sort]')).forEach(b => b.addEventListener('click', e => {
+      this.state.sort = e.target.dataset.sort;
+      this.apply();
+    }));
+
+    document.querySelector('#theme').addEventListener('change', e => {
+      const theme = e.target.checked ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', theme);
+      this.state.theme = theme;
+      this.apply();
+    });
+
+    document.querySelector('#cinema').addEventListener('click', () => document.body.classList.toggle('cinematic'));
+    document.querySelector('#exitCinema').addEventListener('click', () => {
+      document.body.classList.remove('cinematic');
+    });
+
+    document.addEventListener('keydown', (ev) => {
+      if (ev.key === '/' && document.activeElement.id !== 'q') {
+        ev.preventDefault();
+        document.querySelector('#q').focus();
+      }
+      if (ev.key === 'Enter' && document.activeElement.id === 'q') {
+        ev.preventDefault();
+        document.querySelector('#q').value = '';
+        this.state.q = '';
+        this.apply();
+      }
+      if (ev.key === 's') {
+        this.state.sort = (this.state.sort === 'name' ? 'progress' : 'name');
+        this.apply();
+      }
+      if (ev.key === 'x') {
+        document.body.classList.toggle('cinematic');
+      }
+      // FIX: ESC primero limpia selección; si no hay selección, sale del modo cinemático
+      if (ev.key === 'Escape') {
+        if (this.state.pinned) {
+          this.state.pinned = null;
+          this.apply();
+        } else if (document.body.classList.contains('cinematic')) {
+          document.body.classList.remove('cinematic');
+        }
+      }
+    });
+
+    document.querySelector('#exportBars').addEventListener('click', () => this.svgToPNG(document.querySelector('#bars'), 2400, 1000, 'ranking_avance.png'));
+    document.querySelector('#exportSVG').addEventListener('click', () => {
+      const svg = document.querySelector('#bars').cloneNode(true);
+      const sty = document.createElement('style');
+      sty.textContent = `text{fill:${this.getCSS('--text')};font-family:${getComputedStyle(document.body).fontFamily}}`;
+      svg.insertBefore(sty, svg.firstChild);
+      const s = `<?xml version="1.0"?>` + new XMLSerializer().serializeToString(svg);
+      this.download('ranking_avance.svg', s, 'image/svg+xml');
+    });
+    
+    document.querySelector('#exportCSV').addEventListener('click', () => {
+      const rows = Dashboard.DATA.map(d => `${d.name},${d.progress}`).join('\n');
+      this.download('avance_por_area.csv', 'area,progress\n' + rows, 'text/csv');
+    });
+
+    // Click en hero gauge para ver apps detail
+    document.querySelector('#heroGauge').addEventListener('click', () => {
+      if (this.state.pinned) {
+        const pinned = Dashboard.DATA.find(d => d.name === this.state.pinned);
+        if (pinned) {
+          const buId = Dashboard.StorageManager.getBUs().find(bu => bu.name === pinned.name)?.id;
+          if (buId) {
+            Dashboard.AdminController.currentBUId = buId;
+            Dashboard.AdminController.openModal();
+            Dashboard.AdminController.switchTab('apps');
+            setTimeout(() => {
+              const busSelect = document.querySelector('#appBUFilter');
+              if (busSelect) busSelect.value = Dashboard.AdminController.currentBUId;
+              Dashboard.AdminController.renderAppsEditor();
+            }, 100);
+          }
+        }
+      }
+    });
+  },
+
+  getCSS(v) {
+    return getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+  },
+
+  fmt(n) {
+    return `${n.toFixed(0)}%`;
+  },
+
+  color(p) {
+    if (p === 100) return this.getCSS('--ok');
+    if (p === 0) return this.getCSS('--danger');
+    if (p >= 50) return this.getCSS('--warn');
+    return this.getCSS('--low');
+  },
+
+  filtered() {
+    let arr = Dashboard.DATA.filter(d => d.name.toLowerCase().includes(this.state.q.toLowerCase()));
+    if (this.state.status === 'done') arr = arr.filter(d => d.progress === 100);
+    if (this.state.status === 'wip') arr = arr.filter(d => d.progress > 0 && d.progress < 100);
+    if (this.state.status === 'todo') arr = arr.filter(d => d.progress === 0);
+
+    if (this.state.sort === 'name') arr.sort((a, b) => a.name.localeCompare(b.name));
+    if (this.state.sort === 'progress') arr.sort((a, b) => b.progress - a.progress || a.name.localeCompare(b.name));
+    return arr;
+  },
+
+  drawHero(avg) {
+    const svg = document.querySelector('#heroGauge');
+    svg.innerHTML = '';
+    const W = 360, H = 360, cx = W / 2, cy = H / 2, r = 130, sw = 28, C = 2 * Math.PI * r;
+    svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+
+    const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+    const lg = document.createElementNS('http://www.w3.org/2000/svg', 'linearGradient');
+    lg.id = 'g';
+    lg.setAttribute('x1', '0');
+    lg.setAttribute('y1', '0');
+    lg.setAttribute('x2', '1');
+    lg.setAttribute('y2', '1');
+    const stops = [['0%', '#4fd1ff'], ['50%', '#7affb3'], ['100%', '#ffd166']];
+    stops.forEach(([o, c]) => {
+      const s = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
+      s.setAttribute('offset', o);
+      s.setAttribute('stop-color', c);
+      lg.appendChild(s);
+    });
+    const f = document.createElementNS('http://www.w3.org/2000/svg', 'filter');
+    f.id = 'glow';
+    f.innerHTML = '<feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>';
+    defs.appendChild(lg);
+    defs.appendChild(f);
+    svg.appendChild(defs);
+
+    const track = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    track.setAttribute('cx', cx);
+    track.setAttribute('cy', cy);
+    track.setAttribute('r', r);
+    track.setAttribute('fill', 'none');
+    track.setAttribute('stroke', this.getCSS('--ring'));
+    track.setAttribute('stroke-width', sw);
+    svg.appendChild(track);
+
+    // grid
+    for (let i = 0; i <= 10; i++) {
+      const a = (i / 10) * Math.PI * 2 - Math.PI / 2, R = r + sw / 2, r2 = R + 8;
+      const x1 = cx + Math.cos(a) * R, y1 = cy + Math.sin(a) * R, x2 = cx + Math.cos(a) * r2, y2 = cy + Math.sin(a) * r2;
+      const L = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      L.setAttribute('x1', x1);
+      L.setAttribute('y1', y1);
+      L.setAttribute('x2', x2);
+      L.setAttribute('y2', y2);
+      L.setAttribute('stroke', this.getCSS('--grid'));
+      L.setAttribute('stroke-width', (i % 5 === 0) ? 2 : 1);
+      svg.appendChild(L);
+    }
+
+    const arc = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    arc.setAttribute('cx', cx);
+    arc.setAttribute('cy', cy);
+    arc.setAttribute('r', r);
+    arc.setAttribute('fill', 'none');
+    arc.setAttribute('stroke', 'url(#g)');
+    arc.setAttribute('stroke-width', sw);
+    arc.setAttribute('stroke-linecap', 'round');
+    arc.setAttribute('transform', `rotate(-90 ${cx} ${cy})`);
+    const target = C * (1 - avg / 100);
+    const t0 = performance.now();
+    const dur = 800;
+    function step(t) {
+      const k = Math.min(1, (t - t0) / dur);
+      const ease = .5 * (1 - Math.cos(Math.PI * k));
+      arc.setAttribute('stroke-dasharray', `${C} ${C}`);
+      arc.setAttribute('stroke-dashoffset', target + (C - target) * (1 - ease));
+      requestAnimationFrame(step);
+    }
+    arc.setAttribute('filter', 'url(#glow)');
+    svg.appendChild(arc);
+
+    const comet = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    comet.setAttribute('r', '6');
+    comet.setAttribute('fill', '#ffffff');
+    comet.setAttribute('opacity', '.9');
+    svg.appendChild(comet);
+
+    function step2() {
+      const ang = -Math.PI / 2 + 2 * Math.PI * (avg / 100);
+      const rr = r;
+      const x = cx + Math.cos(ang) * rr, y = cy + Math.sin(ang) * rr;
+      comet.setAttribute('cx', x);
+      comet.setAttribute('cy', y);
+      requestAnimationFrame(step2);
+    }
+    requestAnimationFrame(step);
+    requestAnimationFrame(step2);
+  },
+
+  orbTile(d) {
+    const wrap = document.createElement('div');
+    wrap.className = 'tile';
+    wrap.dataset.name = d.name;
+    wrap.dataset.progress = d.progress;
+
+    const svgNS = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(svgNS, 'svg');
+    svg.setAttribute('viewBox', '0 0 100 100');
+    svg.setAttribute('class', 'orb');
+
+    const defs = document.createElementNS(svgNS, 'defs');
+    const g = document.createElementNS(svgNS, 'linearGradient');
+    g.id = 'g-' + d.name.replace(/\W/g, '');
+    g.setAttribute('x1', '0');
+    g.setAttribute('y1', '0');
+    g.setAttribute('x2', '1');
+    g.setAttribute('y2', '1');
+    [['0%', '#5bdcff'], ['50%', this.color(Math.max(1, d.progress))], ['100%', '#ffd166']].forEach(([o, c]) => {
+      const s = document.createElementNS(svgNS, 'stop');
+      s.setAttribute('offset', o);
+      s.setAttribute('stop-color', c);
+      g.appendChild(s);
+    });
+    defs.appendChild(g);
+    svg.appendChild(defs);
+
+    const r = 34, cx = 50, cy = 50, sw = 10, C = 2 * Math.PI * r;
+    const track = document.createElementNS(svgNS, 'circle');
+    track.setAttribute('cy', cy);
+    track.setAttribute('cx', cx);
+    track.setAttribute('r', r);
+    track.setAttribute('fill', 'none');
+    track.setAttribute('stroke', this.getCSS('--ring'));
+    track.setAttribute('stroke-width', sw);
+    svg.appendChild(track);
+
+    const fg = document.createElementNS(svgNS, 'circle');
+    fg.setAttribute('cy', cy);
+    fg.setAttribute('cx', cx);
+    fg.setAttribute('r', r);
+    fg.setAttribute('fill', 'none');
+    fg.setAttribute('stroke', `url(#${g.id})`);
+    fg.setAttribute('stroke-width', sw);
+    fg.setAttribute('stroke-linecap', 'round');
+    fg.setAttribute('transform', `rotate(-90 ${cx} ${cy})`);
+    const target = C * (1 - d.progress / 100);
+    const t0 = performance.now();
+    const dur = 600 + d.progress * 2;
+    function anim(t) {
+      const k = Math.min(1, (t - t0) / dur);
+      const ease = .5 * (1 - Math.cos(Math.PI * k));
+      fg.setAttribute('stroke-dashoffset', target + (C - target) * (1 - ease));
+      if (k < 1) requestAnimationFrame(anim);
+    }
+    fg.setAttribute('stroke-dasharray', `${C} ${C}`);
+    svg.appendChild(fg);
+    requestAnimationFrame(anim);
+
+    const sat = document.createElementNS(svgNS, 'circle');
+    sat.setAttribute('r', '3');
+    sat.setAttribute('fill', '#fff');
+    svg.appendChild(sat);
+    function anim2() {
+      const ang = -Math.PI / 2 + 2 * Math.PI * (d.progress / 100);
+      const x = cx + Math.cos(ang) * r, y = cy + Math.sin(ang) * r;
+      sat.setAttribute('cx', x);
+      sat.setAttribute('cy', y);
+      requestAnimationFrame(anim2);
+    }
+    requestAnimationFrame(anim2);
+
+    const info = document.createElement('div');
+    info.innerHTML = `<div class="name">${d.name}</div><div class="meta">${d.progress}%</div>`;
+    const spot = document.createElement('div');
+    spot.className = 'spot';
+    wrap.appendChild(svg);
+    wrap.appendChild(info);
+    wrap.appendChild(spot);
+
+    wrap.addEventListener('mouseenter', () => this.spotlight(d.name, true));
+    wrap.addEventListener('mouseleave', () => this.spotlight(d.name, false));
+    wrap.addEventListener('click', () => {
+      this.state.pinned = (this.state.pinned === d.name ? null : d.name);
+      this.apply();
+    });
+
+    return wrap;
+  },
+
+  spotlight(name, on) {
+    if (this.state.pinned) return; // si hay selección, ignorar hover
+    Array.from(document.querySelectorAll('#tiles .tile')).forEach(t => {
+      t.style.opacity = on ? (t.dataset.name === name ? '1' : '.25') : '1';
+    });
+  },
+
+  drawBars(items) {
+    const svg = document.querySelector('#bars');
+    svg.innerHTML = '';
+    const W = 1100, H = 460, M = { t: 40, r: 24, b: 40, l: 150 };
+    const w = W - M.l - M.r, h = H - M.t - M.b;
+    svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+
+    // grid + etiquetas
+    for (let i = 0; i <= 10; i++) {
+      const x = M.l + (i / 10) * w;
+      const L = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      L.setAttribute('x1', x);
+      L.setAttribute('y1', M.t);
+      L.setAttribute('x2', x);
+      L.setAttribute('y2', M.t + h);
+      L.setAttribute('stroke', this.getCSS('--grid'));
+      L.setAttribute('stroke-width', (i % 2 === 0) ? 2 : 1);
+      svg.appendChild(L);
+
+      const T = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      T.setAttribute('x', x);
+      T.setAttribute('y', M.t - 10);
+      T.setAttribute('text-anchor', 'middle');
+      T.setAttribute('font-size', '11');
+      T.textContent = (i * 10) + '%';
+      T.setAttribute('fill', this.getCSS('--text'));
+      svg.appendChild(T);
+    }
+
+    const barH = Math.min(26, h / items.length - 10);
+    items.forEach((d, i) => {
+      const y = M.t + i * (barH + 10);
+
+      const lab = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      lab.setAttribute('x', M.l - 12);
+      lab.setAttribute('y', y + barH / 2);
+      lab.setAttribute('text-anchor', 'end');
+      lab.setAttribute('dominant-baseline', 'middle');
+      lab.setAttribute('font-size', '13');
+      lab.textContent = d.name;
+      lab.setAttribute('fill', this.getCSS('--text'));
+      svg.appendChild(lab);
+
+      const track = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      track.setAttribute('x', M.l);
+      track.setAttribute('y', y);
+      track.setAttribute('width', w);
+      track.setAttribute('height', barH);
+      track.setAttribute('rx', '8');
+      track.setAttribute('fill', this.getCSS('--ring'));
+      svg.appendChild(track);
+
+      const defs = svg.querySelector('defs') || document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+      if (!svg.querySelector('defs')) svg.appendChild(defs);
+      const gid = 'gb' + i;
+      const gr = document.createElementNS('http://www.w3.org/2000/svg', 'linearGradient');
+      gr.id = gid;
+      gr.setAttribute('x1', '0');
+      gr.setAttribute('y1', '0');
+      gr.setAttribute('x2', '1');
+      gr.setAttribute('y2', '0');
+      [['0%', this.color(Math.max(1, d.progress))], ['100%', '#ffd166']].forEach(([o, c]) => {
+        const s = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
+        s.setAttribute('offset', o);
+        s.setAttribute('stop-color', c);
+        gr.appendChild(s);
+      });
+      defs.appendChild(gr);
+
+      const bar = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      bar.setAttribute('x', M.l);
+      bar.setAttribute('y', y);
+      bar.setAttribute('width', '0');
+      bar.setAttribute('height', barH);
+      bar.setAttribute('fill', `url(#${gid})`);
+      bar.style.filter = 'drop-shadow(0 2px 10px rgba(0,0,0,.2))';
+      bar.dataset.target = w * d.progress / 100;
+      svg.appendChild(bar);
+
+      const gloss = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      gloss.setAttribute('x', M.l);
+      gloss.setAttribute('y', y);
+      gloss.setAttribute('width', '0');
+      gloss.setAttribute('height', Math.max(2, barH * 0.35));
+      gloss.setAttribute('rx', '6');
+      gloss.setAttribute('fill', '#fff');
+      gloss.setAttribute('opacity', '0.18');
+      svg.appendChild(gloss);
+
+      const v = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      v.setAttribute('x', M.l + 4);
+      v.setAttribute('y', y + barH / 2);
+      v.setAttribute('dominant-baseline', 'middle');
+      v.setAttribute('font-size', '12');
+      v.setAttribute('fill', this.getCSS('--text'));
+      v.textContent = this.fmt(d.progress);
+      svg.appendChild(v);
+    });
+
+    // ✅ FIX: seleccionar solo las barras animables por su data-attribute
+    const bars = Array.from(svg.querySelectorAll('rect[data-target]'));
+    const glosses = Array.from(svg.querySelectorAll('rect[rx="6"]'));
+    bars.forEach((el, idx) => {
+      const target = +el.dataset.target;
+      const t0 = performance.now();
+      const dur = 600;
+      function step(t) {
+        const k = Math.min(1, (t - t0) / dur);
+        const ease = 1 - Math.pow(1 - k, 3);
+        const w = target * ease;
+        el.setAttribute('width', w);
+        if (glosses[idx]) glosses[idx].setAttribute('width', Math.max(0, w - 6));
+        if (k < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    });
+  },
+
+  updateKPIs(items) {
+    const done = items.filter(d => d.progress === 100).length;
+    const wip = items.filter(d => d.progress > 0 && d.progress < 100).length;
+    const todo = items.filter(d => d.progress === 0).length;
+    const avg = Dashboard.DATA.reduce((s, d) => s + d.progress, 0) / Dashboard.DATA.length;
+    document.querySelector('#kpiDone').textContent = done;
+    document.querySelector('#kpiWip').textContent = wip;
+    document.querySelector('#kpiTodo').textContent = todo;
+    document.querySelector('#kpiAvg').textContent = avg.toFixed(2) + '%';
+  },
+
+  renderTiles(items) {
+    const box = document.querySelector('#tiles');
+    box.innerHTML = '';
+    items.forEach(d => box.appendChild(this.orbTile(d))); // posiciones fijas
+    if (this.state.pinned) {
+      Array.from(document.querySelectorAll('#tiles .tile')).forEach(t => t.style.opacity = (t.dataset.name === this.state.pinned ? '1' : '.18'));
+    }
+  },
+
+  apply() {
+    // Actualizar DATA desde storage con progreso calculado
+    const enhancedData = Dashboard.ProgressCalculator.getEnhancedDATA();
+    for (let i = 0; i < enhancedData.length; i++) {
+      if (Dashboard.DATA[i]) Dashboard.DATA[i].progress = enhancedData[i].progress;
+    }
+    const items = this.filtered();
+    const avgGlobal = Dashboard.DATA.reduce((s, d) => s + d.progress, 0) / Dashboard.DATA.length;
+    let heroValue = avgGlobal;
+    let heroText = 'Avg';
+    if (this.state.pinned) {
+      const sel = Dashboard.DATA.find(d => d.name === this.state.pinned);
+      if (sel) {
+        heroValue = sel.progress;
+        heroText = sel.name;
+      }
+    }
+    this.drawHero(heroValue);
+    document.querySelector('#heroPct').textContent = this.fmt(heroValue);
+    document.querySelector('#heroCaption').textContent = heroText;
+
+    this.renderTiles(items);
+    this.drawBars(items);
+    this.updateKPIs(items);
+  },
+
+  download(filename, text, type = 'text/plain') {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([text], { type }));
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  },
+
+  svgToPNG(svgEl, w = 2200, h = 920, filename = 'chart.png') {
+    const svg = new XMLSerializer().serializeToString(svgEl);
+    const img = new Image();
+    img.onload = function() {
+      const c = document.createElement('canvas');
+      c.width = w;
+      c.height = h;
+      const ctx = c.getContext('2d');
+      ctx.fillStyle = UIController.getCSS('--bg');
+      ctx.fillRect(0, 0, w, h);
+      ctx.drawImage(img, 0, 0, w, h);
+      c.toBlob(b => {
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(b);
+        a.download = filename;
+        a.click();
+        URL.revokeObjectURL(a.href);
+      }, 'image/png');
+    };
+    img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svg)));
+  }
+};
+
+// Export module for namespace compatibility
+(function(app) {
+  app.UIController = UIController;
+})(window.Dashboard = window.Dashboard || {});
+
+/* ========== Admin Controller Module ========== */
+const AdminController = {
+  currentBUId: null,
+  
+  init() {
+    this.setupEventListeners();
+    this.renderBUList();
+  },
+  
+  setupEventListeners() {
+    document.querySelector('#setupAdmin').addEventListener('click', () => this.openModal());
+    document.querySelector('#closeAdminModal').addEventListener('click', () => this.closeModal());
+    document.querySelector('#cancelAdminBtn').addEventListener('click', () => this.closeModal());
+    document.querySelector('#saveAdminBtn').addEventListener('click', () => this.saveAndClose());
+    
+    // Tabs
+    Array.from(document.querySelectorAll('.modal-tab')).forEach(tab => {
+      tab.addEventListener('click', (e) => this.switchTab(e.target.dataset.tab));
+    });
+    
+    // BU buttons
+    document.querySelector('#newBUBtn').addEventListener('click', () => this.newBU());
+    
+    // App filter
+    document.querySelector('#appBUFilter').addEventListener('change', (e) => {
+      this.currentBUId = parseInt(e.target.value);
+      this.renderAppsEditor();
+    });
+    
+    // Settings
+    document.querySelector('#exportAdminJSON').addEventListener('click', () => this.exportConfig());
+    document.querySelector('#importAdminJSON').addEventListener('change', (e) => this.importConfig(e));
+    document.querySelector('#clearAllDataBtn').addEventListener('click', () => {
+      if (confirm('⚠️ Clear all data from localStorage?')) {
+        localStorage.removeItem(Dashboard.StorageManager.STORAGE_KEY);
+        location.reload();
+      }
+    });
+  },
+  
+  openModal() {
+    document.querySelector('#adminModal').classList.add('active');
+    this.renderBUList();
+    this.renderBUFilter();
+  },
+  
+  closeModal() {
+    document.querySelector('#adminModal').classList.remove('active');
+  },
+  
+  switchTab(tabName) {
+    Array.from(document.querySelectorAll('.modal-tab')).forEach(t => t.classList.remove('active'));
+    Array.from(document.querySelectorAll('.modal-tabpanel')).forEach(p => p.classList.remove('active'));
+    document.querySelector('[data-tab="' + tabName + '"]').classList.add('active');
+    document.querySelector('#tab-' + tabName).classList.add('active');
+  },
+  
+  renderBUList() {
+    const buses = Dashboard.StorageManager.getBUs();
+    const container = document.querySelector('#buList');
+    container.innerHTML = '';
+    
+    buses.forEach(bu => {
+      const apps = Dashboard.StorageManager.getAppsByBU(bu.id);
+      const progress = Dashboard.ProgressCalculator.calculateBUProgress(bu.id);
+      const card = document.createElement('div');
+      card.className = 'bu-card';
+      card.innerHTML = `
+        <div class="bu-card-actions">
+          <button class="bu-card-btn" title="Edit">✏️</button>
+          <button class="bu-card-btn" title="Delete">🗑️</button>
+        </div>
+        <div class="bu-card-name">${bu.name}</div>
+        <div class="bu-card-meta">${bu.domain} · ${bu.fullname}</div>
+        <div class="bu-card-meta">Apps: ${apps.length} · Progress: ${progress.toFixed(1)}%</div>
+      `;
+      card.addEventListener('click', () => this.selectBU(bu.id, card));
+      container.appendChild(card);
+    });
+  },
+  
+  selectBU(buId, element) {
+    Array.from(document.querySelectorAll('.bu-card')).forEach(c => c.classList.remove('selected'));
+    element.classList.add('selected');
+    this.currentBUId = buId;
+  },
+  
+  newBU() {
+    const name = prompt('Business Unit name:');
+    if (!name) return;
+    Dashboard.StorageManager.addBU({
+      key: name.toUpperCase().slice(0, 4),
+      name,
+      domain: 'CORF',
+      fullname: name + ' Department'
+    });
+    this.renderBUList();
+  },
+  
+  renderBUFilter() {
+    const buses = Dashboard.StorageManager.getBUs();
+    const select = document.querySelector('#appBUFilter');
+    select.innerHTML = '<option value="">-- Select BU --</option>';
+    buses.forEach(bu => {
+      const opt = document.createElement('option');
+      opt.value = bu.id;
+      opt.textContent = bu.name;
+      select.appendChild(opt);
+    });
+  },
+  
+  renderAppsEditor() {
+    if (!this.currentBUId) return;
+    const bu = Dashboard.StorageManager.getBUs().find(b => b.id === this.currentBUId);
+    const apps = Dashboard.StorageManager.getAppsByBU(this.currentBUId);
+    const container = document.querySelector('#appEditorContainer');
+    
+    let html = `<h3>${bu.name} Applications</h3>
+      <button class="btn btn-primary" onclick="Dashboard.AdminController.newApp(${this.currentBUId})" style="margin-bottom:12px">+ Add Application</button>
+      <table class="app-table">
+        <thead>
+          <tr>
+            <th>App Name</th>
+            <th>Status</th>
+            <th>Progress %</th>
+            <th>Weight</th>
+            <th>Criticality</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>`;
+    
+    apps.forEach(app => {
+      html += `
+        <tr>
+          <td><input type="text" value="${app.name}" onchange="Dashboard.AdminController.updateApp(${app.id}, {name: this.value})"/></td>
+          <td><select onchange="Dashboard.AdminController.updateApp(${app.id}, {status: this.value})">
+            <option value="TBS" ${app.status === 'TBS' ? 'selected' : ''}>TBS</option>
+            <option value="WIP" ${app.status === 'WIP' ? 'selected' : ''}>WIP</option>
+            <option value="CLO" ${app.status === 'CLO' ? 'selected' : ''}>CLO</option>
+          </select></td>
+          <td><input type="number" min="0" max="100" value="${app.progress || 0}" onchange="Dashboard.AdminController.updateApp(${app.id}, {progress: parseInt(this.value)})"/></td>
+          <td><input type="number" min="0.5" max="3" step="0.5" value="${app.weight || 1}" onchange="Dashboard.AdminController.updateApp(${app.id}, {weight: parseFloat(this.value)})"/></td>
+          <td><select onchange="Dashboard.AdminController.updateApp(${app.id}, {criticality: this.value})">
+            <option value="Low" ${app.criticality === 'Low' ? 'selected' : ''}>Low</option>
+            <option value="Medium" ${app.criticality === 'Medium' ? 'selected' : ''}>Medium</option>
+            <option value="High" ${app.criticality === 'High' ? 'selected' : ''}>High</option>
+          </select></td>
+          <td><button class="btn btn-danger btn-sm" onclick="Dashboard.AdminController.deleteApp(${app.id})">Delete</button></td>
+        </tr>`;
+    });
+    
+    html += '</tbody></table>';
+    container.innerHTML = html;
+  },
+  
+  newApp(buId) {
+    const name = prompt('Application name:');
+    if (!name) return;
+    Dashboard.StorageManager.addApp({
+      buId,
+      name,
+      status: 'TBS',
+      progress: 0,
+      weight: 1,
+      criticality: 'Medium'
+    });
+    this.renderAppsEditor();
+  },
+  
+  updateApp(appId, updates) {
+    Dashboard.StorageManager.updateApp(appId, updates);
+    this.renderAppsEditor();
+  },
+  
+  deleteApp(appId) {
+    if (confirm('Delete this application?')) {
+      Dashboard.StorageManager.deleteApp(appId);
+      this.renderAppsEditor();
+    }
+  },
+  
+  exportConfig() {
+    const config = Dashboard.StorageManager.loadConfig();
+    const json = JSON.stringify(config, null, 2);
+    const blob = new Blob([json], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'dashboard_config_' + new Date().toISOString().slice(0, 10) + '.json';
+    a.click();
+    URL.revokeObjectURL(url);
+  },
+  
+  importConfig(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const config = JSON.parse(e.target.result);
+        Dashboard.StorageManager.saveConfig(config);
+        alert('✅ Configuration imported successfully');
+        location.reload();
+      } catch (err) {
+        alert('❌ Invalid JSON file');
+      }
+    };
+    reader.readAsText(file);
+  },
+  
+  saveAndClose() {
+    this.closeModal();
+    Dashboard.UIController.apply();
+    alert('✅ Changes saved');
+  }
+};
+
+// Export module for namespace compatibility
+(function(app) {
+  app.AdminController = AdminController;
+})(window.Dashboard = window.Dashboard || {});
+
+
+/* Main entry point */
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize modules in the correct order
+    Dashboard.StorageManager.init();
+    Dashboard.AdminController.init();
+    Dashboard.UIController.init();
+});
+</script>
+</body>
+</html>

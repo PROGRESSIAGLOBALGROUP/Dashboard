@@ -1,0 +1,9 @@
+{
+  "file": "c:\\PROYECTOS\\Dashboard\\dashboard_enhanced.html",
+  "mode": "regex-block",
+  "start": ".modal-overlay\\{position:fixed;inset:0;background:rgba\\(0,0,0,.7\\);display:none;align-items:center;justify-content:center;z-index:9999;backdrop-filter:blur\\(2px\\)\\}",
+  "end": ".btn-sm\\{padding:4px 8px;font-size:12px\\}",
+  "new_fragment_path": "c:\\PROYECTOS\\Dashboard\\surgery\\fragments\\wider-modal.js",
+  "enable_rollback": true,
+  "enable_testing": false
+}

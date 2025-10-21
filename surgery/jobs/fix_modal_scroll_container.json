@@ -1,0 +1,53 @@
+{
+  "title": "Fix Modal Scroll Container - Duplicate Close Tag",
+  "description": "The modal-scroll-container was being closed twice (line 1077 has two consecutive </div> tags), causing the tab panels to not display correctly. This breaks the layout and causes content overlap. Root cause: Extra closing tag left from refactoring.",
+  "targetFile": "dist/dashboard_enhanced.html",
+  "priority": "critical",
+  "reasoning": [
+    "UX Issue: Tab content overlapping and not displaying correctly in admin modal",
+    "HTML Structure Bug: modal-scroll-container closed twice (line ~1077)",
+    "Symptom: Second </div> closes container prematurely, breaking flex layout",
+    "Result: Modal footer appears in wrong position, tabs not scrollable properly",
+    "Root Cause: During Whitelabel tab insertion, extra closing </div> was not removed"
+  ],
+  "changes": [
+    {
+      "type": "replace",
+      "selector": {
+        "method": "contextual",
+        "context": "line 1077",
+        "searchDirection": "exact"
+      },
+      "oldText": "      </div>\n      </div>\n      \n      <div class=\"modal-footer\">",
+      "newText": "      </div>\n      </div>\n      </div>\n      \n      <div class=\"modal-footer\">"
+    }
+  ],
+  "testCases": [
+    {
+      "name": "Modal displays all tabs correctly",
+      "steps": [
+        "1. Open dashboard and click admin button",
+        "2. Verify tabs: Business Units, Applications, Applications Overview, Whitelabel, Settings",
+        "3. Click each tab and verify content displays without overlap",
+        "4. Content should be inside scrollable container",
+        "5. Modal footer should be at bottom"
+      ],
+      "expectedResult": "All tabs display correctly with proper spacing, no content overlap"
+    },
+    {
+      "name": "Modal scroll container is functional",
+      "steps": [
+        "1. Open Applications tab with many apps",
+        "2. Content should scroll within modal, not page",
+        "3. Modal footer stays fixed at bottom",
+        "4. No 'Global Settings' text visible at bottom when scrolled"
+      ],
+      "expectedResult": "Proper scrolling behavior within modal container"
+    }
+  ],
+  "rollbackPlan": "Restore the duplicate </div> tag if needed: change line 1077 from single </div> back to double </div></div>",
+  "files": [
+    "dist/dashboard_enhanced.html",
+    "dashboard_enhanced.html"
+  ]
+}

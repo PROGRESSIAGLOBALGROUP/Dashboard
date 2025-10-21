@@ -1,0 +1,12 @@
+{
+  "file": "src/modules/AdminPanel.js",
+  "mode": "line-range",
+  "start": 1,
+  "end": 99,
+  "new_fragment_path": "surgery/fragments/fix_bu_selection_memory.js",
+  "post_cmd": "python scripts/build/build_enhanced_dashboard.py",
+  "job_file": "surgery/jobs/fix_bu_selection_memory.json",
+  "enable_rollback": true,
+  "enable_testing": false,
+  "description": "Fix for BU Selection Memory - Makes the dropdown remember selected BU when reopening modal"
+}
