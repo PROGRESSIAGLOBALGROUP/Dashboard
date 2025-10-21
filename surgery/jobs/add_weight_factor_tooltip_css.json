@@ -1,0 +1,37 @@
+{
+  "job_id": "add-weight-factor-tooltip-css-20250121",
+  "name": "Add Weight Factor Tooltip CSS Styles",
+  "description": "Injects world-class CSS styles for the Weight Factor 27 tooltip, including animations, responsive design, and accessibility features.",
+  "file": "dist/dashboard_enhanced.html",
+  "mode": "regex-block",
+  "start": "</style>",
+  "end": "</style>",
+  "new_fragment_path": "surgery/patches/weight_factor_tooltip.css",
+  "post_cmd": "echo ✅ Weight Factor Tooltip CSS injected successfully",
+  "job_file": "surgery/jobs/add_weight_factor_tooltip_css.json",
+  "enable_rollback": true,
+  "enable_testing": false,
+  "metadata": {
+    "category": "STYLING",
+    "priority": "HIGH",
+    "impact": "Non-breaking, visual enhancement",
+    "css_features": [
+      "CSS Grid for responsive layouts",
+      "Gradient backgrounds and animations",
+      "Custom scrollbar styling",
+      "Glassmorphism effects (backdrop-filter)",
+      "Media queries for mobile (768px, 480px)",
+      "Smooth transitions and cubic-bezier animations"
+    ],
+    "animation_duration_ms": 300,
+    "z_index": 9999,
+    "accessibility": "Supports reduced-motion preference"
+  },
+  "notes": [
+    "CSS includes responsive breakpoints at 768px and 480px",
+    "All animations are smooth and follow the dashboard theme",
+    "Uses CSS custom properties (--panel, --primary, --text, --ok, etc.)",
+    "Scrollbar styling is WebKit-only (Chrome, Safari, Edge)",
+    "Backdrop blur requires modern browser support"
+  ]
+}

@@ -1,0 +1,54 @@
+/* Priority Badge Styling - World-class visual consistency */
+.priority-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.priority-badge.priority-high {
+  background: linear-gradient(135deg, var(--danger), #ff7a8f);
+  color: white;
+  border: 1px solid var(--danger);
+}
+
+.priority-badge.priority-high:hover {
+  box-shadow: 0 4px 12px rgba(255, 95, 122, 0.3);
+  transform: translateY(-1px);
+}
+
+.priority-badge.priority-medium {
+  background: linear-gradient(135deg, var(--warn), #ffe599);
+  color: #000;
+  border: 1px solid var(--warn);
+}
+
+.priority-badge.priority-medium:hover {
+  box-shadow: 0 4px 12px rgba(255, 209, 102, 0.3);
+  transform: translateY(-1px);
+}
+
+.priority-badge.priority-low {
+  background: linear-gradient(135deg, var(--ok), #5fff99);
+  color: #000;
+  border: 1px solid var(--ok);
+}
+
+.priority-badge.priority-low:hover {
+  box-shadow: 0 4px 12px rgba(50, 230, 133, 0.3);
+  transform: translateY(-1px);
+}
+
+/* Table cell alignment */
+#appsOverviewTableBody td:nth-child(5) {
+  text-align: center;
+  vertical-align: middle;
+}

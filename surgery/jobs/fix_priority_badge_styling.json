@@ -1,0 +1,34 @@
+{
+  "name": "Fix Priority Column Badge Styling",
+  "description": "Replace numeric priority value with semantic Low/Medium/High badges matching Criticality and Business Impact visual style. World-class styling with gradients, emojis, and hover effects.",
+  "file": "dist/dashboard_enhanced.html",
+  "mode": "line-range",
+  "start_line": 5765,
+  "end_line": 5773,
+  "changes": [
+    {
+      "type": "replace_entire_section",
+      "old_code": "        \n        // Ensure priority order is definitely displayed as a number\n        const priorityValue = typeof app.order === 'number' ? app.order : \n                           (parseInt(app.order) || 0);\n                           \n        // Create row without line breaks or unnecessary whitespace\n        html += `<tr class=\"${rowClass}\"><td>${app.id}</td><td title=\"${buName}\">${buName}</td><td>${app.wave || '-'}</td><td>${app.name}</td><td>${priorityValue}</td><td>${app.criticality || 'Medium'}</td><td>${app.impact || 'Medium'}</td><td class=\"progress-cell\"><div class=\"progress-text\">${app.progress || 0}%</div><div class=\"progress-bar\"><div class=\"progress-value\" style=\"width: ${app.progress || 0}%\"></div></div></td><td>${app.status || 'TBS'}</td></tr>`;",
+      "new_code": "        \n        // Convert priority to semantic badge (Low/Medium/High)\n        const priorityLevel = app.priority || 'Medium';\n        const badgeClass = priorityLevel === 'High' ? 'danger' : \n                          priorityLevel === 'Low' ? 'ok' : 'warn';\n        const badgeEmoji = priorityLevel === 'High' ? '🔴' : \n                          priorityLevel === 'Low' ? '🟢' : '🟡';\n        const priorityBadge = `<span class=\"priority-badge priority-${priorityLevel.toLowerCase()}\">${badgeEmoji} ${priorityLevel}</span>`;\n                           \n        // Create row without line breaks or unnecessary whitespace\n        html += `<tr class=\"${rowClass}\"><td>${app.id}</td><td title=\"${buName}\">${buName}</td><td>${app.wave || '-'}</td><td>${app.name}</td><td>${priorityBadge}</td><td>${app.criticality || 'Medium'}</td><td>${app.impact || 'Medium'}</td><td class=\"progress-cell\"><div class=\"progress-text\">${app.progress || 0}%</div><div class=\"progress-bar\"><div class=\"progress-value\" style=\"width: ${app.progress || 0}%\"></div></div></td><td>${app.status || 'TBS'}</td></tr>`;"
+    }
+  ],
+  "css_additions": [
+    {
+      "location": "after_line_330",
+      "css": "/* Priority Badge Styling - World-class visual consistency */\n.priority-badge {\n  display: inline-flex;\n  align-items: center;\n  gap: 6px;\n  padding: 6px 12px;\n  border-radius: 12px;\n  font-size: 12px;\n  font-weight: 600;\n  text-transform: uppercase;\n  letter-spacing: 0.5px;\n  white-space: nowrap;\n  transition: all 0.2s ease;\n  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);\n}\n\n.priority-badge.priority-high {\n  background: linear-gradient(135deg, var(--danger), #ff7a8f);\n  color: white;\n  border: 1px solid var(--danger);\n}\n\n.priority-badge.priority-high:hover {\n  box-shadow: 0 4px 12px rgba(255, 95, 122, 0.3);\n  transform: translateY(-1px);\n}\n\n.priority-badge.priority-medium {\n  background: linear-gradient(135deg, var(--warn), #ffe599);\n  color: #000;\n  border: 1px solid var(--warn);\n}\n\n.priority-badge.priority-medium:hover {\n  box-shadow: 0 4px 12px rgba(255, 209, 102, 0.3);\n  transform: translateY(-1px);\n}\n\n.priority-badge.priority-low {\n  background: linear-gradient(135deg, var(--ok), #5fff99);\n  color: #000;\n  border: 1px solid var(--ok);\n}\n\n.priority-badge.priority-low:hover {\n  box-shadow: 0 4px 12px rgba(50, 230, 133, 0.3);\n  transform: translateY(-1px);\n}\n\n/* Table cell alignment */\n#appsOverviewTableBody td:nth-child(5) {\n  text-align: center;\n  vertical-align: middle;\n}"
+    }
+  ],
+  "post_cmd": "echo '✅ Priority badge styling applied successfully'",
+  "job_file": "surgery/jobs/fix_priority_badge_styling.json",
+  "enable_rollback": true,
+  "enable_testing": false,
+  "validation": {
+    "check_contains": [
+      "priority-badge",
+      "priority-high",
+      "priority-medium",
+      "priority-low",
+      "priorityBadge"
+    ]
+  }
+}

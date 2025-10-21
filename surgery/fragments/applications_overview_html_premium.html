@@ -1,0 +1,100 @@
+      <!-- TAB: APPLICATIONS OVERVIEW -->
+      <div class="modal-tabpanel" id="tab-app-overview">
+        <div class="tab-header">
+          <div>
+            <h3>🔍 Applications Overview</h3>
+            <p class="tab-description">Complete view of all applications across business units with filtering and sorting</p>
+          </div>
+        </div>
+        
+        <!-- Statistics Dashboard -->
+        <div class="apps-overview-stats">
+          <div class="stat-item">
+            <div class="stat-label">Total Apps</div>
+            <div class="stat-value" id="statsTotal">0</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-label">Filtered</div>
+            <div class="stat-value" id="statsFiltered">0</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-label">Avg Completion</div>
+            <div class="stat-value" id="statsCompletion">0%</div>
+          </div>
+        </div>
+        
+        <!-- Premium Filters Bar -->
+        <div class="filters-bar-premium">
+          <div class="search-box-wrapper">
+            <input type="text" id="appsOverviewSearch" placeholder="🔎 Search by name or ID..." class="search-input-premium"/>
+          </div>
+          <select id="overviewFilterField" class="filter-select-premium">
+            <option value="all">📊 Filter By: All</option>
+            <option value="status">⏱️ Status</option>
+            <option value="criticality">⚠️ Criticality</option>
+            <option value="wave">🌊 Wave</option>
+            <option value="buId">🏢 Business Unit</option>
+          </select>
+          <select id="overviewFilterValue" class="filter-select-premium">
+            <option value="all">All Values</option>
+          </select>
+          <button class="btn btn-secondary btn-sm" id="resetAppOverviewFilters" title="Reset all filters"><span class="btn-icon">↻</span> Reset</button>
+        </div>
+        
+        <!-- Active Filters Display -->
+        <div class="active-filters-container" id="activeFiltersBadges" style="display: none;">
+          <span class="active-filters-label">Active Filters:</span>
+          <div id="activeFiltersList"></div>
+        </div>
+        
+        <!-- Premium Table Container -->
+        <div class="apps-table-container-premium">
+          <div class="table-header-info">
+            <span class="table-info-icon">📋</span>
+            <span class="table-info-text">Showing <strong id="appsCountDisplay">0</strong> applications</span>
+          </div>
+          
+          <table class="app-table-premium" id="appsOverviewTable">
+            <thead>
+              <tr>
+                <th onclick="Dashboard.AdminController.sortAppsOverview('ID', 0)" class="sortable">
+                  <span class="col-icon">🔢</span> ID <span class="sort-indicator"></span>
+                </th>
+                <th onclick="Dashboard.AdminController.sortAppsOverview('BU', 1)" class="sortable">
+                  <span class="col-icon">🏢</span> BU <span class="sort-indicator"></span>
+                </th>
+                <th onclick="Dashboard.AdminController.sortAppsOverview('Wave', 2)" class="sortable">
+                  <span class="col-icon">🌊</span> Wave <span class="sort-indicator"></span>
+                </th>
+                <th onclick="Dashboard.AdminController.sortAppsOverview('App Name', 3)" class="sortable">
+                  <span class="col-icon">📱</span> App Name <span class="sort-indicator"></span>
+                </th>
+                <th onclick="Dashboard.AdminController.sortAppsOverview('Priority', 4)" class="sortable">
+                  <span class="col-icon">🎯</span> Priority <span class="sort-indicator"></span>
+                </th>
+                <th onclick="Dashboard.AdminController.sortAppsOverview('Criticality', 5)" class="sortable">
+                  <span class="col-icon">⚠️</span> Criticality <span class="sort-indicator"></span>
+                </th>
+                <th onclick="Dashboard.AdminController.sortAppsOverview('Business Impact', 6)" class="sortable">
+                  <span class="col-icon">💼</span> Impact <span class="sort-indicator"></span>
+                </th>
+                <th onclick="Dashboard.AdminController.sortAppsOverview('Completion', 7)" class="sortable">
+                  <span class="col-icon">✅</span> Completion <span class="sort-indicator"></span>
+                </th>
+                <th onclick="Dashboard.AdminController.sortAppsOverview('Status', 8)" class="sortable">
+                  <span class="col-icon">📊</span> Status <span class="sort-indicator"></span>
+                </th>
+              </tr>
+            </thead>
+            <tbody id="appsOverviewTableBody">
+              <!-- App data will be populated here -->
+            </tbody>
+          </table>
+          
+          <div class="table-empty-state" id="emptyState" style="display: none;">
+            <div class="empty-state-icon">🔍</div>
+            <div class="empty-state-title">No applications found</div>
+            <div class="empty-state-description">Try adjusting your filters or search criteria</div>
+          </div>
+        </div>
+      </div>

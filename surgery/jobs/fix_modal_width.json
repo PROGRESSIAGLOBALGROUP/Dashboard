@@ -1,0 +1,12 @@
+{
+  "file": "dist/dashboard_enhanced.html",
+  "mode": "regex-block",
+  "start": ".modal-content{",
+  "end": "}",
+  "new_fragment_path": "surgery/patches/fix_modal_width.css",
+  "post_cmd": "echo 'Modal width fixed'",
+  "job_file": "surgery/jobs/fix_modal_width.json",
+  "enable_rollback": true,
+  "enable_testing": false,
+  "description": "Fix modal width to 90%-10%"
+}

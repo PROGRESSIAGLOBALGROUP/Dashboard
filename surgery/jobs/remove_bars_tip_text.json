@@ -1,0 +1,27 @@
+{
+  "metadata": {
+    "version": "2.0",
+    "author": "AI Agent",
+    "date": "2025-01-20",
+    "intent": "Remove CSS/text visible below 'Ranking by Advance' chart",
+    "priority": "CRITICAL",
+    "changes": 1
+  },
+  "file": "dist/dashboard_enhanced.html",
+  "mode": "exact-line-range",
+  "target": {
+    "description": "Remove <p class=\"tip\"> paragraph that displays text below SVG bars chart",
+    "line_start": 2187,
+    "line_end": 2187,
+    "line_content": "        <p class=\"tip\">Use controls to order and filter · Enter to clean up Search Bar</p>"
+  },
+  "replacement": "",
+  "action": "DELETE",
+  "enable_rollback": true,
+  "enable_testing": true,
+  "validation": {
+    "check_after_patch": "Verify that line 2187 is now empty and SVG card closes cleanly at line 2188",
+    "visual_inspection": "Open dashboard in browser and confirm no text appears below 'Ranking by Advance' chart"
+  },
+  "notes": "This removes the only HTML text element below the bars chart. No CSS will be visible after this removal. Operation is safe and fully reversible via rollback."
+}

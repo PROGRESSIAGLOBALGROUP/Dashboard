@@ -1,0 +1,12 @@
+{
+  "file": "dist/dashboard_enhanced.html",
+  "mode": "regex-block",
+  "start": "<!-- TAB: SETTINGS -->",
+  "end": "</div>\\s*</div>\\s*</div>\\s*<div class=\"modal-footer\">",
+  "new_fragment_path": "surgery/patches/world_class_settings_tab.html",
+  "post_cmd": "echo 'Settings tab rebuilt successfully'",
+  "job_file": "surgery/jobs/world_class_settings_tab.json",
+  "enable_rollback": true,
+  "enable_testing": false,
+  "description": "Complete rebuild of Settings tab with world-class UI and functionality"
+}
