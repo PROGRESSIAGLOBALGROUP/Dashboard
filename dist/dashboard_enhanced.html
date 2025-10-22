@@ -492,6 +492,8 @@
 .cell-input:focus{outline:none;background:var(--ring);border-radius:4px;padding:2px 4px}
 .cell-select{appearance:none;background:transparent;border:none;color:var(--text);padding:2px;font-size:12px;width:100%;cursor:pointer;font-family:inherit}
 .cell-select:focus{outline:none;background:var(--ring);border-radius:4px;padding:2px 4px}
+.order-input{background:linear-gradient(135deg,rgba(91,157,255,0.1),rgba(50,230,133,0.05));border:1px solid rgba(91,157,255,0.3);border-radius:6px;font-weight:700;color:var(--primary)}
+.order-input:focus{background:rgba(91,157,255,0.2);border-color:var(--primary);box-shadow:0 0 0 2px rgba(91,157,255,0.2)}
 .progress-cell{position:relative}
 .progress-cell input{width:100%}
 .mini-progress{position:absolute;bottom:0;left:0;height:2px;border-radius:1px;opacity:0.6;transition:width 0.3s ease}
@@ -7130,6 +7132,8 @@ const AdminController = {
         <thead>
           <tr>
             <th title="Application Name">App Name</th>
+            <th title="Execution Wave">🌊 Wave</th>
+            <th title="Execution Order">🔢 Order</th>
             <th title="Status: TBS/WIP/CLO">Status</th>
             <th title="Progress Percentage">Progress %</th>
             <th title="Weight Factor (Auto-calculated)">Weight <small>(Auto)</small></th>
@@ -7142,7 +7146,7 @@ const AdminController = {
         <tbody>`;
     
     if (apps.length === 0) {
-      html += `<tr class="empty-row"><td colspan="8" style="text-align:center;padding:40px;color:var(--muted)">
+      html += `<tr class="empty-row"><td colspan="10" style="text-align:center;padding:40px;color:var(--muted)">
         <div style="font-size:32px;margin-bottom:8px">📭</div>
         <div>No applications yet. <button class="link-btn" onclick="Dashboard.AdminController.openAppEditorModal(${this.currentBUId})" style="color:var(--primary);text-decoration:underline;cursor:pointer;background:none;border:none;padding:0;font:inherit">Create one now</button></div>
       </td></tr>`;
@@ -7155,6 +7159,14 @@ const AdminController = {
         html += `
         <tr data-app-id="${app.id}">
           <td><input type="text" class="cell-input" value="${app.name}" onchange="Dashboard.AdminController.updateApp(${app.id}, {name: this.value})"/></td>
+          <td><select class="cell-select" onchange="Dashboard.AdminController.updateApp(${app.id}, {wave: this.value})">
+            <option value="Wave 1" ${(app.wave || 'Wave 1') === 'Wave 1' ? 'selected' : ''}>🌊 Wave 1</option>
+            <option value="Wave 2" ${app.wave === 'Wave 2' ? 'selected' : ''}>🌊 Wave 2</option>
+            <option value="Wave 3" ${app.wave === 'Wave 3' ? 'selected' : ''}>🌊 Wave 3</option>
+            <option value="Wave 4" ${app.wave === 'Wave 4' ? 'selected' : ''}>🌊 Wave 4</option>
+            <option value="Wave 5" ${app.wave === 'Wave 5' ? 'selected' : ''}>🌊 Wave 5</option>
+          </select></td>
+          <td><input type="number" class="cell-input order-input" min="1" max="100" value="${app.order || 0}" onchange="Dashboard.AdminController.updateApp(${app.id}, {order: parseInt(this.value)})" style="width:80px;text-align:center;font-weight:600;"/></td>
           <td><span class="cell-status-badge" data-status="${app.status}" style="padding:6px 12px;border-radius:8px;font-weight:600;font-size:14px;display:inline-block;${app.status === 'TBS' ? 'background:rgba(255,95,122,0.15);color:#ff5f7a' : app.status === 'WIP' ? 'background:rgba(255,209,102,0.15);color:#ffd166' : 'background:rgba(50,230,133,0.15);color:#32e685'}">${app.status === 'TBS' ? '🔜 TBS' : app.status === 'WIP' ? '🚧 WIP' : '✅ CLO'}</span></td>
           <td><div class="progress-cell"><input type="number" class="cell-input" min="0" max="100" value="${app.progress || 0}" onchange="Dashboard.AdminController.progressChangeHandler(${app.id}, this.value)"/><div class="mini-progress" style="width:${app.progress}%;background:${app.progress === 100 ? 'var(--ok)' : app.progress >= 50 ? 'var(--warn)' : 'var(--low)'}"></div></div></td>
           <td><span class="auto-weight">${Dashboard.ProgressCalculator.calculateAppWeight(app).toFixed(2)}</span></td>
