@@ -3875,28 +3875,19 @@ body.cinematic .exit-cinema{display:inline-flex}
           </div>
         </div>
         
-        <!-- Premium Filters Bar -->
-        <div class="filters-bar-premium">
-          <div class="search-box-wrapper">
-            <input type="text" id="appsOverviewSearch" placeholder="🔎 Search by name or ID..." class="search-input-premium"/>
-          </div>
-          <select id="overviewFilterField" class="filter-select-premium">
-            <option value="all">📊 Filter By: All</option>
-            <option value="status">⏱️ Status</option>
-            <option value="criticality">⚠️ Criticality</option>
-            <option value="wave">🌊 Wave</option>
-            <option value="buId">🏢 Business Unit</option>
-          </select>
-          <select id="overviewFilterValue" class="filter-select-premium">
-            <option value="all">All Values</option>
-          </select>
-          <button class="btn btn-secondary btn-sm" id="resetAppOverviewFilters" title="Reset all filters"><span class="btn-icon">↻</span> Reset</button>
+        <!-- Premium Control Buttons (World-Class - Matching Calculation Formulas) -->
+        <div class="matrix-controls" style="margin-bottom: 20px;">
+          <button class="btn-filter-matrix" id="btnFilterMatrixWaveOverview">
+            <span>🌊 Filter by Wave</span>
+          </button>
+          <button class="btn-sort-matrix" id="btnSortMatrixOrderOverview">
+            <span>🔢 Sort by Order</span>
+          </button>
         </div>
         
-        <!-- Active Filters Display -->
-        <div class="active-filters-container" id="activeFiltersBadges" style="display: none;">
-          <span class="active-filters-label">Active Filters:</span>
-          <div id="activeFiltersList"></div>
+        <!-- Search Bar -->
+        <div class="search-box-wrapper" style="margin-bottom: 20px;">
+          <input type="text" id="appsOverviewSearch" placeholder="🔎 Search by name or ID..." class="search-input-premium"/>
         </div>
         
         <!-- Premium Table Container -->
@@ -6362,32 +6353,31 @@ const AdminController = {
       this.renderAppsEditor();
     });
     
-    // Apps overview filters
-    const overviewFilterField = document.querySelector('#overviewFilterField');
-    const overviewFilterValue = document.querySelector('#overviewFilterValue');
-    const resetAppOverviewFilters = document.querySelector('#resetAppOverviewFilters');
+    // Apps overview filters - Premium Wave/Order buttons (World-Class Controls)
+    const btnFilterMatrixWaveOverview = document.querySelector('#btnFilterMatrixWaveOverview');
+    const btnSortMatrixOrderOverview = document.querySelector('#btnSortMatrixOrderOverview');
+    const appsOverviewSearch = document.querySelector('#appsOverviewSearch');
     
-    if (overviewFilterField) {
-      overviewFilterField.addEventListener('change', () => {
-        this.currentOverviewFilters.field = overviewFilterField.value;
-        this.updateOverviewFilterValues();
-        this.renderAppsOverviewTable();
+    if (btnFilterMatrixWaveOverview) {
+      btnFilterMatrixWaveOverview.addEventListener('click', () => {
+        console.log('🌊 Filter by Wave button clicked');
+        // Toggle wave filter modal or panel
+        this.showWaveFilterPanel();
       });
     }
     
-    if (overviewFilterValue) {
-      overviewFilterValue.addEventListener('change', () => {
-        this.currentOverviewFilters.value = overviewFilterValue.value;
-        this.renderAppsOverviewTable();
+    if (btnSortMatrixOrderOverview) {
+      btnSortMatrixOrderOverview.addEventListener('click', () => {
+        console.log('🔢 Sort by Order button clicked');
+        // Sort applications by execution order
+        this.sortApplicationsByOrder();
       });
     }
     
-    if (resetAppOverviewFilters) {
-      resetAppOverviewFilters.addEventListener('click', () => {
-        this.currentOverviewFilters = { field: 'all', value: 'all' };
-        if (overviewFilterField) overviewFilterField.value = 'all';
-        this.updateOverviewFilterValues();
-        if (overviewFilterValue) overviewFilterValue.value = 'all';
+    if (appsOverviewSearch) {
+      appsOverviewSearch.addEventListener('input', (e) => {
+        console.log('🔎 Search:', e.target.value);
+        this.filterAppsOverviewBySearch(e.target.value);
         this.renderAppsOverviewTable();
       });
     }
@@ -7985,6 +7975,118 @@ const AdminController = {
     if (filterValue) filterValue.value = 'all';
     this.renderAppsOverviewTable();
     this.updateAppsOverviewStats();
+  },
+
+  // ===== WORLD-CLASS APPLICATIONS OVERVIEW PREMIUM CONTROLS =====
+  
+  showWaveFilterPanel() {
+    console.log('🌊 Wave Filter Panel Requested');
+    // Get unique waves from all applications
+    const buses = Dashboard.StorageManager.getBUs();
+    const waves = new Set();
+    
+    buses.forEach(bu => {
+      const apps = Dashboard.StorageManager.getAppsByBU(bu.id);
+      apps.forEach(app => {
+        if (app.wave) waves.add(app.wave);
+      });
+    });
+    
+    // Create simple wave filter UI
+    let waveOptions = Array.from(waves).sort();
+    
+    // For now, log the action - can be extended to show a modal or dropdown
+    console.log('📊 Available waves for filtering:', waveOptions);
+    
+    // If currentWaveFilter is not set, show all
+    if (!this.currentWaveFilter) {
+      this.currentWaveFilter = 'all';
+    }
+    
+    // Cycle through available waves
+    if (this.currentWaveFilter === 'all') {
+      if (waveOptions.length > 0) {
+        this.currentWaveFilter = waveOptions[0];
+        console.log(`✅ Filtering by: ${this.currentWaveFilter}`);
+      }
+    } else {
+      const currentIndex = waveOptions.indexOf(this.currentWaveFilter);
+      if (currentIndex >= 0 && currentIndex < waveOptions.length - 1) {
+        this.currentWaveFilter = waveOptions[currentIndex + 1];
+        console.log(`✅ Filtering by: ${this.currentWaveFilter}`);
+      } else {
+        this.currentWaveFilter = 'all';
+        console.log('✅ Showing all waves');
+      }
+    }
+    
+    this.renderAppsOverviewTable();
+  },
+
+  sortApplicationsByOrder() {
+    console.log('🔢 Sort by Order Activated');
+    // Toggle sort direction
+    if (!this.appOrderSort) {
+      this.appOrderSort = 'asc';
+    } else {
+      this.appOrderSort = this.appOrderSort === 'asc' ? 'desc' : 'asc';
+    }
+    
+    console.log(`📈 Applications sorted by Order (${this.appOrderSort})`);
+    this.renderAppsOverviewTable();
+  },
+
+  filterAppsOverviewBySearch(searchTerm) {
+    console.log('🔎 Search Filter:', searchTerm);
+    this.currentOverviewSearch = searchTerm.toLowerCase();
+  },
+
+  getFilteredApps() {
+    const buses = Dashboard.StorageManager.getBUs();
+    let apps = [];
+    
+    buses.forEach(bu => {
+      const buApps = Dashboard.StorageManager.getAppsByBU(bu.id);
+      buApps.forEach(app => {
+        apps.push({
+          ...app,
+          buId: bu.id,
+          buName: bu.name
+        });
+      });
+    });
+    
+    // Apply wave filter
+    if (this.currentWaveFilter && this.currentWaveFilter !== 'all') {
+      apps = apps.filter(app => app.wave === this.currentWaveFilter);
+    }
+    
+    // Apply search filter
+    if (this.currentOverviewSearch) {
+      apps = apps.filter(app => 
+        (app.name && app.name.toLowerCase().includes(this.currentOverviewSearch)) ||
+        (app.id && app.id.toString().toLowerCase().includes(this.currentOverviewSearch)) ||
+        (app.buName && app.buName.toLowerCase().includes(this.currentOverviewSearch))
+      );
+    }
+    
+    // Apply sort by order if needed
+    if (this.appOrderSort === 'asc' || this.appOrderSort === 'desc') {
+      apps.sort((a, b) => {
+        const orderA = parseInt(a.order) || 0;
+        const orderB = parseInt(b.order) || 0;
+        return this.appOrderSort === 'asc' ? (orderA - orderB) : (orderB - orderA);
+      });
+    } else {
+      // Default sort by order ascending
+      apps.sort((a, b) => {
+        const orderA = parseInt(a.order) || 0;
+        const orderB = parseInt(b.order) || 0;
+        return orderA - orderB;
+      });
+    }
+    
+    return apps;
   },
   
   importConfig(event) {
