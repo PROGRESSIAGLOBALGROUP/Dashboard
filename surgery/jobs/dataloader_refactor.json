@@ -1,0 +1,11 @@
+{
+  "description": "Replace embedded hardcoded data with dynamic JSON loader from data/tables.json",
+  "file": "dist/dashboard_enhanced.html",
+  "mode": "line-range",
+  "start_line": 5207,
+  "end_line": 5310,
+  "new_fragment_path": "surgery/patches/dataloader_from_json.js",
+  "enable_rollback": true,
+  "enable_testing": false,
+  "post_cmd": "echo DataLoader refactored to load from external JSON"
+}

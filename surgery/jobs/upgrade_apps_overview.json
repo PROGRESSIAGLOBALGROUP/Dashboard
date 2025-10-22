@@ -1,0 +1,11 @@
+{
+  "description": "Replace Applications Overview table with world-class Applications Impact Matrix presentation",
+  "file": "dist/dashboard_enhanced.html",
+  "mode": "regex-block",
+  "start": "    const tableBody = document.querySelector('#appsOverviewTableBody');",
+  "end": "      });",
+  "new_fragment_path": "surgery/patches/upgrade_apps_overview_table.js",
+  "enable_rollback": true,
+  "enable_testing": false,
+  "post_cmd": "echo Applications Overview table upgrade prepared"
+}

@@ -298,7 +298,7 @@
 .formula-equation{font-family:'Segoe UI', system-ui;font-size:20px;font-weight:600;color:var(--text);margin-bottom:8px}
 .formula-equation .highlight{color:var(--primary);background:var(--primary)20;padding:2px 8px;border-radius:6px}
 .formula-range{color:var(--text-secondary);font-size:14px;font-family:'Courier New', monospace}
-.business-intelligence-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(350px, 1fr));gap:20px;max-width:100%;overflow:hidden}
+.business-intelligence-grid{display:grid;grid-template-columns:repeat(3, 1fr);gap:20px;max-width:100%;overflow:hidden}
 .bi-card{background:var(--panel);border:1px solid var(--ring);border-radius:16px;padding:0;overflow:hidden;transition:all 0.3s ease;position:relative}
 .bi-card:hover{border-color:var(--primary);box-shadow:0 8px 32px rgba(91, 157, 255, 0.1);transform:translateY(-2px)}
 .bi-header{background:linear-gradient(135deg, var(--bg), var(--panel));border-bottom:1px solid var(--ring);padding:20px;display:flex;align-items:center;justify-content:space-between}
@@ -3796,9 +3796,7 @@ body.cinematic .exit-cinema{display:inline-flex}
                 <div class="form-group">
                   <label for="appWaveInput">Wave</label>
                   <select id="appWaveInput">
-                    <option value="Wave 1">Wave 1</option>
-                    <option value="Wave 2">Wave 2</option>
-                    <option value="Wave 3">Wave 3</option>
+                    <!-- Populated dynamically by JavaScript -->
                   </select>
                 </div>
               </div>
@@ -3911,33 +3909,14 @@ body.cinematic .exit-cinema{display:inline-flex}
           <table class="app-table-premium" id="appsOverviewTable">
             <thead>
               <tr>
-                <th onclick="Dashboard.AdminController.sortAppsOverview('ID', 0)" class="sortable">
-                  <span class="col-icon">🔢</span> ID <span class="sort-indicator"></span>
-                </th>
-                <th onclick="Dashboard.AdminController.sortAppsOverview('BU', 1)" class="sortable">
-                  <span class="col-icon">🏢</span> BU <span class="sort-indicator"></span>
-                </th>
-                <th onclick="Dashboard.AdminController.sortAppsOverview('Wave', 2)" class="sortable">
-                  <span class="col-icon">🌊</span> Wave <span class="sort-indicator"></span>
-                </th>
-                <th onclick="Dashboard.AdminController.sortAppsOverview('App Name', 3)" class="sortable">
-                  <span class="col-icon">📱</span> App Name <span class="sort-indicator"></span>
-                </th>
-                <th onclick="Dashboard.AdminController.sortAppsOverview('Priority', 4)" class="sortable">
-                  <span class="col-icon">🎯</span> Priority <span class="sort-indicator"></span>
-                </th>
-                <th onclick="Dashboard.AdminController.sortAppsOverview('Criticality', 5)" class="sortable">
-                  <span class="col-icon">⚠️</span> Criticality <span class="sort-indicator"></span>
-                </th>
-                <th onclick="Dashboard.AdminController.sortAppsOverview('Business Impact', 6)" class="sortable">
-                  <span class="col-icon">💼</span> Impact <span class="sort-indicator"></span>
-                </th>
-                <th onclick="Dashboard.AdminController.sortAppsOverview('Completion', 7)" class="sortable">
-                  <span class="col-icon">✅</span> Completion <span class="sort-indicator"></span>
-                </th>
-                <th onclick="Dashboard.AdminController.sortAppsOverview('Status', 8)" class="sortable">
-                  <span class="col-icon">📊</span> Status <span class="sort-indicator"></span>
-                </th>
+                <th title="Execution Order">🔢 ORDER</th>
+                <th title="Application Name">📱 APPLICATION</th>
+                <th title="Business Unit">🏢 BU</th>
+                <th title="Execution Wave">� WAVE</th>
+                <th title="Auto-calculated Weight">⚖️ AUTO-WEIGHT</th>
+                <th title="Business Factors">🎯 FACTORS</th>
+                <th title="Progress">📈 PROGRESS</th>
+                <th title="Status">✓ STATUS</th>
               </tr>
             </thead>
             <tbody id="appsOverviewTableBody">
@@ -4069,122 +4048,8 @@ body.cinematic .exit-cinema{display:inline-flex}
 
         <!-- Business Intelligence Dashboard -->
         <div class="business-intelligence-grid">
-          <!-- Factor Analysis -->
-          <div class="bi-card factor-analysis">
-            <div class="bi-header">
-              <h4>📊 Business Factor Analysis</h4>
-              <div class="bi-badge">Live Data</div>
-            </div>
-            <div class="factor-matrix">
-              <div class="factor-row">
-                <div class="factor-name">🔥 Criticality</div>
-                <div class="factor-scale">
-                  <div class="scale-item danger">High<span>3</span></div>
-                  <div class="scale-item warn">Med<span>2</span></div>
-                  <div class="scale-item ok">Low<span>1</span></div>
-                </div>
-                <div class="factor-desc">Operational Impact</div>
-              </div>
-              
-              <div class="factor-row">
-                <div class="factor-name">💼 Business Impact</div>
-                <div class="factor-scale">
-                  <div class="scale-item danger">High<span>3</span></div>
-                  <div class="scale-item warn">Med<span>2</span></div>
-                  <div class="scale-item ok">Low<span>1</span></div>
-                </div>
-                <div class="factor-desc">Economic Value</div>
-              </div>
-              
-              <div class="factor-row">
-                <div class="factor-name">🎯 Priority</div>
-                <div class="factor-scale">
-                  <div class="scale-item danger">1-3<span>3</span></div>
-                  <div class="scale-item warn">4-7<span>2</span></div>
-                  <div class="scale-item ok">8-10<span>1</span></div>
-                </div>
-                <div class="factor-desc">Strategic Urgency</div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Weight Calculator -->
-          <div class="bi-card weight-calculator">
-            <div class="bi-header">
-              <h4>🧮 Real-time Weight Calculator</h4>
-              <div class="bi-badge calculator">Interactive</div>
-            </div>
-            <div class="calculator-content">
-              <div class="calc-inputs">
-                <div class="calc-input">
-                  <label>Criticality</label>
-                  <select id="calc-criticality">
-                    <option value="1">Low (1)</option>
-                    <option value="2" selected>Medium (2)</option>
-                    <option value="3">High (3)</option>
-                  </select>
-                </div>
-                <div class="calc-input">
-                  <label>Business Impact</label>
-                  <select id="calc-impact">
-                    <option value="1">Low (1)</option>
-                    <option value="2" selected>Medium (2)</option>
-                    <option value="3">High (3)</option>
-                  </select>
-                </div>
-                <div class="calc-input">
-                  <label>Priority Order</label>
-                  <input type="number" id="calc-order" value="5" min="1" max="10">
-                </div>
-              </div>
-              
-              <div class="calc-result">
-                <div class="result-label">Calculated Weight</div>
-                <div class="result-value" id="calc-result">1.48</div>
-                <div class="result-formula" id="calc-formula">[(2 × 2 × 2) ÷ 27] × 3</div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Progress Method Configuration -->
-          <div class="bi-card progress-config">
-            <div class="bi-header">
-              <h4>⚙️ Progress Calculation Method</h4>
-              <div class="bi-badge config">Configuration</div>
-            </div>
-            <div class="config-content">
-              <div class="method-selector">
-                <div class="method-option">
-                  <input type="radio" id="method-weighted" name="progress-method" value="weighted" checked>
-                  <label for="method-weighted">
-                    <div class="method-name">🎯 Weighted Average</div>
-                    <div class="method-desc">Uses automatic weights from business factors</div>
-                    <div class="method-formula">BU Progress = Σ(App Progress × Auto-Weight) / Σ(Auto-Weight)</div>
-                  </label>
-                </div>
-                
-                <div class="method-option">
-                  <input type="radio" id="method-simple" name="progress-method" value="simple">
-                  <label for="method-simple">
-                    <div class="method-name">📊 Simple Average</div>
-                    <div class="method-desc">All applications have equal influence</div>
-                    <div class="method-formula">BU Progress = Σ(App Progress) / Count(Apps)</div>
-                  </label>
-                </div>
-                
-                <div class="method-option">
-                  <input type="radio" id="method-minimum" name="progress-method" value="minimum">
-                  <label for="method-minimum">
-                    <div class="method-name">⚠️ Minimum Progress</div>
-                    <div class="method-desc">Conservative bottleneck approach</div>
-                    <div class="method-formula">BU Progress = MIN(App Progress)</div>
-                  </label>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Status Inclusion -->
+          
+          <!-- 1. Status Inclusion Rules - Business Rules (TOP) -->
           <div class="bi-card status-inclusion">
             <div class="bi-header">
               <h4>� Status Inclusion Rules</h4>
@@ -4222,7 +4087,45 @@ body.cinematic .exit-cinema{display:inline-flex}
             </div>
           </div>
 
-          <!-- Global Progress -->
+          <!-- 2. Progress Calculation Method - Configuration (TOP) -->
+          <div class="bi-card progress-config">
+            <div class="bi-header">
+              <h4>⚙️ Progress Calculation Method</h4>
+              <div class="bi-badge config">Configuration</div>
+            </div>
+            <div class="config-content">
+              <div class="method-selector">
+                <div class="method-option">
+                  <input type="radio" id="method-weighted" name="progress-method" value="weighted" checked>
+                  <label for="method-weighted">
+                    <div class="method-name">🎯 Weighted Average</div>
+                    <div class="method-desc">Uses automatic weights from business factors</div>
+                    <div class="method-formula">BU Progress = Σ(App Progress × Auto-Weight) / Σ(Auto-Weight)</div>
+                  </label>
+                </div>
+                
+                <div class="method-option">
+                  <input type="radio" id="method-simple" name="progress-method" value="simple">
+                  <label for="method-simple">
+                    <div class="method-name">📊 Simple Average</div>
+                    <div class="method-desc">All applications have equal influence</div>
+                    <div class="method-formula">BU Progress = Σ(App Progress) / Count(Apps)</div>
+                  </label>
+                </div>
+                
+                <div class="method-option">
+                  <input type="radio" id="method-minimum" name="progress-method" value="minimum">
+                  <label for="method-minimum">
+                    <div class="method-name">⚠️ Minimum Progress</div>
+                    <div class="method-desc">Conservative bottleneck approach</div>
+                    <div class="method-formula">BU Progress = MIN(App Progress)</div>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. Global Progress Formula - Enterprise (TOP) -->
           <div class="bi-card global-progress">
             <div class="bi-header">
               <h4>🌐 Global Progress Formula</h4>
@@ -4249,7 +4152,46 @@ body.cinematic .exit-cinema{display:inline-flex}
             </div>
           </div>
 
-          <!-- Weight Examples -->
+          <!-- 4. Business Factor Analysis - Live Data (BOTTOM) -->
+          <div class="bi-card factor-analysis">
+            <div class="bi-header">
+              <h4>📊 Business Factor Analysis</h4>
+              <div class="bi-badge">Live Data</div>
+            </div>
+            <div class="factor-matrix">
+              <div class="factor-row">
+                <div class="factor-name">🔥 Criticality</div>
+                <div class="factor-scale">
+                  <div class="scale-item danger">High<span>3</span></div>
+                  <div class="scale-item warn">Med<span>2</span></div>
+                  <div class="scale-item ok">Low<span>1</span></div>
+                </div>
+                <div class="factor-desc">Operational Impact</div>
+              </div>
+              
+              <div class="factor-row">
+                <div class="factor-name">💼 Business Impact</div>
+                <div class="factor-scale">
+                  <div class="scale-item danger">High<span>3</span></div>
+                  <div class="scale-item warn">Med<span>2</span></div>
+                  <div class="scale-item ok">Low<span>1</span></div>
+                </div>
+                <div class="factor-desc">Economic Value</div>
+              </div>
+              
+              <div class="factor-row">
+                <div class="factor-name">🎯 Priority</div>
+                <div class="factor-scale">
+                  <div class="scale-item danger">High<span>3</span></div>
+                  <div class="scale-item warn">Med<span>2</span></div>
+                  <div class="scale-item ok">Low<span>1</span></div>
+                </div>
+                <div class="factor-desc">Strategic Urgency</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 5. Weight Examples - Reference (BOTTOM) -->
           <div class="bi-card weight-examples">
             <div class="bi-header">
               <h4>💎 Weight Examples</h4>
@@ -4297,6 +4239,49 @@ body.cinematic .exit-cinema{display:inline-flex}
               </div>
             </div>
           </div>
+
+          <!-- 6. Real-time Weight Calculator - Interactive (BOTTOM) -->
+          <div class="bi-card weight-calculator">
+            <div class="bi-header">
+              <h4>🧮 Real-time Weight Calculator</h4>
+              <div class="bi-badge calculator">Interactive</div>
+            </div>
+            <div class="calculator-content">
+              <div class="calc-inputs">
+                <div class="calc-input">
+                  <label>Criticality</label>
+                  <select id="calc-criticality">
+                    <option value="1">🟢 Low</option>
+                    <option value="2" selected>🟡 Medium</option>
+                    <option value="3">🔴 High</option>
+                  </select>
+                </div>
+                <div class="calc-input">
+                  <label>Business Impact</label>
+                  <select id="calc-impact">
+                    <option value="1">🟢 Low</option>
+                    <option value="2" selected>🟡 Medium</option>
+                    <option value="3">🔴 High</option>
+                  </select>
+                </div>
+                <div class="calc-input">
+                  <label>Priority</label>
+                  <select id="calc-priority">
+                    <option value="High">🔴 High</option>
+                    <option value="Medium" selected>🟡 Medium</option>
+                    <option value="Low">🟢 Low</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div class="calc-result">
+                <div class="result-label">Calculated Weight</div>
+                <div class="result-value" id="calc-result">1.48</div>
+                <div class="result-formula" id="calc-formula">[(2 × 2 × 2) ÷ 27] × 3</div>
+              </div>
+            </div>
+          </div>
+
         </div>
 
         <!-- Applications Impact Matrix - World-Class Presentation -->
@@ -5219,12 +5204,95 @@ body.cinematic .exit-cinema{display:inline-flex}
   <!-- JavaScript Modules - Embedded directly to avoid CORS issues -->
   <!-- No external scripts - all code embedded inline to avoid CORS errors -->
 <script>
+/* ========== Data Loader Module - CRITICAL DATA INITIALIZATION ========== */
+const DataLoader = {
+  // NO EMBEDDED DATA - Load from external JSON file
+  
+  async loadData() {
+    try {
+      console.log('🚀 [DataLoader] Fetching data from data/tables.json...');
+      
+      // FETCH from external JSON file (no hardcodes)
+      const response = await fetch('./data/tables.json');
+      if (!response.ok) {
+        console.error('❌ [DataLoader] Failed to fetch data/tables.json:', response.statusText);
+        return { businessUnits: [], apps: [], waves: [] };
+      }
+      
+      const jsonData = await response.json();
+      console.log('✅ [DataLoader] JSON loaded successfully');
+      
+      // Transform Business Units
+      const businessUnits = (jsonData.business_units_catalog || []).map(bu => ({
+        id: bu.BU_ID,
+        key: bu.BU_DOMAIN,
+        name: bu.BU_NAME,
+        domain: bu.BU_DOMAIN,
+        fullname: bu.BU_FULLNAME,
+        apps: []
+      }));
+      
+      // Transform Applications
+      const apps = (jsonData.apps_catalog || []).map(app => ({
+        id: app.APP_ID,
+        buId: app.BU_ID,
+        wave: `Wave ${app.WAVE_ID}`,
+        name: app.APP_NAME,
+        status: app.APP_STATUS === "Completed" ? "CLO" : app.APP_STATUS === "WIP" ? "WIP" : "TBS",
+        progress: app.APP_COMPLETION_PROGRESS || 0,
+        criticality: app.APP_CRITICALITY || "Medium",
+        impact: app.APP_BUSINESS_IMPACT || "Medium",
+        priority: app.APP_PRIORITY || "Medium",
+        order: app.APP_ID
+      }));
+      
+      // Transform Waves
+      const waves = (jsonData.waves_catalog || []).map(wave => ({
+        id: wave.WAVE_ID,
+        name: wave.DESCRIPTION
+      }));
+      
+      // PERSIST to localStorage (single source of truth)
+      Dashboard.StorageManager.saveConfig({
+        buses: businessUnits,
+        apps: apps,
+        waves: waves
+      });
+      
+      console.log('✅ [DataLoader] Data persisted to localStorage:', { 
+        buses: businessUnits.length, 
+        apps: apps.length, 
+        waves: waves.length 
+      });
+      return { businessUnits, apps, waves };
+    } catch (error) {
+      console.error("❌ [DataLoader] Error loading data:", error);
+      return { businessUnits: [], apps: [], waves: [] };
+    }
+  }
+};
+
+if (!window.Dashboard) window.Dashboard = {};
+window.Dashboard.DataLoader = DataLoader;
+
 /* ========== Storage Manager Module ========== */
 const StorageManager = {
   STORAGE_KEY: 'dashboard_config_v1',
   CLEARED_FLAG: 'dashboard_user_cleared_v1',
   
   init() {
+    // CRITICAL: Load embedded data FIRST before checking storage
+    console.log('🚀 [StorageManager.init] Starting initialization with DataLoader...');
+    
+    // Load embedded data from DataLoader (becomes the source of truth)
+    Dashboard.DataLoader.loadData().then(result => {
+      console.log('✅ [DataLoader] Data loaded and persisted to localStorage');
+      rebuildDATAFromStorage();
+    }).catch(err => {
+      console.error('❌ [DataLoader] Failed to load data:', err);
+    });
+    
+    // Continue with legacy initialization for backwards compatibility
     // =========== SISTEMA DE DETECCIÓN DE BORRADO INTENCIONAL ===========
     console.log('🔍 [StorageManager.init] Verificando estado de los datos...');
     console.log('📊 [DIAGNÓSTICO INICIAL]', {
@@ -5254,7 +5322,9 @@ const StorageManager = {
           waves: [
             { id: 1, name: 'Wave 1' },
             { id: 2, name: 'Wave 2' },
-            { id: 3, name: 'Wave 3' }
+            { id: 3, name: 'Wave 3' },
+            { id: 4, name: 'Wave 4' },
+            { id: 5, name: 'Wave 5' }
           ]
         });
         console.log('✅ [StorageManager.init] Dashboard inicializado con datos por defecto');
@@ -7116,6 +7186,24 @@ const AdminController = {
     this.renderAppsEditor();
     Dashboard.UIController.apply();
   },
+
+  // Helper function to generate wave options dynamically
+  generateWaveOptions(currentWave = null) {
+    const config = Dashboard.StorageManager.loadConfig();
+    let options = '';
+    
+    if (config.waves && config.waves.length > 0) {
+      config.waves.forEach(wave => {
+        const isSelected = (currentWave || config.waves[0].name) === wave.name;
+        options += `<option value="${wave.name}" ${isSelected ? 'selected' : ''}>🌊 ${wave.name}</option>`;
+      });
+    } else {
+      // Fallback if no waves in dataset
+      options = `<option value="Wave 1" ${!currentWave || currentWave === 'Wave 1' ? 'selected' : ''}>🌊 Wave 1</option>`;
+    }
+    
+    return options;
+  },
   
   renderAppsEditor() {
     if (!this.currentBUId) return;
@@ -7160,11 +7248,7 @@ const AdminController = {
         <tr data-app-id="${app.id}">
           <td><input type="text" class="cell-input" value="${app.name}" onchange="Dashboard.AdminController.updateApp(${app.id}, {name: this.value})"/></td>
           <td><select class="cell-select" onchange="Dashboard.AdminController.updateApp(${app.id}, {wave: this.value})">
-            <option value="Wave 1" ${(app.wave || 'Wave 1') === 'Wave 1' ? 'selected' : ''}>🌊 Wave 1</option>
-            <option value="Wave 2" ${app.wave === 'Wave 2' ? 'selected' : ''}>🌊 Wave 2</option>
-            <option value="Wave 3" ${app.wave === 'Wave 3' ? 'selected' : ''}>🌊 Wave 3</option>
-            <option value="Wave 4" ${app.wave === 'Wave 4' ? 'selected' : ''}>🌊 Wave 4</option>
-            <option value="Wave 5" ${app.wave === 'Wave 5' ? 'selected' : ''}>🌊 Wave 5</option>
+            ${this.generateWaveOptions(app.wave)}
           </select></td>
           <td><input type="number" class="cell-input order-input" min="1" max="100" value="${app.order || 0}" onchange="Dashboard.AdminController.updateApp(${app.id}, {order: parseInt(this.value)})" style="width:80px;text-align:center;font-weight:600;"/></td>
           <td><span class="cell-status-badge" data-status="${app.status}" style="padding:6px 12px;border-radius:8px;font-weight:600;font-size:14px;display:inline-block;${app.status === 'TBS' ? 'background:rgba(255,95,122,0.15);color:#ff5f7a' : app.status === 'WIP' ? 'background:rgba(255,209,102,0.15);color:#ffd166' : 'background:rgba(50,230,133,0.15);color:#32e685'}">${app.status === 'TBS' ? '🔜 TBS' : app.status === 'WIP' ? '🚧 WIP' : '✅ CLO'}</span></td>
@@ -7212,8 +7296,25 @@ const AdminController = {
     document.getElementById('appCriticalityInput').value = 'Medium';
     document.getElementById('appImpactInput').value = 'Medium';
     document.getElementById('appPriorityInput').value = 'Medium';
-    // Weight preview will be updated by recalculateWeightPreview
-    document.getElementById('appWaveInput').value = 'Wave 1';
+    
+    // Populate Wave dropdown dynamically from dataset
+    const config = Dashboard.StorageManager.loadConfig();
+    const waveSelect = document.getElementById('appWaveInput');
+    waveSelect.innerHTML = ''; // Clear existing options
+    
+    if (config.waves && config.waves.length > 0) {
+      config.waves.forEach(wave => {
+        const option = document.createElement('option');
+        option.value = wave.name;
+        option.textContent = wave.name;
+        waveSelect.appendChild(option);
+      });
+      waveSelect.value = config.waves[0].name; // Select first wave by default
+    } else {
+      // Fallback if no waves in dataset
+      waveSelect.innerHTML = '<option value="Wave 1">Wave 1</option>';
+      waveSelect.value = 'Wave 1';
+    }
     
     // Function to recalculate weight preview
     const recalculateWeightPreview = () => {
@@ -7733,27 +7834,63 @@ const AdminController = {
     
     let html = '';
     if (apps.length === 0) {
-      html = '<tr style="background: var(--bg-2);"><td colspan="9" style="text-align:center;padding:40px;"><div class="empty-state-icon">🔍</div><div class="empty-state-title">No applications found</div><div class="empty-state-description">Try adjusting your filters or search criteria</div></td></tr>';
+      html = '<tr style="background: var(--bg-2);"><td colspan="8" style="text-align:center;padding:40px;"><div class="empty-state-icon">🔍</div><div class="empty-state-title">No applications found</div><div class="empty-state-description">Try adjusting your filters or search criteria</div></td></tr>';
     } else {
       const validApps = apps.filter(app => app.id && app.name && app.buId !== undefined);
-      validApps.forEach(app => {
+      
+      // Sort by order (application execution sequence)
+      validApps.sort((a, b) => {
+        const orderA = parseInt(a.order) || 0;
+        const orderB = parseInt(b.order) || 0;
+        return orderA - orderB;
+      });
+      
+      validApps.forEach((app, idx) => {
         const bu = Dashboard.StorageManager.getBUById(app.buId);
         const buName = bu ? bu.name : app.buId;
         
         const criticality = app.criticality || 'Medium';
+        const impact = app.impact || 'Medium';
         const priority = app.priority || 'Medium';
         const status = app.status || 'TBS';
+        const progress = app.progress || 0;
+        const weight = Dashboard.ProgressCalculator.calculateAppWeight(app);
         
-        const rowClass = criticality === 'High' ? 'high' : (criticality === 'Critical' ? 'critical' : 'medium');
+        // Build factor badges (world-class presentation)
+        const factorBadges = `
+          <div class="matrix-factors">
+            <span class="factor-badge criticality">${criticality}</span>
+            <span class="factor-badge impact">${impact}</span>
+            <span class="factor-badge priority">${priority}</span>
+          </div>
+        `;
         
-        const priorityBadge = `<span class="priority-badge-premium ${priority.toLowerCase()}">${this.getPriorityEmoji(priority)} ${priority}</span>`;
-        const criticalityBadge = `<span class="criticality-badge-premium ${criticality.toLowerCase()}">${this.getCriticalityEmoji(criticality)} ${criticality}</span>`;
-        const impactBadge = `<span class="impact-badge-premium ${(app.impact || 'Medium').toLowerCase()}">${this.getImpactEmoji(app.impact || 'Medium')} ${app.impact || 'Medium'}</span>`;
-        const statusBadge = `<span class="status-badge-premium ${status.toLowerCase()}">${this.getStatusEmoji(status)} ${status}</span>`;
+        // Build progress bar (world-class presentation)
+        const progressBar = `
+          <div class="matrix-progress-bar">
+            <div class="matrix-progress-container">
+              <div class="matrix-progress-value" style="width: ${progress}%"></div>
+            </div>
+            <span class="matrix-progress-label">${progress}%</span>
+          </div>
+        `;
         
-        const progressBar = `<div class="progress-container"><div class="progress-label"><span class="progress-percentage">${app.progress || 0}%</span></div><div class="progress-bar-premium shimmer"><div class="progress-value-premium" style="width: ${app.progress || 0}%"></div></div></div>`;
+        // Build status badge
+        const statusEmoji = status === 'CLO' ? '✅' : (status === 'WIP' ? '⏱️' : '📋');
+        const statusBadge = `<span class="matrix-status">${statusEmoji} ${status}</span>`;
         
-        html += `<tr class="${rowClass}"><td>${app.id}</td><td title="${buName}">${buName}</td><td>${app.wave || '-'}</td><td>${app.name}</td><td>${priorityBadge}</td><td>${criticalityBadge}</td><td>${impactBadge}</td><td class="progress-cell-premium">${progressBar}</td><td>${statusBadge}</td></tr>`;
+        html += `
+          <tr>
+            <td><span class="matrix-order">${parseInt(app.order) || 0}</span></td>
+            <td><span class="matrix-app-name">${app.name}</span></td>
+            <td><span class="matrix-bu-name">${buName}</span></td>
+            <td><span class="matrix-wave">🌊 ${app.wave || 'Wave 1'}</span></td>
+            <td><span class="matrix-weight">${weight.toFixed(2)}</span></td>
+            <td>${factorBadges}</td>
+            <td>${progressBar}</td>
+            <td>${statusBadge}</td>
+          </tr>
+        `;
       });
     }
     
@@ -8068,21 +8205,21 @@ const AdminController = {
     // Real-time weight calculator
     const calcCriticality = document.getElementById('calc-criticality');
     const calcImpact = document.getElementById('calc-impact');
-    const calcOrder = document.getElementById('calc-order');
+    const calcPriority = document.getElementById('calc-priority');
     const calcResult = document.getElementById('calc-result');
     const calcFormula = document.getElementById('calc-formula');
     
-    if (calcCriticality && calcImpact && calcOrder && calcResult && calcFormula) {
+    if (calcCriticality && calcImpact && calcPriority && calcResult && calcFormula) {
       const updateCalculator = () => {
         const criticality = parseInt(calcCriticality.value);
         const impact = parseInt(calcImpact.value);
-        const order = parseInt(calcOrder.value);
+        const priorityValue = calcPriority.value;
         
-        // Convert order to priority (1-3=High(3), 4-7=Med(2), 8-10=Low(1))
+        // Convert priority to numeric value
         let priority;
-        if (order >= 1 && order <= 3) priority = 3;
-        else if (order >= 4 && order <= 7) priority = 2;
-        else priority = 1;
+        if (priorityValue === 'High') priority = 3;
+        else if (priorityValue === 'Medium') priority = 2;
+        else priority = 1; // Low
         
         // Calculate weight using enterprise formula
         const weight = ((criticality * impact * priority) / 27 * 3).toFixed(2);
@@ -8101,7 +8238,7 @@ const AdminController = {
       // Event listeners
       calcCriticality.addEventListener('change', updateCalculator);
       calcImpact.addEventListener('change', updateCalculator);
-      calcOrder.addEventListener('input', updateCalculator);
+      calcPriority.addEventListener('change', updateCalculator);
       
       // Initial calculation
       updateCalculator();
