@@ -930,6 +930,34 @@
   color: var(--ok);
 }
 
+/* Impact Badge */
+.impact-badge-premium {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.impact-badge-premium.high {
+  background: rgba(255, 95, 122, 0.15);
+  color: var(--danger);
+}
+
+.impact-badge-premium.medium {
+  background: rgba(91, 157, 255, 0.15);
+  color: var(--primary);
+}
+
+.impact-badge-premium.low {
+  background: rgba(50, 230, 133, 0.15);
+  color: var(--ok);
+}
+
 /* Progress Bar Premium */
 .progress-cell-premium {
   min-width: 150px;
@@ -7325,11 +7353,12 @@ const AdminController = {
         
         const priorityBadge = `<span class="priority-badge-premium ${priority.toLowerCase()}">${this.getPriorityEmoji(priority)} ${priority}</span>`;
         const criticalityBadge = `<span class="criticality-badge-premium ${criticality.toLowerCase()}">${this.getCriticalityEmoji(criticality)} ${criticality}</span>`;
+        const impactBadge = `<span class="impact-badge-premium ${(app.impact || 'Medium').toLowerCase()}">${this.getImpactEmoji(app.impact || 'Medium')} ${app.impact || 'Medium'}</span>`;
         const statusBadge = `<span class="status-badge-premium ${status.toLowerCase()}">${this.getStatusEmoji(status)} ${status}</span>`;
         
         const progressBar = `<div class="progress-container"><div class="progress-label"><span class="progress-percentage">${app.progress || 0}%</span></div><div class="progress-bar-premium shimmer"><div class="progress-value-premium" style="width: ${app.progress || 0}%"></div></div></div>`;
         
-        html += `<tr class="${rowClass}"><td>${app.id}</td><td title="${buName}">${buName}</td><td>${app.wave || '-'}</td><td>${app.name}</td><td>${priorityBadge}</td><td>${criticalityBadge}</td><td>${app.impact || 'Medium'}</td><td class="progress-cell-premium">${progressBar}</td><td>${statusBadge}</td></tr>`;
+        html += `<tr class="${rowClass}"><td>${app.id}</td><td title="${buName}">${buName}</td><td>${app.wave || '-'}</td><td>${app.name}</td><td>${priorityBadge}</td><td>${criticalityBadge}</td><td>${impactBadge}</td><td class="progress-cell-premium">${progressBar}</td><td>${statusBadge}</td></tr>`;
       });
     }
     
@@ -7371,6 +7400,10 @@ const AdminController = {
 
   getCriticalityEmoji(criticality) {
     return criticality === 'Critical' ? '🔴' : (criticality === 'High' ? '⚠️' : '✅');
+  },
+
+  getImpactEmoji(impact) {
+    return impact === 'High' ? '🔴' : (impact === 'Low' ? '🟢' : '🔵');
   },
 
   getStatusEmoji(status) {
