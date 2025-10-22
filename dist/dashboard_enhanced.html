@@ -1044,6 +1044,341 @@
   color: var(--muted);
 }
 
+/* ===== APPLICATIONS IMPACT MATRIX STYLES ===== */
+
+.applications-impact-matrix {
+  margin-top: 40px;
+  padding: 0;
+}
+
+.matrix-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid var(--ring);
+}
+
+.matrix-title-section {
+  flex: 1;
+}
+
+.matrix-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 4px 0;
+  background: linear-gradient(135deg, var(--primary), #4d86ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.matrix-subtitle {
+  font-size: 13px;
+  color: var(--muted);
+  margin: 0;
+}
+
+.matrix-controls {
+  display: flex;
+  gap: 12px;
+}
+
+.btn-filter-matrix,
+.btn-sort-matrix {
+  padding: 8px 16px;
+  background: rgba(91, 157, 255, 0.1);
+  border: 1px solid rgba(91, 157, 255, 0.3);
+  color: var(--primary);
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-filter-matrix:hover,
+.btn-sort-matrix:hover {
+  background: rgba(91, 157, 255, 0.2);
+  border-color: var(--primary);
+  transform: translateY(-1px);
+}
+
+/* Matrix Table */
+.matrix-table-wrapper {
+  overflow-x: auto;
+  margin-bottom: 32px;
+  border-radius: 12px;
+  border: 1px solid var(--ring);
+  background: var(--panel);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.applications-matrix-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.applications-matrix-table thead {
+  background: linear-gradient(135deg, rgba(91, 157, 255, 0.1), rgba(50, 230, 133, 0.05));
+  border-bottom: 2px solid var(--ring);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.applications-matrix-table th {
+  padding: 14px 12px;
+  text-align: left;
+  font-weight: 700;
+  color: var(--primary);
+  white-space: nowrap;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 10px;
+}
+
+.applications-matrix-table tbody tr {
+  border-bottom: 1px solid var(--ring);
+  transition: all 0.2s ease;
+}
+
+.applications-matrix-table tbody tr:hover {
+  background: rgba(91, 157, 255, 0.08);
+}
+
+.applications-matrix-table td {
+  padding: 12px;
+  color: var(--text);
+  vertical-align: middle;
+}
+
+.th-order,
+.th-weight {
+  text-align: center;
+  min-width: 80px;
+}
+
+.th-app {
+  min-width: 200px;
+}
+
+.th-bu {
+  min-width: 120px;
+}
+
+.th-wave {
+  min-width: 100px;
+}
+
+.th-factors {
+  min-width: 150px;
+}
+
+.th-progress {
+  min-width: 120px;
+}
+
+.th-status {
+  text-align: center;
+  min-width: 80px;
+}
+
+/* Cell Styles */
+.matrix-order {
+  font-weight: 700;
+  font-size: 14px;
+  background: linear-gradient(135deg, rgba(91, 157, 255, 0.15), transparent);
+  padding: 6px 10px;
+  border-radius: 6px;
+  text-align: center;
+  min-width: 50px;
+  display: inline-block;
+}
+
+.matrix-app-name {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.matrix-bu-name {
+  background: rgba(91, 157, 255, 0.1);
+  padding: 4px 8px;
+  border-radius: 4px;
+  display: inline-block;
+  font-size: 11px;
+}
+
+.matrix-wave {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  background: linear-gradient(135deg, rgba(50, 230, 133, 0.2), rgba(91, 157, 255, 0.1));
+  border-radius: 6px;
+  font-weight: 600;
+  color: var(--ok);
+}
+
+.matrix-weight {
+  font-weight: 700;
+  font-size: 13px;
+  background: linear-gradient(135deg, var(--primary), #4d86ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-align: center;
+}
+
+.matrix-factors {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.factor-badge {
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  display: inline-block;
+}
+
+.factor-badge.criticality {
+  background: rgba(255, 95, 122, 0.15);
+  color: var(--danger);
+}
+
+.factor-badge.impact {
+  background: rgba(91, 157, 255, 0.15);
+  color: var(--primary);
+}
+
+.factor-badge.priority {
+  background: rgba(255, 209, 102, 0.15);
+  color: var(--warn);
+}
+
+.matrix-progress-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.matrix-progress-container {
+  flex: 1;
+  height: 6px;
+  background: var(--ring);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.matrix-progress-value {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary), #4d86ff);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.matrix-progress-label {
+  min-width: 35px;
+  text-align: right;
+  font-weight: 600;
+}
+
+.matrix-status {
+  text-align: center;
+}
+
+/* Wave Summary Section */
+.wave-summary-section {
+  margin-top: 32px;
+}
+
+.wave-summary-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 16px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.wave-cards-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.wave-card {
+  padding: 16px;
+  background: linear-gradient(135deg, var(--panel), rgba(91, 157, 255, 0.05));
+  border: 1px solid var(--ring);
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+.wave-card:hover {
+  border-color: var(--primary);
+  box-shadow: 0 4px 16px rgba(91, 157, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+.wave-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--ring);
+}
+
+.wave-card-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--primary);
+  margin: 0;
+}
+
+.wave-badge {
+  background: linear-gradient(135deg, rgba(91, 157, 255, 0.2), rgba(50, 230, 133, 0.1));
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.wave-card-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.wave-stat {
+  text-align: center;
+}
+
+.wave-stat-value {
+  font-size: 18px;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--primary), var(--ok));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.wave-stat-label {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 2px;
+  font-weight: 600;
+}
+
 /* Responsive Design */
 @media (max-width: 1024px) {
   .filters-bar-premium {
@@ -3962,6 +4297,53 @@ body.cinematic .exit-cinema{display:inline-flex}
           </div>
         </div>
 
+        <!-- Applications Impact Matrix - World-Class Presentation -->
+        <div class="applications-impact-matrix">
+          <div class="matrix-header">
+            <div class="matrix-title-section">
+              <h3 class="matrix-title">📊 Applications Impact Matrix</h3>
+              <p class="matrix-subtitle">Real-time view of all applications with execution sequence and wave allocation</p>
+            </div>
+            <div class="matrix-controls">
+              <button class="btn-filter-matrix" id="btnFilterMatrixWave">
+                <span>🌊 Filter by Wave</span>
+              </button>
+              <button class="btn-sort-matrix" id="btnSortMatrixOrder">
+                <span>🔢 Sort by Order</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Matrix Table -->
+          <div class="matrix-table-wrapper">
+            <table class="applications-matrix-table">
+              <thead>
+                <tr>
+                  <th class="th-order">🔢<br>Order</th>
+                  <th class="th-app">📱 Application</th>
+                  <th class="th-bu">🏢 BU</th>
+                  <th class="th-wave">🌊 Wave</th>
+                  <th class="th-weight">⚖️ Auto-Weight</th>
+                  <th class="th-factors">🎯 Factors</th>
+                  <th class="th-progress">📈 Progress</th>
+                  <th class="th-status">✓ Status</th>
+                </tr>
+              </thead>
+              <tbody id="matrixTableBody">
+                <!-- Populated by JavaScript -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Wave Summary Cards -->
+          <div class="wave-summary-section">
+            <h4 class="wave-summary-title">🌊 Wave Execution Timeline</h4>
+            <div class="wave-cards-container" id="waveCardsContainer">
+              <!-- Populated by JavaScript -->
+            </div>
+          </div>
+        </div>
+
         <!-- Save Changes Action -->
         <div class="formula-actions">
           <button class="btn-save-formulas" id="btn-save-formulas">
@@ -6191,6 +6573,7 @@ const AdminController = {
       // Initialize the new enterprise formula calculator
       setTimeout(() => {
         this.initializeFormulaCalculator();
+        this.renderApplicationsImpactMatrix();
       }, 100);
       // Load formula configuration
       this.loadFormulaConfig();
@@ -8072,6 +8455,141 @@ const AdminController = {
       el.style.display = 'none';
     });
     document.querySelector('.math-formula.global-' + globalMethod).style.display = 'block';
+  },
+
+  renderApplicationsImpactMatrix() {
+    console.log('🚀 Rendering Applications Impact Matrix...');
+    
+    const matrixBody = document.getElementById('matrixTableBody');
+    const waveContainer = document.getElementById('waveCardsContainer');
+    
+    if (!matrixBody || !waveContainer) {
+      console.warn('⚠️ Matrix containers not found');
+      return;
+    }
+    
+    // Get all applications
+    const allApps = [];
+    const buses = Dashboard.StorageManager.getBUs();
+    const waveMap = new Map();
+    
+    buses.forEach(bu => {
+      const apps = Dashboard.StorageManager.getAppsByBU(bu.id);
+      apps.forEach(app => {
+        allApps.push({
+          ...app,
+          buId: bu.id,
+          buName: bu.name,
+          wave: app.wave || 'Wave 1'
+        });
+        
+        // Build wave map
+        const wave = app.wave || 'Wave 1';
+        if (!waveMap.has(wave)) {
+          waveMap.set(wave, []);
+        }
+        waveMap.get(wave).push(app);
+      });
+    });
+    
+    // Sort apps by order
+    allApps.sort((a, b) => {
+      const orderA = parseInt(a.order) || 0;
+      const orderB = parseInt(b.order) || 0;
+      return orderA - orderB;
+    });
+    
+    // Render matrix table
+    matrixBody.innerHTML = '';
+    allApps.forEach((app, idx) => {
+      const weight = Dashboard.ProgressCalculator.calculateAppWeight(app);
+      const criticality = app.criticality || 'Medium';
+      const impact = app.impact || 'Medium';
+      const priority = app.priority || 'Medium';
+      const status = app.status || 'TBS';
+      const progress = app.progress || 0;
+      
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>
+          <span class="matrix-order">${parseInt(app.order) || 0}</span>
+        </td>
+        <td>
+          <span class="matrix-app-name">${app.name}</span>
+        </td>
+        <td>
+          <span class="matrix-bu-name">${app.buName}</span>
+        </td>
+        <td>
+          <span class="matrix-wave">🌊 ${app.wave || 'Wave 1'}</span>
+        </td>
+        <td>
+          <span class="matrix-weight">${weight.toFixed(2)}</span>
+        </td>
+        <td>
+          <div class="matrix-factors">
+            <span class="factor-badge criticality">${criticality}</span>
+            <span class="factor-badge impact">${impact}</span>
+            <span class="factor-badge priority">${priority}</span>
+          </div>
+        </td>
+        <td>
+          <div class="matrix-progress-bar">
+            <div class="matrix-progress-container">
+              <div class="matrix-progress-value" style="width: ${progress}%"></div>
+            </div>
+            <span class="matrix-progress-label">${progress}%</span>
+          </div>
+        </td>
+        <td>
+          <span class="matrix-status">${this.getStatusEmoji(status)} ${status}</span>
+        </td>
+      `;
+      matrixBody.appendChild(row);
+    });
+    
+    // Render wave summary cards
+    waveContainer.innerHTML = '';
+    const sortedWaves = Array.from(waveMap.keys()).sort();
+    
+    sortedWaves.forEach(wave => {
+      const waveApps = waveMap.get(wave);
+      const completedApps = waveApps.filter(a => a.status === 'CLO').length;
+      const wipApps = waveApps.filter(a => a.status === 'WIP').length;
+      const avgProgress = waveApps.length > 0
+        ? Math.round(waveApps.reduce((sum, a) => sum + (a.progress || 0), 0) / waveApps.length)
+        : 0;
+      
+      const card = document.createElement('div');
+      card.className = 'wave-card';
+      card.innerHTML = `
+        <div class="wave-card-header">
+          <h4 class="wave-card-title">${wave}</h4>
+          <span class="wave-badge">${waveApps.length} apps</span>
+        </div>
+        <div class="wave-card-stats">
+          <div class="wave-stat">
+            <div class="wave-stat-value">${completedApps}</div>
+            <div class="wave-stat-label">Completed</div>
+          </div>
+          <div class="wave-stat">
+            <div class="wave-stat-value">${wipApps}</div>
+            <div class="wave-stat-label">In Progress</div>
+          </div>
+          <div class="wave-stat">
+            <div class="wave-stat-value">${avgProgress}%</div>
+            <div class="wave-stat-label">Avg Progress</div>
+          </div>
+          <div class="wave-stat">
+            <div class="wave-stat-value">${waveApps.length}</div>
+            <div class="wave-stat-label">Total</div>
+          </div>
+        </div>
+      `;
+      waveContainer.appendChild(card);
+    });
+    
+    console.log('✅ Applications Impact Matrix rendered successfully');
   },
 
   // ========== BU ANALYTICS EXPORT/IMPORT FUNCTIONS ==========
