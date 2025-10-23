@@ -1,0 +1,11 @@
+{
+  "description": "Inject missing DataLoader module to enable data initialization from embedded JSON",
+  "file": "dist/dashboard_enhanced.html",
+  "mode": "regex-block",
+  "start": "/* ========== Storage Manager Module ========== */",
+  "end": "const StorageManager = {",
+  "new_fragment_path": "surgery/patches/dataloader_injection.js",
+  "enable_rollback": true,
+  "enable_testing": false,
+  "post_cmd": "echo DataLoader injection prepared"
+}

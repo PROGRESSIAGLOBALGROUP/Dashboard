@@ -1,0 +1,72 @@
+{
+  "job_id": "upgrade_apps_overview_controls_v1",
+  "job_name": "Upgrade Applications Overview Controls to World-Class Standards",
+  "job_description": "Replace the simple filter/reset controls in Applications Overview tab with the premium 'Filter by Wave' and 'Sort by Order' buttons from Calculation Formulas tab. This creates visual consistency and world-class UX across all admin panels.",
+  "target_file": "dist/dashboard_enhanced.html",
+  "status": "ready",
+  "priority": "high",
+  "created_date": "2025-10-22",
+  "modifications": [
+    {
+      "id": "mod_1_replace_apps_overview_controls",
+      "name": "Replace Applications Overview Filter Controls",
+      "type": "replace",
+      "description": "Replace the simple filters bar in Applications Overview with premium wave filter and sort order buttons matching Calculation Formulas style",
+      "search_text": "          <!-- Premium Filters Bar -->\n          <div class=\"filters-bar-premium\">\n            <div class=\"search-box-wrapper\">\n              <input type=\"text\" id=\"appsOverviewSearch\" placeholder=\"🔎 Search by name or ID...\" class=\"search-input-premium\"/>\n            </div>\n            <select id=\"overviewFilterField\" class=\"filter-select-premium\">\n              <option value=\"all\">📊 Filter By: All</option>\n              <option value=\"status\">⏱️ Status</option>\n              <option value=\"criticality\">⚠️ Criticality</option>\n              <option value=\"wave\">🌊 Wave</option>\n              <option value=\"buId\">🏢 Business Unit</option>\n            </select>\n            <select id=\"overviewFilterValue\" class=\"filter-select-premium\">\n              <option value=\"all\">All Values</option>\n            </select>\n            <button class=\"btn btn-secondary btn-sm\" id=\"resetAppOverviewFilters\" title=\"Reset all filters\"><span class=\"btn-icon\">↻</span> Reset</button>\n          </div>",
+      "replace_text": "          <!-- Premium Control Buttons (Matching Calculation Formulas) -->\n          <div class=\"matrix-controls\" style=\"margin-bottom: 20px;\">\n            <button class=\"btn-filter-matrix\" id=\"btnFilterMatrixWaveOverview\">\n              <span>🌊 Filter by Wave</span>\n            </button>\n            <button class=\"btn-sort-matrix\" id=\"btnSortMatrixOrderOverview\">\n              <span>🔢 Sort by Order</span>\n            </button>\n          </div>\n          \n          <!-- Search Bar (Optional) -->\n          <div class=\"search-box-wrapper\" style=\"margin-bottom: 20px;\">\n            <input type=\"text\" id=\"appsOverviewSearch\" placeholder=\"🔎 Search by name or ID...\" class=\"search-input-premium\"/>\n          </div>",
+      "line_reference": "3876-3893",
+      "reason": "Replaces simple dropdown filters with premium wave/order controls for world-class consistency"
+    }
+  ],
+  "validation": {
+    "pre_checks": [
+      "Verify dist/dashboard_enhanced.html exists",
+      "Verify 'Applications Overview' tab section exists",
+      "Verify 'Calculation Formulas' tab has wave/order buttons",
+      "Verify no syntax errors in replacement text"
+    ],
+    "post_checks": [
+      "Verify HTML syntax is valid",
+      "Verify both buttons render correctly",
+      "Verify Applications Overview tab opens",
+      "Verify Filter by Wave button is functional",
+      "Verify Sort by Order button is functional",
+      "Verify search box remains functional",
+      "Test in browser DevTools console",
+      "Verify no console errors"
+    ],
+    "rollback_instructions": "Restore from git or use backup of dashboard_enhanced.html"
+  },
+  "testing_plan": {
+    "manual_steps": [
+      "1. Open dist/dashboard_enhanced.html in browser",
+      "2. Click 'Project Administration' modal",
+      "3. Click 'Applications Overview' tab",
+      "4. Verify 'Filter by Wave' button appears",
+      "5. Verify 'Sort by Order' button appears",
+      "6. Verify search box still works",
+      "7. Click Filter by Wave button - should show wave filtering",
+      "8. Click Sort by Order button - should sort by order",
+      "9. Check browser console for errors",
+      "10. Compare visual style with Calculation Formulas tab"
+    ],
+    "visual_comparison": "Controls should match exactly the style/appearance of Filter by Wave and Sort by Order in Calculation Formulas tab",
+    "browser_console": "No errors, warnings, or undefined references expected"
+  },
+  "affected_areas": [
+    "Applications Overview Tab UI",
+    "Filter/Sort Controls",
+    "Modal Layout",
+    "User Interaction Flow"
+  ],
+  "dependencies": [
+    "CSS for .matrix-controls (already exists)",
+    "CSS for .btn-filter-matrix and .btn-sort-matrix (already exists)",
+    "JavaScript event handlers (will need to be added/updated)"
+  ],
+  "notes": "This is a UI-only change that improves visual consistency without affecting data persistence or business logic. The wave and order filter buttons already exist in Calculation Formulas and have working CSS. We're simply reusing them in Applications Overview for world-class presentation.",
+  "post_cmd": "echo 'Applications Overview controls upgraded to world-class standards'",
+  "estimated_time": "15 minutes",
+  "version": "1.0",
+  "author": "GitHub Copilot AI Agent"
+}

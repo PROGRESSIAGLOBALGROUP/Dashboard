@@ -1,0 +1,270 @@
+<!-- BU ANALYTICS EXPORT/IMPORT - PREMIUM WORLD-CLASS CARD -->
+
+<!-- Card Section -->
+<div class="settings-card bu-analytics-premium">
+  <div class="settings-card-header">
+    <div class="settings-card-icon analytics">📊</div>
+    <div class="settings-card-title">BU Analytics Sharing</div>
+    <div class="analytics-badge">Team Collaboration</div>
+  </div>
+  
+  <div class="settings-card-content">
+    <p class="settings-card-description">
+      Export analytics from a specific Business Unit and share with team members. Import their data to integrate into your main report.
+    </p>
+    
+    <!-- Main Actions Grid -->
+    <div class="bu-analytics-grid">
+      
+      <!-- Export Section -->
+      <div class="analytics-section export-section">
+        <div class="section-header">
+          <span class="section-icon">📤</span>
+          <h4 class="section-title">Export BU Analytics</h4>
+        </div>
+        
+        <div class="bu-selector-container">
+          <label class="selector-label">Select Business Unit</label>
+          <select id="buAnalyticsExportSelect" class="bu-analytics-select">
+            <option value="">-- Choose a Business Unit --</option>
+          </select>
+          <small class="selector-hint">📌 Select which BU's data to export</small>
+        </div>
+        
+        <div id="exportPreviewBox" class="preview-box" style="display:none;">
+          <div class="preview-header">
+            <span class="preview-icon">👁️</span>
+            <span class="preview-title">Export Preview</span>
+          </div>
+          <div class="preview-content">
+            <div class="preview-stat">
+              <span class="preview-label">Apps:</span>
+              <span class="preview-value" id="exportPreviewApps">0</span>
+            </div>
+            <div class="preview-stat">
+              <span class="preview-label">Avg Progress:</span>
+              <span class="preview-value" id="exportPreviewProgress">0%</span>
+            </div>
+            <div class="preview-stat">
+              <span class="preview-label">File Size:</span>
+              <span class="preview-value" id="exportPreviewSize">0 KB</span>
+            </div>
+          </div>
+        </div>
+        
+        <button class="btn btn-primary btn-export" id="exportBUAnalyticsBtn" disabled style="width:100%;margin-top:12px;">
+          <span class="btn-icon">📥</span>
+          <span class="btn-text">Export as JSON</span>
+        </button>
+      </div>
+      
+      <!-- Divider -->
+      <div class="analytics-divider"></div>
+      
+      <!-- Import Section -->
+      <div class="analytics-section import-section">
+        <div class="section-header">
+          <span class="section-icon">📥</span>
+          <h4 class="section-title">Import BU Analytics</h4>
+        </div>
+        
+        <div class="merge-strategy-container">
+          <label class="strategy-label">Merge Strategy</label>
+          <div class="strategy-options">
+            <label class="strategy-option">
+              <input type="radio" name="buMergeStrategy" value="replace" checked>
+              <span class="strategy-name">🔄 Replace</span>
+              <span class="strategy-desc">Replace entire BU data</span>
+            </label>
+            <label class="strategy-option">
+              <input type="radio" name="buMergeStrategy" value="merge">
+              <span class="strategy-name">🔗 Merge</span>
+              <span class="strategy-desc">Add new apps, update existing</span>
+            </label>
+            <label class="strategy-option">
+              <input type="radio" name="buMergeStrategy" value="append">
+              <span class="strategy-name">➕ Append</span>
+              <span class="strategy-desc">Add as new apps only</span>
+            </label>
+          </div>
+        </div>
+        
+        <div class="import-drop-zone" id="importDropZone">
+          <div class="drop-icon">📁</div>
+          <div class="drop-text">
+            <strong>Drop JSON file here or click to browse</strong>
+            <span class="drop-hint">Supports BU analytics files up to 5MB</span>
+          </div>
+        </div>
+        <input type="file" id="importBUAnalyticsFile" accept=".json" style="display:none;"/>
+        
+        <button class="btn btn-secondary btn-import" id="importBUAnalyticsBtn" disabled style="width:100%;margin-top:12px;">
+          <span class="btn-icon">📤</span>
+          <span class="btn-text">Select File to Import</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODALS -->
+
+<!-- Export Preview Modal -->
+<div id="buAnalyticsExportModal" class="nested-modal">
+  <div class="nested-modal-content bu-analytics-modal">
+    <div class="modal-header-premium">
+      <h3 class="modal-title-premium">📊 Export Business Unit Analytics</h3>
+      <button class="modal-close-premium" onclick="document.getElementById('buAnalyticsExportModal').classList.remove('active')">✕</button>
+    </div>
+    
+    <div class="modal-body-premium">
+      <div class="bu-export-info">
+        <h4 id="exportBUName" class="export-bu-name">Business Unit Name</h4>
+        <p id="exportBUMeta" class="export-bu-meta">Domain • Manager</p>
+      </div>
+      
+      <div class="export-statistics-grid">
+        <div class="stat-card">
+          <div class="stat-icon">📱</div>
+          <div class="stat-content">
+            <div class="stat-value" id="exportStatApps">0</div>
+            <div class="stat-label">Total Applications</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">✅</div>
+          <div class="stat-content">
+            <div class="stat-value" id="exportStatComplete">0</div>
+            <div class="stat-label">Completed</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🚧</div>
+          <div class="stat-content">
+            <div class="stat-value" id="exportStatWIP">0</div>
+            <div class="stat-label">In Progress</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">📊</div>
+          <div class="stat-content">
+            <div class="stat-value" id="exportStatProgress">0%</div>
+            <div class="stat-label">Avg Progress</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="export-details">
+        <h5 class="details-title">📋 Export Details</h5>
+        <div class="details-list">
+          <div class="detail-item">
+            <span class="detail-label">Format:</span>
+            <span class="detail-value">bu-analytics-v1.json</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Includes:</span>
+            <span class="detail-value">BU info, all apps, progress data, statistics</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Shareable:</span>
+            <span class="detail-value">✅ Yes - safe to send to teammates</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="export-warning">
+        <div class="warning-icon">ℹ️</div>
+        <div class="warning-text">
+          <strong>Export Ready</strong><br>
+          Click "Download" to save this BU's analytics. Share the file with teammates to integrate their data.
+        </div>
+      </div>
+    </div>
+    
+    <div class="modal-footer-premium">
+      <button class="btn btn-secondary" onclick="document.getElementById('buAnalyticsExportModal').classList.remove('active')">
+        Cancel
+      </button>
+      <button class="btn btn-primary" id="downloadBUAnalyticsBtn">
+        <span class="btn-icon">⬇️</span>
+        Download Analytics
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Import Preview Modal -->
+<div id="buAnalyticsImportModal" class="nested-modal">
+  <div class="nested-modal-content bu-analytics-modal">
+    <div class="modal-header-premium">
+      <h3 class="modal-title-premium">📥 Import Business Unit Analytics</h3>
+      <button class="modal-close-premium" onclick="document.getElementById('buAnalyticsImportModal').classList.remove('active')">✕</button>
+    </div>
+    
+    <div class="modal-body-premium">
+      <div class="import-source-info">
+        <h4 id="importBUName" class="import-bu-name">Business Unit Name</h4>
+        <p id="importBUMeta" class="import-bu-meta">Domain • Manager</p>
+      </div>
+      
+      <div class="import-statistics-grid">
+        <div class="stat-card">
+          <div class="stat-icon">📱</div>
+          <div class="stat-content">
+            <div class="stat-value" id="importStatApps">0</div>
+            <div class="stat-label">Applications</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">✅</div>
+          <div class="stat-content">
+            <div class="stat-value" id="importStatComplete">0</div>
+            <div class="stat-label">Completed</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🚧</div>
+          <div class="stat-content">
+            <div class="stat-value" id="importStatWIP">0</div>
+            <div class="stat-label">In Progress</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">📊</div>
+          <div class="stat-content">
+            <div class="stat-value" id="importStatProgress">0%</div>
+            <div class="stat-label">Avg Progress</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="merge-strategy-display">
+        <h5 class="strategy-title">🔀 Merge Strategy</h5>
+        <div id="importMergeStrategyDisplay" class="strategy-display"></div>
+      </div>
+      
+      <div class="import-apps-preview">
+        <h5 class="preview-title">📋 Applications to Import</h5>
+        <div id="importAppsPreviewList" class="apps-preview-list" style="max-height:300px;overflow-y:auto;"></div>
+      </div>
+      
+      <div class="import-notice">
+        <div class="notice-icon">✅</div>
+        <div class="notice-text">
+          <strong>Ready to Import</strong><br>
+          Review the data above and click "Confirm & Import" to integrate this BU's analytics.
+        </div>
+      </div>
+    </div>
+    
+    <div class="modal-footer-premium">
+      <button class="btn btn-secondary" onclick="document.getElementById('buAnalyticsImportModal').classList.remove('active')">
+        Cancel
+      </button>
+      <button class="btn btn-primary" id="confirmBUImportBtn">
+        <span class="btn-icon">✅</span>
+        Confirm & Import
+      </button>
+    </div>
+  </div>
+</div>

@@ -41,9 +41,64 @@
 - **World-class UX** - Premium animations, modal interfaces, and responsive design
 - **Production-ready** - No mocks, no placeholders, no simulation
 
+### 🚨 **File Organization Protocol (MANDATORY)**
+**ALL files must be in their correct locations. Root directory cleanup is STRICTLY enforced:**
+
+| File Type | CORRECT Location | Root? | Reason |
+|-----------|------------------|-------|--------|
+| `.md` (Technical Docs) | `docs/technical/` | ❌ NO | Implementation specs, architecture docs |
+| `.md` (User Guides) | `docs/guides/` | ❌ NO | Tutorials, how-to guides |
+| `.md` (Release Notes) | `docs/releases/` | ❌ NO | Version history, deployment notes |
+| `.md` (Process Docs) | `docs/process/` | ❌ NO | Checklists, test plans, workflows |
+| `README.md` | ROOT ONLY | ✅ YES | Project overview (exception) |
+| `.js` (Scripts) | `scripts/` OR `build/` | ❌ NO | Build helpers, automation scripts |
+| `.js` (Modules) | `src/modules/` | ❌ NO | Application logic modules |
+| `.ps1` (PowerShell) | `scripts/` | ❌ NO | Automation scripts in scripts folder |
+| `.json` (Config/Data) | `data/` OR `scripts/` | ❌ NO | External data, configuration files |
+| `*.html` (Dist) | `dist/` ONLY | ❌ NO | Final compiled/built files |
+
+**ENFORCEMENT RULES:**
+- ✅ **ALWAYS** organize new files to their correct folder immediately after creation
+- ✅ **ALWAYS** check if a file belongs in `docs/`, `scripts/`, `src/`, or `data/` BEFORE creation
+- ✅ **ALWAYS** validate root directory contains ONLY: `README.md`, `package.json`, `dashboard_enhanced.html` (legacy), `index.html`, `.github/`, source folders
+- ❌ **NEVER** leave temporary files (`.js`, `.md`, `.ps1`) in root—move them immediately
+- ❌ **NEVER** assume a markdown file belongs in root just because it was created there
+- ❌ **NEVER** leave helper scripts or automation files scattered in root
+
+**IF YOU FIND MISPLACED FILES:**
+1. Identify correct folder from table above
+2. Move file using command: `mv "root/filename" "correct/folder/filename"`
+3. Commit with message: `chore: organize <filename> to proper folder`
+
 ---
 
 ## 🏗️ Architecture & Big Picture
+
+### **📋 Root Directory Manifest (Canonical Source)**
+These files/folders ONLY belong in root:
+```
+README.md                  ← Project overview (ONLY .md allowed)
+package.json              ← Dependency manifest
+index.html                ← Legacy redirect (kept for backward compat)
+dashboard_enhanced.html   ← Legacy full app (kept for backward compat)
+.github/                  ← Configuration folder
+src/                      ← Source modules
+dist/                     ← Compiled artifacts
+docs/                     ← ALL documentation (organized)
+data/                     ← External data files (JSON, CSV)
+scripts/                  ← Automation & build scripts
+tests/                    ← Unit tests
+code_surgeon/             ← Patching infrastructure
+```
+
+**⛔ ABSOLUTE PROHIBITIONS - NEVER IN ROOT:**
+- ~~Technical documentation .md files~~ → Use `docs/technical/`
+- ~~User guides .md files~~ → Use `docs/guides/`
+- ~~Release notes .md files~~ → Use `docs/releases/`
+- ~~Process/workflow .md files~~ → Use `docs/process/`
+- ~~JavaScript helper scripts~~ → Use `scripts/` or `src/`
+- ~~PowerShell automation scripts~~ → Use `scripts/`
+- ~~Code fix scripts~~ → Use `scripts/` or `surgery/`
 
 ### Three-Layer Architecture
 
@@ -129,6 +184,20 @@ animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 ---
 
 ## 🚀 Development Workflow
+
+### **🔍 Pre-Commit File Organization Check (MANDATORY)**
+Before committing ANY file, answer these questions:
+1. **Is this a .md file?** → Must go to `docs/{guides|technical|releases|process}/`
+2. **Is this a .js file?** → Must go to `scripts/`, `src/modules/`, or `build/`
+3. **Is this a .ps1 file?** → Must go to `scripts/`
+4. **Is this a temporary/fix script?** → Must go to `scripts/` or `surgery/jobs/`
+5. **Exception: Only README.md in root** → All other .md must be organized
+
+**Auto-Organization Checklist:**
+- [ ] File type identified correctly
+- [ ] Correct destination folder determined
+- [ ] File moved BEFORE first commit
+- [ ] If moved, commit message uses `chore: organize <filename> to <folder>/`
 
 ### To Add a Feature
 1. **Identify layer**: Is it data (StorageManager), logic (ProgressCalculator), admin (AdminController), or UI (UIController)?
