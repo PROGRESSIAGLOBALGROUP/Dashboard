@@ -1,0 +1,116 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Build Documentation Index
+        run: |
+          mkdir -p _site
+          
+          # Copiar dashboard principal
+          cp dashboard_enhanced.html _site/
+          cp index.html _site/
+          
+          # Copiar documentación
+          cp -r docs _site/
+          
+          # Crear índice principal para GitHub Pages
+          cat > _site/index.md << 'EOF'
+          # 📊 Dashboard Enhanced - Documentation Hub
+          
+          ## 🎯 Quick Navigation
+          
+          ### 📖 Getting Started
+          - [Quick Start Guide - Order & Wave](docs/guides/QUICK_START_ORDER_WAVE.md)
+          - [Dashboard Application](dashboard_enhanced.html)
+          
+          ### 📚 Documentation
+          - [Technical Specifications](docs/technical/)
+          - [Implementation Details](docs/implementations/)
+          - [User Guides](docs/guides/)
+          - [Feature Documentation](docs/features/)
+          
+          ### 🔧 Troubleshooting & Fixes
+          - [Known Issues](docs/fixes/)
+          - [Problem Diagnosis](docs/fixes/TOOLTIP_DIAGNOSTIC.md)
+          
+          ### 📋 Process & Audit
+          - [Audit History](docs/process/audits/)
+          - [Documentation Index](docs/process/documentation_index/INDEX.md)
+          - [Release Notes](docs/releases/)
+          
+          ### 📊 Reports
+          - [Executive Summaries](docs/reports/)
+          
+          ---
+          
+          ## 🚀 Open Dashboard
+          
+          **[👉 Click here to open Dashboard Enhanced](dashboard_enhanced.html)**
+          
+          Or navigate to `/dashboard_enhanced.html`
+          
+          ---
+          
+          ## 📁 Directory Structure
+          
+          ```
+          Dashboard/
+          ├── dashboard_enhanced.html        ← Main Application
+          ├── index.html                     ← Landing Page
+          ├── README.md                      ← Project Documentation
+          ├── docs/
+          │   ├── guides/                    ← User Guides
+          │   ├── technical/                 ← Technical Specs
+          │   ├── implementations/           ← Implementation Details
+          │   ├── features/                  ← Feature Documentation
+          │   ├── fixes/                     ← Troubleshooting
+          │   ├── process/                   ← Process Documentation
+          │   ├── releases/                  ← Release Notes
+          │   └── reports/                   ← Executive Reports
+          └── ...
+          ```
+          
+          ---
+          
+          **Last Updated**: $(date)
+          EOF
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '_site'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v2
