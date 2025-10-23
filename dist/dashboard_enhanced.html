@@ -4574,53 +4574,6 @@ body.cinematic .exit-cinema{display:inline-flex}
 
         </div>
 
-        <!-- Applications Impact Matrix - World-Class Presentation -->
-        <div class="applications-impact-matrix">
-          <div class="matrix-header">
-            <div class="matrix-title-section">
-              <h3 class="matrix-title">📊 Applications Impact Matrix</h3>
-              <p class="matrix-subtitle">Real-time view of all applications with execution sequence and wave allocation</p>
-            </div>
-            <div class="matrix-controls">
-              <button class="btn-filter-matrix" id="btnFilterMatrixWave">
-                <span>🌊 Filter by Wave</span>
-              </button>
-              <button class="btn-sort-matrix" id="btnSortMatrixOrder">
-                <span>🔢 Sort by Order</span>
-              </button>
-            </div>
-          </div>
-
-          <!-- Matrix Table -->
-          <div class="matrix-table-wrapper">
-            <table class="applications-matrix-table">
-              <thead>
-                <tr>
-                  <th class="th-order">🔢<br>Order</th>
-                  <th class="th-app">📱 Application</th>
-                  <th class="th-bu">🏢 BU</th>
-                  <th class="th-wave">🌊 Wave</th>
-                  <th class="th-weight">⚖️ Auto-Weight</th>
-                  <th class="th-factors">🎯 Factors</th>
-                  <th class="th-progress">📈 Progress</th>
-                  <th class="th-status">✓ Status</th>
-                </tr>
-              </thead>
-              <tbody id="matrixTableBody">
-                <!-- Populated by JavaScript -->
-              </tbody>
-            </table>
-          </div>
-
-          <!-- Wave Summary Cards -->
-          <div class="wave-summary-section">
-            <h4 class="wave-summary-title">🌊 Wave Execution Timeline</h4>
-            <div class="wave-cards-container" id="waveCardsContainer">
-              <!-- Populated by JavaScript -->
-            </div>
-          </div>
-        </div>
-
         <!-- Save Changes Action -->
         <div class="formula-actions">
           <button class="btn-save-formulas" id="btn-save-formulas">
@@ -5500,12 +5453,13 @@ const DataLoader = {
   
   async loadData() {
     try {
-      console.log('🚀 [DataLoader] Fetching data from data/tables.json...');
+      console.log('🚀 [DataLoader] Fetching data from ../data/tables.json...');
       
       // FETCH from external JSON file (no hardcodes)
-      const response = await fetch('./data/tables.json');
+      // Path: from dist/dashboard_enhanced.html → ../data/tables.json
+      const response = await fetch('../data/tables.json');
       if (!response.ok) {
-        console.error('❌ [DataLoader] Failed to fetch data/tables.json:', response.statusText);
+        console.error('❌ [DataLoader] Failed to fetch ../data/tables.json:', response.statusText);
         return { businessUnits: [], apps: [], waves: [] };
       }
       
@@ -5572,17 +5526,8 @@ const StorageManager = {
   
   init() {
     // CRITICAL: Load embedded data FIRST before checking storage
-    console.log('🚀 [StorageManager.init] Starting initialization with DataLoader...');
+    console.log('🚀 [StorageManager.init] Starting initialization...');
     
-    // Load embedded data from DataLoader (becomes the source of truth)
-    Dashboard.DataLoader.loadData().then(result => {
-      console.log('✅ [DataLoader] Data loaded and persisted to localStorage');
-      rebuildDATAFromStorage();
-    }).catch(err => {
-      console.error('❌ [DataLoader] Failed to load data:', err);
-    });
-    
-    // Continue with legacy initialization for backwards compatibility
     // =========== SISTEMA DE DETECCIÓN DE BORRADO INTENCIONAL ===========
     console.log('🔍 [StorageManager.init] Verificando estado de los datos...');
     console.log('📊 [DIAGNÓSTICO INICIAL]', {
@@ -5821,6 +5766,18 @@ const StorageManager = {
 // Export module for namespace compatibility
 if (!window.Dashboard) window.Dashboard = {};
 window.Dashboard.StorageManager = StorageManager;
+
+// Load initial data from DataLoader (now that both are registered)
+if (window.Dashboard && window.Dashboard.DataLoader) {
+  window.Dashboard.DataLoader.loadData().then(result => {
+    console.log('✅ [DataLoader] Data loaded and persisted to localStorage');
+    rebuildDATAFromStorage();
+  }).catch(err => {
+    console.error('❌ [DataLoader] Failed to load data:', err);
+  });
+} else {
+  console.warn('⚠️ [DataLoader] DataLoader not available');
+}
 
 /* ========== Progress Calculator Module ========== */
 // REPLACEMENT FOR HARDCODED DATA ARRAY
@@ -6652,47 +6609,7 @@ const AdminController = {
       this.renderAppsEditor();
     });
     
-    // Apps overview filters - Premium Wave/Order buttons (World-Class Controls)
-    const btnFilterMatrixWaveOverview = document.querySelector('#btnFilterMatrixWaveOverview');
-    const btnSortMatrixOrderOverview = document.querySelector('#btnSortMatrixOrderOverview');
-    const appsOverviewSearch = document.querySelector('#appsOverviewSearch');
-    
-    if (btnFilterMatrixWaveOverview) {
-      btnFilterMatrixWaveOverview.addEventListener('click', () => {
-        console.log('🌊 Filter by Wave button clicked');
-        // Toggle wave filter modal or panel
-        this.showWaveFilterPanel();
-      });
-    }
-    
-    if (btnSortMatrixOrderOverview) {
-      btnSortMatrixOrderOverview.addEventListener('click', () => {
-        console.log('🔢 Sort by Order button clicked');
-        // Sort applications by execution order
-        this.sortApplicationsByOrder();
-      });
-    }
-    
-    if (appsOverviewSearch) {
-      appsOverviewSearch.addEventListener('input', (e) => {
-        console.log('🔎 Search:', e.target.value);
-        this.filterAppsOverviewBySearch(e.target.value);
-        this.renderAppsOverviewTable();
-      });
-    }
-    
-    // Add sorting functionality to app overview table headers
-    const headers = document.querySelectorAll('#appsOverviewTable th');
-    headers.forEach((header, index) => {
-      header.addEventListener('click', () => {
-        const columnName = header.textContent.trim();
-        this.sortAppsOverview(columnName, index);
-      });
-    });
-    
-    // Initialize sort and filters
-    this.currentOverviewFilters = { field: 'all', value: 'all' };
-    this.currentSort = { column: null, direction: 'asc' };
+    // Applications Overview filtering handled by AppsOverviewWorldClass module
     
     // Settings
     document.querySelector('#exportAdminJSON').addEventListener('click', () => this.exportConfig());
@@ -6942,7 +6859,8 @@ const AdminController = {
     
     // Solo renderizar la vista de aplicaciones si estamos en esa pestaña
     if (tabName === 'app-overview') {
-      this.renderAppsOverview();
+      // Applications Overview is now handled by AppsOverviewWorldClass module
+      // this.renderAppsOverview();
     }
   },
   
@@ -7703,7 +7621,8 @@ const AdminController = {
       // Refresh UI
       this.renderAppsEditor();
       if (document.querySelector('#tab-app-overview.active')) {
-        this.renderAppsOverview();
+        // Applications Overview is now handled by AppsOverviewWorldClass module
+        // this.renderAppsOverview();
       }
       
       // Show success
@@ -7743,9 +7662,9 @@ const AdminController = {
     if (updates.criticality || updates.impact || updates.order || updates.progress) {
       Dashboard.UIController.apply();
     }
-    // Also refresh the overview table if it's visible
+    // Also refresh the overview table if it's visible (now handled by AppsOverviewWorldClass)
     if (document.querySelector('#tab-app-overview.active')) {
-      this.renderAppsOverview();
+      // this.renderAppsOverview();
     }
   },
   
@@ -7753,9 +7672,9 @@ const AdminController = {
     if (confirm('Delete this application?')) {
       Dashboard.StorageManager.deleteApp(appId);
       this.renderAppsEditor();
-      // Also refresh the overview table if it's visible
+      // Also refresh the overview table if it's visible (now handled by AppsOverviewWorldClass)
       if (document.querySelector('#tab-app-overview.active')) {
-        this.renderAppsOverview();
+        // this.renderAppsOverview();
       }
     }
   },
@@ -7960,269 +7879,8 @@ const AdminController = {
     };
   },
   
-  // Applications Overview Tab Functionality
-  renderAppsOverview() {
-    this.initAppOverviewFilters();
-    this.setupAppsOverviewSearch();
-    this.renderAppsOverviewTable();
-    this.updateAppsOverviewStats();
-  },
-
-  setupAppsOverviewSearch() {
-    const searchInput = document.querySelector('#appsOverviewSearch');
-    if (searchInput) {
-      searchInput.addEventListener('input', (e) => {
-        this.currentOverviewSearch = e.target.value.toLowerCase();
-        this.renderAppsOverviewTable();
-        this.updateAppsOverviewStats();
-      });
-    }
-  },
-
-  updateAppsOverviewStats() {
-    const totalStats = document.querySelector('#statsTotal');
-    const filteredStats = document.querySelector('#statsFiltered');
-    const completionStats = document.querySelector('#statsCompletion');
-    const countDisplay = document.querySelector('#appsCountDisplay');
-    
-    if (!totalStats) return;
-    
-    let apps = Dashboard.StorageManager.getAllApps();
-    const totalCount = apps.length;
-    
-    let filteredApps = this.getFilteredApps();
-    
-    const avgCompletion = filteredApps.length > 0
-      ? Math.round(filteredApps.reduce((sum, app) => sum + (app.progress || 0), 0) / filteredApps.length)
-      : 0;
-    
-    totalStats.textContent = totalCount;
-    filteredStats.textContent = filteredApps.length;
-    completionStats.textContent = avgCompletion + '%';
-    countDisplay.textContent = filteredApps.length;
-  },
-
-  getFilteredApps() {
-    let apps = Dashboard.StorageManager.getAllApps();
-    
-    if (this.currentOverviewFilters.field !== 'all' && this.currentOverviewFilters.value !== 'all') {
-      const fieldToProperty = {
-        'status': 'status',
-        'criticality': 'criticality',
-        'wave': 'wave',
-        'buId': 'buId'
-      };
-      const field = fieldToProperty[this.currentOverviewFilters.field];
-      const value = this.currentOverviewFilters.value;
-      apps = apps.filter(app => String(app[field]) === String(value));
-    }
-    
-    if (this.currentOverviewSearch) {
-      apps = apps.filter(app => 
-        app.name.toLowerCase().includes(this.currentOverviewSearch) ||
-        (app.wave && app.wave.toLowerCase().includes(this.currentOverviewSearch)) ||
-        app.id.toString().includes(this.currentOverviewSearch)
-      );
-    }
-    
-    return apps;
-  },
-
-  initAppOverviewFilters() {
-    const filterField = document.querySelector('#overviewFilterField');
-    const filterValue = document.querySelector('#overviewFilterValue');
-    
-    if (filterField && filterValue) {
-      this.currentOverviewFilters = { field: filterField.value, value: 'all' };
-      this.updateOverviewFilterValues();
-    }
-  },
+  // Applications Overview tab functionality is now handled by AppsOverviewWorldClass module
   
-  updateOverviewFilterValues() {
-    const filterField = document.querySelector('#overviewFilterField');
-    const filterValue = document.querySelector('#overviewFilterValue');
-    
-    if (!filterField || !filterValue) return;
-    
-    const field = filterField.value;
-    this.currentOverviewFilters.field = field;
-    
-    filterValue.innerHTML = '<option value="all">All Values</option>';
-    
-    const fieldToProperty = {
-      'status': 'status',
-      'criticality': 'criticality',
-      'wave': 'wave',
-      'buId': 'buId'
-    };
-    
-    const propertyName = fieldToProperty[field] || field;
-    const allApps = Dashboard.StorageManager.getAllApps();
-    
-    if (field === 'all') {
-      filterValue.disabled = true;
-      this.currentOverviewFilters.value = 'all';
-    } else {
-      filterValue.disabled = false;
-      const uniqueValues = new Set();
-      
-      if (field === 'buId') {
-        const buses = Dashboard.StorageManager.getBUs();
-        buses.forEach(bu => {
-          filterValue.innerHTML += `<option value="${bu.id}">${bu.name}</option>`;
-        });
-      } else {
-        allApps.forEach(app => {
-          const value = app[propertyName];
-          if (value && !uniqueValues.has(value)) {
-            uniqueValues.add(value);
-            filterValue.innerHTML += `<option value="${value}">${value}</option>`;
-          }
-        });
-      }
-    }
-  },
-  
-  renderAppsOverviewTable() {
-    const tableBody = document.querySelector('#appsOverviewTableBody');
-    const emptyState = document.querySelector('#emptyState');
-    if (!tableBody) return;
-    
-    let apps = this.getFilteredApps();
-    
-    if (this.currentSort.column) {
-      const { column, direction } = this.currentSort;
-      const columnToProperty = {
-        'ID': 'id',
-        'BU': 'buId',
-        'Wave': 'wave',
-        'App Name': 'name',
-        'Priority': 'priority',
-        'Criticality': 'criticality',
-        'Business Impact': 'impact',
-        'Completion': 'progress',
-        'Status': 'status'
-      };
-      
-      const propertyName = columnToProperty[column];
-      apps.sort((a, b) => {
-        const aValue = a[propertyName] || '';
-        const bValue = b[propertyName] || '';
-        
-        if (propertyName === 'progress' || propertyName === 'id' || propertyName === 'buId') {
-          const aNum = parseInt(aValue) || 0;
-          const bNum = parseInt(bValue) || 0;
-          return direction === 'asc' ? (aNum - bNum) : (bNum - aNum);
-        } else {
-          return direction === 'asc' 
-            ? aValue.toString().localeCompare(bValue.toString())
-            : bValue.toString().localeCompare(aValue.toString());
-        }
-      });
-    }
-    
-    let html = '';
-    if (apps.length === 0) {
-      html = '<tr style="background: var(--bg-2);"><td colspan="8" style="text-align:center;padding:40px;"><div class="empty-state-icon">🔍</div><div class="empty-state-title" style="font-size: 16px; font-weight: 600; color: var(--text); margin-bottom: 8px;">No applications found</div><div class="empty-state-description" style="font-size: 13px; color: #aaa;">Try adjusting your filters or search criteria</div></td></tr>';
-    } else {
-      const validApps = apps.filter(app => app.id && app.name && app.buId !== undefined);
-      
-      // Sort by order (application execution sequence)
-      validApps.sort((a, b) => {
-        const orderA = parseInt(a.order) || 0;
-        const orderB = parseInt(b.order) || 0;
-        return orderA - orderB;
-      });
-      
-      validApps.forEach((app, idx) => {
-        const bu = Dashboard.StorageManager.getBUById(app.buId);
-        const buName = bu ? bu.name : app.buId;
-        
-        const criticality = app.criticality || 'Medium';
-        const impact = app.impact || 'Medium';
-        const priority = app.priority || 'Medium';
-        const status = app.status || 'TBS';
-        const progress = app.progress || 0;
-        const weight = Dashboard.ProgressCalculator.calculateAppWeight(app);
-        
-        // Build factor badges (world-class presentation)
-        const factorBadges = `
-          <div class="matrix-factors">
-            <span class="factor-badge criticality">${criticality}</span>
-            <span class="factor-badge impact">${impact}</span>
-            <span class="factor-badge priority">${priority}</span>
-          </div>
-        `;
-        
-        // Build progress bar (world-class presentation)
-        const progressBar = `
-          <div class="matrix-progress-bar">
-            <div class="matrix-progress-container">
-              <div class="matrix-progress-value" style="width: ${progress}%"></div>
-            </div>
-            <span class="matrix-progress-label">${progress}%</span>
-          </div>
-        `;
-        
-        // Build status badge
-        const statusEmoji = status === 'CLO' ? '✅' : (status === 'WIP' ? '⏱️' : '📋');
-        const statusBadge = `<span class="matrix-status">${statusEmoji} ${status}</span>`;
-        
-        html += `
-          <tr>
-            <td><span class="matrix-order">${parseInt(app.order) || 0}</span></td>
-            <td><span class="matrix-app-name">${app.name}</span></td>
-            <td><span class="matrix-bu-name">${buName}</span></td>
-            <td><span class="matrix-wave">🌊 ${app.wave || 'Wave 1'}</span></td>
-            <td><span class="matrix-weight">${weight.toFixed(2)}</span></td>
-            <td>${factorBadges}</td>
-            <td>${progressBar}</td>
-            <td>${statusBadge}</td>
-          </tr>
-        `;
-      });
-    }
-    
-    tableBody.innerHTML = html;
-    
-    if (apps.length === 0) {
-      if (emptyState) emptyState.style.display = 'flex';
-    } else {
-      if (emptyState) emptyState.style.display = 'none';
-    }
-    
-    this.updateFilterBadges();
-  },
-
-  sortAppsOverview(columnName, columnIndex) {
-    const headers = document.querySelectorAll('#appsOverviewTable th');
-    
-    headers.forEach(header => {
-      header.classList.remove('sort-asc', 'sort-desc');
-    });
-    
-    if (this.currentSort.column === columnName) {
-      this.currentSort.direction = this.currentSort.direction === 'asc' ? 'desc' : 'asc';
-    } else {
-      this.currentSort.column = columnName;
-      this.currentSort.direction = 'asc';
-    }
-    
-    headers[columnIndex].classList.add(
-      this.currentSort.direction === 'asc' ? 'sort-asc' : 'sort-desc'
-    );
-    
-    this.renderAppsOverviewTable();
-  },
-
-  getPriorityEmoji(priority) {
-    return priority === 'High' ? '🔴' : (priority === 'Low' ? '🟢' : '🟡');
-  },
-
-  getCriticalityEmoji(criticality) {
-    return criticality === 'Critical' ? '🔴' : (criticality === 'High' ? '⚠️' : '✅');
-  },
-
   getImpactEmoji(impact) {
     return impact === 'High' ? '🔴' : (impact === 'Low' ? '🟢' : '🔵');
   },
@@ -8262,8 +7920,8 @@ const AdminController = {
     const searchInput = document.querySelector('#appsOverviewSearch');
     if (searchInput) searchInput.value = '';
     this.currentOverviewSearch = '';
-    this.renderAppsOverviewTable();
-    this.updateAppsOverviewStats();
+    // this.renderAppsOverviewTable();
+    // this.updateAppsOverviewStats();
   },
 
   clearFieldFilter() {
@@ -8272,8 +7930,8 @@ const AdminController = {
     const filterValue = document.querySelector('#overviewFilterValue');
     if (filterField) filterField.value = 'all';
     if (filterValue) filterValue.value = 'all';
-    this.renderAppsOverviewTable();
-    this.updateAppsOverviewStats();
+    // this.renderAppsOverviewTable();
+    // this.updateAppsOverviewStats();
   },
 
   // ===== WORLD-CLASS APPLICATIONS OVERVIEW PREMIUM CONTROLS =====
@@ -8319,7 +7977,7 @@ const AdminController = {
       }
     }
     
-    this.renderAppsOverviewTable();
+    // this.renderAppsOverviewTable();
   },
 
   sortApplicationsByOrder() {
@@ -8332,7 +7990,7 @@ const AdminController = {
     }
     
     console.log(`📈 Applications sorted by Order (${this.appOrderSort})`);
-    this.renderAppsOverviewTable();
+    // this.renderAppsOverviewTable();
   },
 
   filterAppsOverviewBySearch(searchTerm) {
@@ -10923,21 +10581,6 @@ document.head.appendChild(notificationStyles);
 
 // End Settings Tab Functionality
 
-/* Main entry point */
-document.addEventListener('DOMContentLoaded', function() {
-    // Initialize StorageManager FIRST to detect cleared state
-    Dashboard.StorageManager.init();
-    
-    // Initialize other modules in the correct order
-    Dashboard.AdminController.init();
-    Dashboard.UIController.init();
-    
-    // Initialize Applications Overview World-Class module
-    if (typeof Dashboard.AppsOverviewWorldClass !== 'undefined') {
-        Dashboard.AppsOverviewWorldClass.init();
-    }
-});
-
 /**
  * Applications Overview World-Class Module
  * Enhanced KPI metrics, filtering, and visualization
@@ -10951,9 +10594,17 @@ document.addEventListener('DOMContentLoaded', function() {
         currentSearchQuery: '',
 
         init: function() {
-            if (!document.getElementById('tab-app-overview')) return;
+            console.log('[AppsOverview] Initializing module...');
+            const tabElement = document.getElementById('tab-app-overview');
+            if (!tabElement) {
+                console.warn('[AppsOverview] tab-app-overview element not found');
+                return;
+            }
+            console.log('[AppsOverview] Tab found, binding events...');
             this.bindEvents();
+            console.log('[AppsOverview] Events bound, refreshing data...');
             this.refresh();
+            console.log('[AppsOverview] Initialization complete');
         },
 
         bindEvents: function() {
@@ -10984,19 +10635,19 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
             }
 
-            // Wave filter button
+            // Wave filter button (placeholder - no external dependencies)
             const waveFilterBtn = document.getElementById('btnFilterMatrixWaveOverview');
             if (waveFilterBtn) {
                 waveFilterBtn.addEventListener('click', () => {
-                    Dashboard.AdminPanel.showWaveFilter('apps-overview');
+                    console.log('Wave filter clicked - feature available in full admin panel');
                 });
             }
 
-            // Sort button
+            // Sort button (placeholder - no external dependencies)
             const sortBtn = document.getElementById('btnSortMatrixOrderOverview');
             if (sortBtn) {
                 sortBtn.addEventListener('click', () => {
-                    Dashboard.AdminPanel.showOrderSort('apps-overview');
+                    console.log('Sort by order clicked - feature available in full admin panel');
                 });
             }
         },
@@ -11045,98 +10696,123 @@ document.addEventListener('DOMContentLoaded', function() {
         },
 
         updateMetrics: function(apps, config) {
-            const total = apps.length;
-            const atRisk = apps.filter(a => {
-                const progress = Dashboard.DataProcessor.calculateAppProgress(a, config);
-                return progress > 0 && progress < 50;
-            }).length;
-            
-            const avgCompletion = total > 0 
-                ? Math.round(apps.reduce((sum, a) => sum + Dashboard.DataProcessor.calculateAppProgress(a, config), 0) / total)
-                : 0;
+            try {
+                const total = apps.length;
+                const atRisk = apps.filter(a => {
+                    const progress = a.progress || 0;
+                    return progress > 0 && progress < 50;
+                }).length;
+                
+                const avgCompletion = total > 0 
+                    ? Math.round(apps.reduce((sum, a) => sum + (a.progress || 0), 0) / total)
+                    : 0;
 
-            document.getElementById('statsTotalApps').textContent = total;
-            document.getElementById('statsCompletionPct').textContent = avgCompletion;
-            document.getElementById('statsAtRisk').textContent = atRisk;
-            
-            // Wave counts
-            const waves = {};
-            apps.forEach(a => {
-                const wave = a.wave || 'Unknown';
-                waves[wave] = (waves[wave] || 0) + 1;
-            });
+                const el_total = document.getElementById('statsTotalApps');
+                const el_completion = document.getElementById('statsCompletionPct');
+                const el_risk = document.getElementById('statsAtRisk');
+                
+                if (el_total) el_total.textContent = total;
+                if (el_completion) el_completion.textContent = avgCompletion;
+                if (el_risk) el_risk.textContent = atRisk;
+                
+                // Wave counts
+                const waves = {};
+                apps.forEach(a => {
+                    const wave = a.wave || 'Unknown';
+                    waves[wave] = (waves[wave] || 0) + 1;
+                });
 
-            document.getElementById('waveCount1').textContent = waves['Wave 1'] || 0;
-            document.getElementById('waveCount2').textContent = waves['Wave 2'] || 0;
-            document.getElementById('waveCount3').textContent = waves['Wave 3'] || 0;
+                const el_w1 = document.getElementById('waveCount1');
+                const el_w2 = document.getElementById('waveCount2');
+                const el_w3 = document.getElementById('waveCount3');
+                
+                if (el_w1) el_w1.textContent = waves['Wave 1'] || 0;
+                if (el_w2) el_w2.textContent = waves['Wave 2'] || 0;
+                if (el_w3) el_w3.textContent = waves['Wave 3'] || 0;
+            } catch (error) {
+                console.error('[AppsOverview] Error updating metrics:', error);
+            }
         },
 
         updateCharts: function(apps) {
-            const total = apps.length;
-            
-            // Status breakdown
-            const statuses = { CLO: 0, WIP: 0, TBS: 0 };
-            apps.forEach(a => statuses[a.status || 'TBS']++);
-            
-            const statusChart = document.getElementById('statusBreakChart');
-            if (statusChart) {
-                statusChart.innerHTML = `
-                    <div style="flex: ${statuses.CLO || 1}; background: rgba(50,230,133,0.4); border-radius: 2px;" title="Complete"></div>
-                    <div style="flex: ${statuses.WIP || 1}; background: rgba(255,209,102,0.4); border-radius: 2px;" title="In Progress"></div>
-                    <div style="flex: ${statuses.TBS || 1}; background: rgba(255,95,122,0.4); border-radius: 2px;" title="To Start"></div>
-                `;
-            }
+            try {
+                const total = apps.length;
+                
+                // Status breakdown
+                const statuses = { CLO: 0, WIP: 0, TBS: 0 };
+                apps.forEach(a => statuses[a.status || 'TBS']++);
+                
+                const statusChart = document.getElementById('statusBreakChart');
+                if (statusChart) {
+                    statusChart.innerHTML = `
+                        <div style="flex: ${statuses.CLO || 1}; background: rgba(50,230,133,0.4); border-radius: 2px;" title="Complete"></div>
+                        <div style="flex: ${statuses.WIP || 1}; background: rgba(255,209,102,0.4); border-radius: 2px;" title="In Progress"></div>
+                        <div style="flex: ${statuses.TBS || 1}; background: rgba(255,95,122,0.4); border-radius: 2px;" title="To Start"></div>
+                    `;
+                }
 
-            // Update count display
-            const totalDisplay = document.getElementById('appsTotalDisplay');
-            const countDisplay = document.getElementById('appsCountDisplay');
-            if (totalDisplay) totalDisplay.textContent = apps.length;
-            if (countDisplay) countDisplay.textContent = apps.length;
+                // Update count display
+                const totalDisplay = document.getElementById('appsTotalDisplay');
+                const countDisplay = document.getElementById('appsCountDisplay');
+                if (totalDisplay) totalDisplay.textContent = apps.length;
+                if (countDisplay) countDisplay.textContent = apps.length;
+            } catch (error) {
+                console.error('[AppsOverview] Error updating charts:', error);
+            }
         },
 
         renderTable: function(apps, buses) {
             const tbody = document.getElementById('appsOverviewTableBody');
-            if (!tbody) return;
+            if (!tbody) {
+                console.warn('[AppsOverview] tbody not found');
+                return;
+            }
 
-            tbody.innerHTML = apps.map(app => {
-                const bu = buses.find(b => b.id === app.buId);
-                const buName = bu ? bu.name : 'N/A';
-                const progress = Dashboard.DataProcessor.calculateAppProgress(app, {
-                    buses, apps: this.filteredData
-                });
-                
-                let statusBadge = '⏳ To Start';
-                let statusColor = 'to-start';
-                if (app.status === 'CLO') {
-                    statusBadge = '✓ Complete';
-                    statusColor = 'complete';
-                } else if (app.status === 'WIP') {
-                    statusBadge = '🔄 In Progress';
-                    statusColor = 'in-progress';
-                }
+            try {
+                tbody.innerHTML = apps.map(app => {
+                    const bu = buses.find(b => b.id === app.buId);
+                    const buName = bu ? bu.name : 'N/A';
+                    const progress = app.progress || 0;
+                    const factors = Array.isArray(app.factors) ? app.factors : [];
+                    const wave = app.wave || 'Wave 1';
+                    
+                    let statusBadge = '⏳ To Start';
+                    let statusColor = 'to-start';
+                    if (app.status === 'CLO') {
+                        statusBadge = '✓ Complete';
+                        statusColor = 'complete';
+                    } else if (app.status === 'WIP') {
+                        statusBadge = '🔄 In Progress';
+                        statusColor = 'in-progress';
+                    }
 
-                let waveColor = app.wave === 'Wave 1' ? 'w1' : app.wave === 'Wave 2' ? 'w2' : 'w3';
+                    const waveColor = wave === 'Wave 1' ? 'w1' : wave === 'Wave 2' ? 'w2' : 'w3';
 
-                return `
-                    <tr class="app-row-${statusColor}">
-                        <td style="color: #5b9dff; font-weight: 600;">${app.order || '—'}</td>
-                        <td>${app.name}</td>
-                        <td>${buName}</td>
-                        <td style="text-align: center;"><span class="badge-wave ${waveColor}">${app.wave || 'N/A'}</span></td>
-                        <td style="text-align: center;"><strong>${(app.weight || 1).toFixed(1)}</strong></td>
-                        <td style="text-align: center;"><span style="font-size: 11px; color: #aaa;">${(app.factors || []).length}</span></td>
-                        <td>
-                            <div style="display: flex; align-items: center; gap: 8px;">
-                                <div style="flex: 1; height: 6px; background: rgba(91,157,255,0.2); border-radius: 3px; overflow: hidden;">
-                                    <div style="height: 100%; background: ${progress === 100 ? '#32e685' : progress > 50 ? '#ffd166' : '#ff5f7a'}; width: ${progress}%; transition: width 0.3s ease;"></div>
+                    return `
+                        <tr class="app-row-${statusColor}">
+                            <td style="color: #5b9dff; font-weight: 600;">${app.order || '—'}</td>
+                            <td>${app.name || 'Unnamed'}</td>
+                            <td>${buName}</td>
+                            <td style="text-align: center;"><span class="badge-wave ${waveColor}">${wave}</span></td>
+                            <td style="text-align: center;"><strong>${(app.weight || 1).toFixed(1)}</strong></td>
+                            <td style="text-align: center;"><span style="font-size: 11px; color: #aaa;">${factors.length}</span></td>
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <div style="flex: 1; height: 6px; background: rgba(91,157,255,0.2); border-radius: 3px; overflow: hidden;">
+                                        <div style="height: 100%; background: ${progress === 100 ? '#32e685' : progress > 50 ? '#ffd166' : '#ff5f7a'}; width: ${progress}%; transition: width 0.3s ease;"></div>
+                                    </div>
+                                    <span style="font-weight: 600; min-width: 40px; text-align: right;">${Math.round(progress)}%</span>
                                 </div>
-                                <span style="font-weight: 600; min-width: 40px; text-align: right;">${Math.round(progress)}%</span>
-                            </div>
-                        </td>
-                        <td style="text-align: center;"><span class="status-badge ${statusColor}">${statusBadge}</span></td>
-                    </tr>
-                `;
-            }).join('');
+                            </td>
+                            <td style="text-align: center;"><span class="status-badge ${statusColor}">${statusBadge}</span></td>
+                        </tr>
+                    `;
+                }).join('');
+                console.log(`[AppsOverview] Rendered ${apps.length} applications`);
+            } catch (error) {
+                console.error('[AppsOverview] Error rendering table:', error);
+                tbody.innerHTML = `<tr><td colspan="9" style="text-align: center; padding: 20px; color: #ff5f7a;">Error rendering table: ${error.message}</td></tr>`;
+            }
         }
     };
 
@@ -11144,6 +10820,21 @@ document.addEventListener('DOMContentLoaded', function() {
     window.Dashboard.AppsOverviewWorldClass = AppsOverviewWorldClass;
 
 })();
+
+/* Main entry point - AFTER all modules are defined */
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize StorageManager FIRST to detect cleared state
+    Dashboard.StorageManager.init();
+    
+    // Initialize other modules in the correct order
+    Dashboard.AdminController.init();
+    Dashboard.UIController.init();
+    
+    // Initialize Applications Overview World-Class module
+    if (typeof Dashboard.AppsOverviewWorldClass !== 'undefined') {
+        Dashboard.AppsOverviewWorldClass.init();
+    }
+});
 </script>
 </body>
 </html>
