@@ -1,0 +1,74 @@
+{
+  "metadata": {
+    "timestamp": "2025-10-23T14:30:00Z",
+    "version": "1.0",
+    "author": "GitHub Copilot - Expert Mode",
+    "project": "Dashboard Enhanced",
+    "priority": "CRITICAL"
+  },
+  "file": "dist/dashboard_enhanced.html",
+  "operation": "replace",
+  "description": "Implement World-Class Wave Filter and Sort by Order functionality in Applications Overview tab",
+  "rationale": "Current implementation has placeholder event listeners that only log messages. The Wave Filter and Sort by Order buttons are non-functional. This fix adds complete filtering and sorting logic with UI feedback.",
+  "impact": "Users can now filter applications by Wave (Wave 1/2/3) and sort by execution order (ascending/descending) with visual feedback",
+  "riskLevel": "Low",
+  "targetSection": "AppsOverviewWorldClass.bindEvents() function and related state properties",
+  "originalCode": "        bindEvents: function() {\n            // Status filter buttons\n            document.querySelectorAll('.status-pill-filter').forEach(btn => {\n                btn.addEventListener('click', (e) => {\n                    document.querySelectorAll('.status-pill-filter').forEach(b => {\n                        b.style.background = b.dataset.status === 'all' \n                            ? 'rgba(91,157,255,0.2)' \n                            : b.dataset.status === 'CLO' \n                                ? 'rgba(50,230,133,0.1)' \n                                : b.dataset.status === 'WIP'\n                                    ? 'rgba(255,209,102,0.1)'\n                                    : 'rgba(255,95,122,0.1)';\n                    });\n                    e.target.style.background = 'rgba(91,157,255,0.35)';\n                    this.activeStatusFilter = e.target.dataset.status;\n                    this.filterAndRender();\n                });\n            });\n\n            // Search input\n            const searchInput = document.getElementById('appsOverviewSearch');\n            if (searchInput) {\n                searchInput.addEventListener('input', (e) => {\n                    this.currentSearchQuery = e.target.value.toLowerCase();\n                    this.filterAndRender();\n                });\n            }\n\n            // Wave filter button (placeholder - no external dependencies)\n            const waveFilterBtn = document.getElementById('btnFilterMatrixWaveOverview');\n            if (waveFilterBtn) {\n                waveFilterBtn.addEventListener('click', () => {\n                    console.log('Wave filter clicked - feature available in full admin panel');\n                });\n            }\n\n            // Sort button (placeholder - no external dependencies)\n            const sortBtn = document.getElementById('btnSortMatrixOrderOverview');\n            if (sortBtn) {\n                sortBtn.addEventListener('click', () => {\n                    console.log('Sort by order clicked - feature available in full admin panel');\n                });\n            }\n        },",
+  "newCode": "        bindEvents: function() {\n            // Status filter buttons\n            document.querySelectorAll('.status-pill-filter').forEach(btn => {\n                btn.addEventListener('click', (e) => {\n                    document.querySelectorAll('.status-pill-filter').forEach(b => {\n                        b.style.background = b.dataset.status === 'all' \n                            ? 'rgba(91,157,255,0.2)' \n                            : b.dataset.status === 'CLO' \n                                ? 'rgba(50,230,133,0.1)' \n                                : b.dataset.status === 'WIP'\n                                    ? 'rgba(255,209,102,0.1)'\n                                    : 'rgba(255,95,122,0.1)';\n                    });\n                    e.target.style.background = 'rgba(91,157,255,0.35)';\n                    this.activeStatusFilter = e.target.dataset.status;\n                    this.filterAndRender();\n                });\n            });\n\n            // Search input\n            const searchInput = document.getElementById('appsOverviewSearch');\n            if (searchInput) {\n                searchInput.addEventListener('input', (e) => {\n                    this.currentSearchQuery = e.target.value.toLowerCase();\n                    this.filterAndRender();\n                });\n            }\n\n            // Wave filter button - WORLD CLASS IMPLEMENTATION\n            const waveFilterBtn = document.getElementById('btnFilterMatrixWaveOverview');\n            if (waveFilterBtn) {\n                waveFilterBtn.addEventListener('click', (e) => {\n                    e.stopPropagation();\n                    this.showWaveFilterPanel(waveFilterBtn);\n                });\n            }\n\n            // Sort button - WORLD CLASS IMPLEMENTATION (bidirectional)\n            const sortBtn = document.getElementById('btnSortMatrixOrderOverview');\n            if (sortBtn) {\n                sortBtn.addEventListener('click', (e) => {\n                    e.stopPropagation();\n                    this.cycleSortOrder();\n                });\n            }\n        },\n        \n        showWaveFilterPanel: function(btn) {\n            // Remove existing panel if present\n            const existingPanel = document.getElementById('waveFilterPanel');\n            if (existingPanel) existingPanel.remove();\n\n            const config = Dashboard.StorageManager.loadConfig();\n            const apps = config.apps || [];\n            const uniqueWaves = [...new Set(apps.map(a => a.wave).filter(Boolean))].sort();\n\n            const panelHtml = `\n                <div id=\"waveFilterPanel\" style=\"position: absolute; top: 100%; left: 0; margin-top: 8px; background: var(--panel); border: 1px solid var(--ring); border-radius: 10px; padding: 12px 0; min-width: 180px; box-shadow: 0 8px 32px rgba(0,0,0,0.3); z-index: 999;\">\n                    <button class=\"wave-filter-option\" data-wave=\"all\" style=\"display: block; width: 100%; padding: 10px 16px; background: none; border: none; color: var(--text); text-align: left; font-size: 13px; cursor: pointer; transition: all 0.2s ease; ${this.activeWaveFilter === 'all' ? 'background: rgba(91,157,255,0.2);' : ''}\" onmouseover=\"this.style.background='rgba(91,157,255,0.15)'\" onmouseout=\"this.style.background='${this.activeWaveFilter === 'all' ? 'rgba(91,157,255,0.2)' : 'transparent'}'\">\n                        ✓ All Waves\n                    </button>\n                    ${uniqueWaves.map(wave => {\n                        const count = apps.filter(a => a.wave === wave).length;\n                        return `<button class=\"wave-filter-option\" data-wave=\"${wave}\" style=\"display: block; width: 100%; padding: 10px 16px; background: none; border: none; color: var(--text); text-align: left; font-size: 13px; cursor: pointer; transition: all 0.2s ease; ${this.activeWaveFilter === wave ? 'background: rgba(91,157,255,0.2);' : ''}\" onmouseover=\"this.style.background='rgba(91,157,255,0.15)'\" onmouseout=\"this.style.background='${this.activeWaveFilter === wave ? 'rgba(91,157,255,0.2)' : 'transparent'}'\">\n                            🌊 ${wave} <span style=\"color: #aaa; font-size: 11px;\">(${count})</span>\n                        </button>`;\n                    }).join('')}\n                </div>\n            `;\n\n            btn.style.position = 'relative';\n            btn.insertAdjacentHTML('afterend', panelHtml);\n\n            // Bind click handlers\n            document.querySelectorAll('.wave-filter-option').forEach(opt => {\n                opt.addEventListener('click', (e) => {\n                    this.activeWaveFilter = e.target.closest('.wave-filter-option').dataset.wave;\n                    btn.innerHTML = this.activeWaveFilter === 'all' \n                        ? '<span>🌊 Filter by Wave</span>' \n                        : `<span>🌊 ${this.activeWaveFilter}</span>`;\n                    btn.style.background = 'rgba(91,157,255,0.25)';\n                    btn.style.borderColor = 'var(--primary)';\n                    this.filterAndRender();\n                    document.getElementById('waveFilterPanel').remove();\n                });\n            });\n\n            // Close panel when clicking outside\n            setTimeout(() => {\n                const closeHandler = (e) => {\n                    if (!btn.contains(e.target) && !document.getElementById('waveFilterPanel')?.contains(e.target)) {\n                        document.getElementById('waveFilterPanel')?.remove();\n                        document.removeEventListener('click', closeHandler);\n                    }\n                };\n                document.addEventListener('click', closeHandler);\n            }, 10);\n        },\n\n        cycleSortOrder: function() {\n            // Cycle: none → asc → desc → none\n            if (this.sortOrder === 'asc') {\n                this.sortOrder = 'desc';\n            } else if (this.sortOrder === 'desc') {\n                this.sortOrder = 'none';\n            } else {\n                this.sortOrder = 'asc';\n            }\n\n            const sortBtn = document.getElementById('btnSortMatrixOrderOverview');\n            if (sortBtn) {\n                sortBtn.innerHTML = this.sortOrder === 'asc' \n                    ? '<span>🔢 Sort by Order ▲</span>' \n                    : this.sortOrder === 'desc'\n                    ? '<span>🔢 Sort by Order ▼</span>'\n                    : '<span>🔢 Sort by Order</span>';\n                \n                if (this.sortOrder !== 'none') {\n                    sortBtn.style.background = 'rgba(91,157,255,0.25)';\n                    sortBtn.style.borderColor = 'var(--primary)';\n                } else {\n                    sortBtn.style.background = '';\n                    sortBtn.style.borderColor = '';\n                }\n            }\n\n            this.filterAndRender();\n        },",
+  "validation": {
+    "beforeExecute": [
+      "File exists: dist/dashboard_enhanced.html",
+      "AppsOverviewWorldClass module present",
+      "bindEvents function exists at expected location",
+      "btnFilterMatrixWaveOverview and btnSortMatrixOrderOverview buttons exist in HTML"
+    ],
+    "afterExecute": [
+      "New methods showWaveFilterPanel and cycleSortOrder exist",
+      "Wave filter button shows dropdown on click",
+      "Sort button cycles through ASC/DESC/NONE",
+      "Visual indicators (▲▼) appear correctly",
+      "Filtering works correctly with new logic"
+    ]
+  },
+  "stateChanges": {
+    "newProperties": [
+      "activeWaveFilter: defaults to 'all'",
+      "sortOrder: defaults to 'none'"
+    ],
+    "modifiedMethods": [
+      "bindEvents: expanded to include real logic",
+      "filterAndRender: needs update to handle wave + sort"
+    ]
+  },
+  "rollback": {
+    "enabled": true,
+    "keepBackup": true,
+    "backupName": "dashboard_enhanced_20251023_pre_filters.html",
+    "maxBackups": 5
+  },
+  "testing": {
+    "unitTests": [],
+    "integrationTests": [
+      "Wave filter: select Wave 1, verify only Wave 1 apps shown",
+      "Wave filter: select all, verify all waves shown",
+      "Sort order: click button, verify cycling through ▲▼ states",
+      "Sort ASC: verify apps sorted by order ascending",
+      "Sort DESC: verify apps sorted by order descending",
+      "Combined: filter by wave AND sort by order AND search"
+    ],
+    "manualTests": [
+      "Click Wave Filter button, verify dropdown appears with all waves",
+      "Click Sort Order button, verify icon cycles ▲ → ▼ → none",
+      "Verify buttons show active state visually",
+      "Test with no apps (empty state)",
+      "Test with single wave",
+      "Test with mixed orders (1,3,2 etc)",
+      "Responsive: test on mobile, tablet, desktop"
+    ]
+  },
+  "notes": "This is OPERATION 1 of 3. After this completes, OPERATION 2 (modify refresh() to apply wave filter and sort) will be needed to fully integrate the logic.",
+  "approval": {
+    "requiresReview": false,
+    "status": "ready"
+  }
+}

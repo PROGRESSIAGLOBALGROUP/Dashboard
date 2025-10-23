@@ -10595,6 +10595,11 @@ document.head.appendChild(notificationStyles);
 
         init: function() {
             console.log('[AppsOverview] Initializing module...');
+            
+            // Initialize state properties
+            this.activeWaveFilter = 'all';
+            this.sortOrder = 'none';
+            
             const tabElement = document.getElementById('tab-app-overview');
             if (!tabElement) {
                 console.warn('[AppsOverview] tab-app-overview element not found');
@@ -10604,7 +10609,7 @@ document.head.appendChild(notificationStyles);
             this.bindEvents();
             console.log('[AppsOverview] Events bound, refreshing data...');
             this.refresh();
-            console.log('[AppsOverview] Initialization complete');
+            console.log('[AppsOverview] Initialization complete - Filters: Wave=%s, Sort=%s', this.activeWaveFilter, this.sortOrder);
         },
 
         bindEvents: function() {
@@ -10635,21 +10640,105 @@ document.head.appendChild(notificationStyles);
                 });
             }
 
-            // Wave filter button (placeholder - no external dependencies)
+            // Wave filter button - WORLD CLASS IMPLEMENTATION
             const waveFilterBtn = document.getElementById('btnFilterMatrixWaveOverview');
             if (waveFilterBtn) {
-                waveFilterBtn.addEventListener('click', () => {
-                    console.log('Wave filter clicked - feature available in full admin panel');
+                waveFilterBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    this.showWaveFilterPanel(waveFilterBtn);
                 });
             }
 
-            // Sort button (placeholder - no external dependencies)
+            // Sort button - WORLD CLASS IMPLEMENTATION (bidirectional)
             const sortBtn = document.getElementById('btnSortMatrixOrderOverview');
             if (sortBtn) {
-                sortBtn.addEventListener('click', () => {
-                    console.log('Sort by order clicked - feature available in full admin panel');
+                sortBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    this.cycleSortOrder();
                 });
             }
+        },
+        
+        showWaveFilterPanel: function(btn) {
+            // Remove existing panel if present
+            const existingPanel = document.getElementById('waveFilterPanel');
+            if (existingPanel) existingPanel.remove();
+
+            const config = Dashboard.StorageManager.loadConfig();
+            const apps = config.apps || [];
+            const uniqueWaves = [...new Set(apps.map(a => a.wave).filter(Boolean))].sort();
+
+            const panelHtml = `
+                <div id="waveFilterPanel" style="position: absolute; top: 100%; left: 0; margin-top: 8px; background: var(--panel); border: 1px solid var(--ring); border-radius: 10px; padding: 12px 0; min-width: 180px; box-shadow: 0 8px 32px rgba(0,0,0,0.3); z-index: 999;">
+                    <button class="wave-filter-option" data-wave="all" style="display: block; width: 100%; padding: 10px 16px; background: none; border: none; color: var(--text); text-align: left; font-size: 13px; cursor: pointer; transition: all 0.2s ease; ${this.activeWaveFilter === 'all' ? 'background: rgba(91,157,255,0.2);' : ''}" onmouseover="this.style.background='rgba(91,157,255,0.15)'" onmouseout="this.style.background='${this.activeWaveFilter === 'all' ? 'rgba(91,157,255,0.2)' : 'transparent'}'">
+                        ✓ All Waves
+                    </button>
+                    ${uniqueWaves.map(wave => {
+                        const count = apps.filter(a => a.wave === wave).length;
+                        return `<button class="wave-filter-option" data-wave="${wave}" style="display: block; width: 100%; padding: 10px 16px; background: none; border: none; color: var(--text); text-align: left; font-size: 13px; cursor: pointer; transition: all 0.2s ease; ${this.activeWaveFilter === wave ? 'background: rgba(91,157,255,0.2);' : ''}" onmouseover="this.style.background='rgba(91,157,255,0.15)'" onmouseout="this.style.background='${this.activeWaveFilter === wave ? 'rgba(91,157,255,0.2)' : 'transparent'}'">
+                            🌊 ${wave} <span style="color: #aaa; font-size: 11px;">(${count})</span>
+                        </button>`
+                    }).join('')}
+                </div>
+            `;
+
+            btn.style.position = 'relative';
+            btn.insertAdjacentHTML('afterend', panelHtml);
+
+            // Bind click handlers
+            document.querySelectorAll('.wave-filter-option').forEach(opt => {
+                opt.addEventListener('click', (e) => {
+                    this.activeWaveFilter = e.target.closest('.wave-filter-option').dataset.wave;
+                    btn.innerHTML = this.activeWaveFilter === 'all' 
+                        ? '<span>🌊 Filter by Wave</span>' 
+                        : `<span>🌊 ${this.activeWaveFilter}</span>`;
+                    btn.style.background = 'rgba(91,157,255,0.25)';
+                    btn.style.borderColor = 'var(--primary)';
+                    this.filterAndRender();
+                    document.getElementById('waveFilterPanel').remove();
+                });
+            });
+
+            // Close panel when clicking outside
+            setTimeout(() => {
+                const closeHandler = (e) => {
+                    if (!btn.contains(e.target) && !document.getElementById('waveFilterPanel')?.contains(e.target)) {
+                        document.getElementById('waveFilterPanel')?.remove();
+                        document.removeEventListener('click', closeHandler);
+                    }
+                };
+                document.addEventListener('click', closeHandler);
+            }, 10);
+        },
+
+        cycleSortOrder: function() {
+            // Cycle: none → asc → desc → none
+            if (this.sortOrder === 'asc') {
+                this.sortOrder = 'desc';
+            } else if (this.sortOrder === 'desc') {
+                this.sortOrder = 'none';
+            } else {
+                this.sortOrder = 'asc';
+            }
+
+            const sortBtn = document.getElementById('btnSortMatrixOrderOverview');
+            if (sortBtn) {
+                sortBtn.innerHTML = this.sortOrder === 'asc' 
+                    ? '<span>🔢 Sort by Order ▲</span>' 
+                    : this.sortOrder === 'desc'
+                    ? '<span>🔢 Sort by Order ▼</span>'
+                    : '<span>🔢 Sort by Order</span>';
+                
+                if (this.sortOrder !== 'none') {
+                    sortBtn.style.background = 'rgba(91,157,255,0.25)';
+                    sortBtn.style.borderColor = 'var(--primary)';
+                } else {
+                    sortBtn.style.background = '';
+                    sortBtn.style.borderColor = '';
+                }
+            }
+
+            this.filterAndRender();
         },
 
         filterAndRender: function() {
@@ -10662,14 +10751,30 @@ document.head.appendChild(notificationStyles);
             const buses = config.buses || [];
             const waves = config.waves || [];
 
-            // Filter data
+            // Filter data - WORLD CLASS with Wave + Status + Search
             let filtered = apps.filter(app => {
                 const matchesStatus = this.activeStatusFilter === 'all' || app.status === this.activeStatusFilter;
                 const matchesSearch = !this.currentSearchQuery || 
                     app.name.toLowerCase().includes(this.currentSearchQuery) ||
                     app.id.toLowerCase().includes(this.currentSearchQuery);
-                return matchesStatus && matchesSearch;
+                const matchesWave = this.activeWaveFilter === 'all' || app.wave === this.activeWaveFilter;
+                return matchesStatus && matchesSearch && matchesWave;
             });
+
+            // Sort data - WORLD CLASS bidirectional sorting
+            if (this.sortOrder === 'asc') {
+                filtered = filtered.sort((a, b) => {
+                    const orderA = a.order || Infinity;
+                    const orderB = b.order || Infinity;
+                    return orderA - orderB;
+                });
+            } else if (this.sortOrder === 'desc') {
+                filtered = filtered.sort((a, b) => {
+                    const orderA = a.order || Infinity;
+                    const orderB = b.order || Infinity;
+                    return orderB - orderA;
+                });
+            }
 
             this.filteredData = filtered;
 

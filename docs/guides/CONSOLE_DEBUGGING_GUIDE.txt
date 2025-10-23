@@ -1,0 +1,108 @@
+═══════════════════════════════════════════════════════════════════════════════
+                    DEBUGGING GUIDE - Applications Overview
+═══════════════════════════════════════════════════════════════════════════════
+
+🔍 WHAT TO CHECK IN BROWSER CONSOLE:
+
+1. EXPECTED SUCCESS LOGS (in order):
+   ✅ "[DataLoader] Fetching data from data/tables.json..."
+   ✅ "[DataLoader] JSON loaded successfully"
+   ✅ "[DataLoader] Data persisted to localStorage"
+   ✅ "[AppsOverview] Initializing module..."
+   ✅ "[AppsOverview] Tab found, binding events..."
+   ✅ "[AppsOverview] Events bound, refreshing data..."
+   ✅ "[AppsOverview] Rendered X applications"
+   ✅ "[AppsOverview] Initialization complete"
+
+2. IF YOU SEE ERRORS, LOOK FOR:
+   
+   ERROR: CORS - cannot load data/tables.json
+   → Solution: Copy tables.json to data/ folder or check path
+   
+   ERROR: undefined.loadData
+   → Solution: DataLoader not registering - should be fixed now
+   
+   ERROR: Cannot read properties of undefined (reading...)
+   → Check if element IDs exist in HTML
+   → Module will show defensive error message
+   
+   ERROR: Cannot render table
+   → App data might be corrupted
+   → Check localStorage in Application tab
+
+3. MANUAL TESTING STEPS:
+   
+   a) Open DevTools (F12)
+   b) Go to Console tab
+   c) Reload page (Ctrl+Shift+R to skip cache)
+   d) Look for the logs above
+   e) Navigate to Applications Overview tab
+   f) Check if table populates with data
+   g) Test filters: All, Complete, In Progress, To Start
+   h) Test search: Type in search box
+   
+4. IF TABLE IS EMPTY:
+   
+   Type in console:
+   → localStorage.getItem('dashboard_config_v1')
+   → Should show JSON with buses, apps, waves
+   
+   If empty or null:
+   → DataLoader failed to fetch
+   → Check if data/tables.json exists and is valid JSON
+   → Check for CORS errors in Network tab
+   
+5. IF SPECIFIC FEATURES DON'T WORK:
+   
+   Status Filters (All/Complete/In Progress/To Start):
+   → Should work - test by clicking each button
+   → Table should update instantly
+   
+   Search Box:
+   → Should filter by app name, BU, or ID
+   → Type "XXX" to test
+   
+   Wave Filter & Sort buttons:
+   → Now show console message (feature stubs)
+   → Will work when AdminPanel integrates them
+   
+   KPI Metrics (Total Apps, Avg Completion, At Risk):
+   → Should update when data loads
+   → Check span elements with IDs: statsTotalApps, statsCompletionPct, statsAtRisk
+
+═══════════════════════════════════════════════════════════════════════════════
+
+RECENT FIXES APPLIED:
+
+✅ Fixed DataLoader initialization order
+   - Moved DataLoader call to AFTER both modules register
+   - Prevents "undefined.loadData()" error
+
+✅ Added defensive error handling
+   - renderTable() catches errors and shows message
+   - updateMetrics() checks if elements exist
+   - updateCharts() checks if elements exist
+   - All errors logged to console
+
+✅ Removed problematic method calls
+   - showWaveFilter() and showOrderSort() don't exist
+   - Replaced with stub functions that log instead of crash
+
+✅ Added detailed console logging
+   - Each step of initialization now visible
+   - Errors shown with helpful context
+
+═══════════════════════════════════════════════════════════════════════════════
+
+QUICK CHECKLIST:
+
+[ ] Data loads from tables.json - check console for "[DataLoader]" messages
+[ ] Applications Overview tab initializes - check for "[AppsOverview]" messages
+[ ] Table displays applications - should show list under "Showing N applications"
+[ ] Status filters work - click each button and table updates
+[ ] Search works - type and results filter
+[ ] KPI metrics display - Total Apps, Avg Completion, At Risk show numbers
+[ ] No errors in console - check console tab for red X icons
+[ ] Proper number of applications shown - compare with other tabs
+
+═══════════════════════════════════════════════════════════════════════════════

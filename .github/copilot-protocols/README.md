@@ -1,9 +1,19 @@
 # 🤖 GitHub Copilot - Master Configuration
 
 **Version**: 2.0  
-**Last Updated**: October 22, 2025  
+**Last Updated**: October 23, 2025
 **Project**: Dashboard Enhanced  
 **Purpose**: Central configuration for AI-assisted development
+
+---
+
+## 🚨 **CRITICAL: READ ROOT_PROHIBITIONS.md FIRST**
+
+**BEFORE creating ANY file**, consult:
+
+📁 **[ROOT_PROHIBITIONS.md](./ROOT_PROHIBITIONS.md)** ← **BINDING ENFORCEMENT**
+
+This document defines what MUST NEVER be in the root directory.
 
 ---
 

@@ -1,0 +1,159 @@
+      <!-- TAB: APPLICATIONS OVERVIEW - WORLD CLASS PREMIUM -->
+      <div class="modal-tabpanel" id="tab-app-overview">
+        <div class="tab-header">
+          <div>
+            <h3>🔍 Applications Overview</h3>
+            <p class="tab-description">Complete view of all applications across business units with intelligent filtering and advanced analytics</p>
+          </div>
+        </div>
+        
+        <!-- ENHANCED METRICS DASHBOARD -->
+        <div class="apps-metrics-dashboard" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px; margin-bottom: 24px; padding: 16px; background: rgba(91,157,255,0.02); border-radius: 12px; border: 1px solid var(--ring);">
+          
+          <!-- Total Applications KPI -->
+          <div class="kpi-card" style="padding: 16px; border-radius: 10px; background: linear-gradient(135deg, rgba(50,230,133,0.1), transparent); border: 1px solid rgba(50,230,133,0.2);">
+            <div style="font-size: 12px; color: #aaa; margin-bottom: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Total Apps</div>
+            <div style="font-size: 24px; font-weight: 700; color: #32e685;">
+              <span id="statsTotalApps">0</span>
+            </div>
+            <div style="font-size: 11px; color: #777; margin-top: 4px;">
+              <span id="statsAppsChange" style="color: #32e685;">↑ All</span>
+            </div>
+          </div>
+          
+          <!-- Completion Average KPI -->
+          <div class="kpi-card" style="padding: 16px; border-radius: 10px; background: linear-gradient(135deg, rgba(255,209,102,0.1), transparent); border: 1px solid rgba(255,209,102,0.2);">
+            <div style="font-size: 12px; color: #aaa; margin-bottom: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Avg Completion</div>
+            <div style="font-size: 24px; font-weight: 700; color: #ffd166;">
+              <span id="statsCompletionPct">0</span>%
+            </div>
+            <div style="font-size: 11px; color: #777; margin-top: 4px;">
+              <span id="statsCompletionTrend">→ Stable</span>
+            </div>
+          </div>
+          
+          <!-- Critical/At-Risk KPI -->
+          <div class="kpi-card" style="padding: 16px; border-radius: 10px; background: linear-gradient(135deg, rgba(255,95,122,0.1), transparent); border: 1px solid rgba(255,95,122,0.2);">
+            <div style="font-size: 12px; color: #aaa; margin-bottom: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">At Risk</div>
+            <div style="font-size: 24px; font-weight: 700; color: #ff5f7a;">
+              <span id="statsAtRisk">0</span>
+            </div>
+            <div style="font-size: 11px; color: #777; margin-top: 4px;">
+              <span id="statsRiskLabel">Below 50%</span>
+            </div>
+          </div>
+          
+          <!-- Wave Distribution KPI -->
+          <div class="kpi-card" style="padding: 16px; border-radius: 10px; background: linear-gradient(135deg, rgba(91,157,255,0.1), transparent); border: 1px solid rgba(91,157,255,0.2);">
+            <div style="font-size: 12px; color: #aaa; margin-bottom: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Wave Status</div>
+            <div style="font-size: 14px; font-weight: 600; color: #5b9dff; margin-top: 4px;">
+              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <span style="background: rgba(50,230,133,0.2); color: #32e685; padding: 2px 8px; border-radius: 4px; font-size: 11px;">W1: <span id="waveCount1">0</span></span>
+                <span style="background: rgba(255,209,102,0.2); color: #ffd166; padding: 2px 8px; border-radius: 4px; font-size: 11px;">W2: <span id="waveCount2">0</span></span>
+                <span style="background: rgba(91,157,255,0.2); color: #5b9dff; padding: 2px 8px; border-radius: 4px; font-size: 11px;">W3: <span id="waveCount3">0</span></span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- ADVANCED CONTROLS -->
+        <div style="display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; align-items: center;">
+          <!-- Premium Control Buttons (World-Class) -->
+          <div style="display: flex; gap: 8px;">
+            <button class="btn-filter-matrix" id="btnFilterMatrixWaveOverview" style="padding: 8px 14px; font-size: 13px;">
+              <span>🌊 Filter by Wave</span>
+            </button>
+            <button class="btn-sort-matrix" id="btnSortMatrixOrderOverview" style="padding: 8px 14px; font-size: 13px;">
+              <span>🔢 Sort by Order</span>
+            </button>
+          </div>
+          
+          <!-- Status Filter Pills -->
+          <div style="display: flex; gap: 6px;">
+            <button class="status-pill-filter" data-status="all" style="padding: 6px 12px; background: rgba(91,157,255,0.2); border: 1px solid rgba(91,157,255,0.3); border-radius: 20px; color: #5b9dff; font-size: 12px; cursor: pointer; font-weight: 600;">
+              All
+            </button>
+            <button class="status-pill-filter" data-status="CLO" style="padding: 6px 12px; background: rgba(50,230,133,0.1); border: 1px solid rgba(50,230,133,0.2); border-radius: 20px; color: #32e685; font-size: 12px; cursor: pointer; font-weight: 600;">
+              ✓ Complete
+            </button>
+            <button class="status-pill-filter" data-status="WIP" style="padding: 6px 12px; background: rgba(255,209,102,0.1); border: 1px solid rgba(255,209,102,0.2); border-radius: 20px; color: #ffd166; font-size: 12px; cursor: pointer; font-weight: 600;">
+              🔄 In Progress
+            </button>
+            <button class="status-pill-filter" data-status="TBS" style="padding: 6px 12px; background: rgba(255,95,122,0.1); border: 1px solid rgba(255,95,122,0.2); border-radius: 20px; color: #ff5f7a; font-size: 12px; cursor: pointer; font-weight: 600;">
+              ⏳ To Start
+            </button>
+          </div>
+        </div>
+        
+        <!-- Search Bar -->
+        <div class="search-box-wrapper" style="margin-bottom: 16px;">
+          <input type="text" id="appsOverviewSearch" placeholder="🔎 Search by name, BU, or ID..." class="search-input-premium" style="width: 100%; padding: 10px 14px; background: rgba(91,157,255,0.05); border: 1px solid var(--ring); border-radius: 8px; color: var(--text); font-size: 13px;"/>
+        </div>
+        
+        <!-- MINI VISUALIZATION PANELS -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 16px;">
+          
+          <!-- Wave Distribution -->
+          <div style="padding: 12px; background: rgba(91,157,255,0.02); border: 1px solid var(--ring); border-radius: 10px;">
+            <div style="font-size: 11px; font-weight: 600; color: #aaa; margin-bottom: 8px; text-transform: uppercase;">Wave Distribution</div>
+            <div id="waveDistChart" style="display: flex; gap: 2px; align-items: flex-end; height: 40px; justify-content: center;">
+              <div style="flex: 1; background: rgba(50,230,133,0.3); height: 60%; border-radius: 2px;" title="Wave 1"></div>
+              <div style="flex: 1; background: rgba(255,209,102,0.3); height: 40%; border-radius: 2px;" title="Wave 2"></div>
+              <div style="flex: 1; background: rgba(91,157,255,0.3); height: 30%; border-radius: 2px;" title="Wave 3"></div>
+            </div>
+          </div>
+          
+          <!-- Status Breakdown -->
+          <div style="padding: 12px; background: rgba(91,157,255,0.02); border: 1px solid var(--ring); border-radius: 10px;">
+            <div style="font-size: 11px; font-weight: 600; color: #aaa; margin-bottom: 8px; text-transform: uppercase;">Status Breakdown</div>
+            <div id="statusBreakChart" style="display: flex; gap: 2px; height: 40px;">
+              <div style="flex: 1; background: rgba(50,230,133,0.4); border-radius: 2px; position: relative;" title="Complete"><span style="position: absolute; bottom: -18px; font-size: 10px; color: #32e685; left: 0; right: 0; text-align: center;">CLO</span></div>
+              <div style="flex: 1; background: rgba(255,209,102,0.4); border-radius: 2px; position: relative;" title="In Progress"><span style="position: absolute; bottom: -18px; font-size: 10px; color: #ffd166; left: 0; right: 0; text-align: center;">WIP</span></div>
+              <div style="flex: 1; background: rgba(255,95,122,0.4); border-radius: 2px; position: relative;" title="To Start"><span style="position: absolute; bottom: -18px; font-size: 10px; color: #ff5f7a; left: 0; right: 0; text-align: center;">TBS</span></div>
+            </div>
+          </div>
+          
+          <!-- Completion Range -->
+          <div style="padding: 12px; background: rgba(91,157,255,0.02); border: 1px solid var(--ring); border-radius: 10px;">
+            <div style="font-size: 11px; font-weight: 600; color: #aaa; margin-bottom: 8px; text-transform: uppercase;">Completion Range</div>
+            <div style="display: flex; align-items: center; gap: 6px; height: 40px;">
+              <div style="flex: 1; height: 4px; background: linear-gradient(90deg, #ff5f7a 0%, #ffd166 50%, #32e685 100%); border-radius: 2px;"></div>
+              <div style="font-size: 12px; color: var(--text); font-weight: 600;"><span id="completionMin">0</span>% - <span id="completionMax">100</span>%</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Premium Table Container -->
+        <div class="apps-table-container-premium" style="border-radius: 10px; border: 1px solid var(--ring); overflow: hidden;">
+          <div class="table-header-info" style="padding: 12px 16px; background: rgba(91,157,255,0.05); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--ring);">
+            <span style="font-size: 12px; color: #aaa;">
+              <span style="font-weight: 600; color: var(--text);">📋</span> Showing <strong id="appsCountDisplay" style="color: #5b9dff;">0</strong> of <strong id="appsTotalDisplay" style="color: #5b9dff;">0</strong> applications
+            </span>
+            <span id="filterBadges" style="font-size: 11px; color: #aaa;"></span>
+          </div>
+          
+          <table class="app-table-premium world-class" id="appsOverviewTable" style="width: 100%; border-collapse: collapse;">
+            <thead style="background: rgba(91,157,255,0.08); border-bottom: 2px solid var(--ring);">
+              <tr>
+                <th style="padding: 12px 14px; text-align: left; font-size: 12px; font-weight: 600; color: #aaa; text-transform: uppercase; letter-spacing: 0.5px; border-right: 1px solid var(--ring);" title="Execution Order">🔢 Order</th>
+                <th style="padding: 12px 14px; text-align: left; font-size: 12px; font-weight: 600; color: #aaa; text-transform: uppercase; letter-spacing: 0.5px; border-right: 1px solid var(--ring);" title="Application Name">📱 Application</th>
+                <th style="padding: 12px 14px; text-align: left; font-size: 12px; font-weight: 600; color: #aaa; text-transform: uppercase; letter-spacing: 0.5px; border-right: 1px solid var(--ring);" title="Business Unit">🏢 BU</th>
+                <th style="padding: 12px 14px; text-align: center; font-size: 12px; font-weight: 600; color: #aaa; text-transform: uppercase; letter-spacing: 0.5px; border-right: 1px solid var(--ring);" title="Execution Wave">🌊 Wave</th>
+                <th style="padding: 12px 14px; text-align: center; font-size: 12px; font-weight: 600; color: #aaa; text-transform: uppercase; letter-spacing: 0.5px; border-right: 1px solid var(--ring);" title="Auto-calculated Weight">⚖️ Weight</th>
+                <th style="padding: 12px 14px; text-align: center; font-size: 12px; font-weight: 600; color: #aaa; text-transform: uppercase; letter-spacing: 0.5px; border-right: 1px solid var(--ring);" title="Business Factors">🎯 Factors</th>
+                <th style="padding: 12px 14px; text-align: left; font-size: 12px; font-weight: 600; color: #aaa; text-transform: uppercase; letter-spacing: 0.5px; border-right: 1px solid var(--ring);" title="Progress">📈 Progress</th>
+                <th style="padding: 12px 14px; text-align: center; font-size: 12px; font-weight: 600; color: #aaa; text-transform: uppercase; letter-spacing: 0.5px;" title="Status">✓ Status</th>
+              </tr>
+            </thead>
+            <tbody id="appsOverviewTableBody" style="background: transparent;">
+              <!-- App data will be populated here -->
+            </tbody>
+          </table>
+          
+          <div class="table-empty-state" id="emptyState" style="display: none; padding: 40px 20px; text-align: center;">
+            <div class="empty-state-icon" style="font-size: 48px; margin-bottom: 12px;">🔍</div>
+            <div class="empty-state-title" style="font-size: 16px; font-weight: 600; color: var(--text); margin-bottom: 8px;">No applications found</div>
+            <div class="empty-state-description" style="font-size: 13px; color: #aaa;">Try adjusting your filters or search criteria</div>
+          </div>
+        </div>
+      </div>

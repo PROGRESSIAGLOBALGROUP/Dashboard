@@ -1,0 +1,73 @@
+{
+  "metadata": {
+    "timestamp": "2025-10-23T14:35:00Z",
+    "version": "1.0",
+    "author": "GitHub Copilot - Expert Mode",
+    "project": "Dashboard Enhanced",
+    "priority": "CRITICAL",
+    "dependsOn": "20251023_applications_overview_world_class_filters.json"
+  },
+  "file": "dist/dashboard_enhanced.html",
+  "operation": "replace",
+  "description": "Integrate Wave Filter and Sort Order logic into the refresh() method - OPERATION 2 of 3",
+  "rationale": "The bindEvents and UI handlers are ready (from OP1), now we need to modify the refresh() method to actually apply wave filtering and order sorting when rendering the table",
+  "impact": "Filtering by wave and sorting by order will now produce actual results visible in the table",
+  "riskLevel": "Low",
+  "targetSection": "AppsOverviewWorldClass.refresh() function - the filtering logic section",
+  "originalCode": "        refresh: function() {\n            const config = Dashboard.StorageManager.loadConfig();\n            const apps = config.apps || [];\n            const buses = config.buses || [];\n            const waves = config.waves || [];\n\n            // Filter data\n            let filtered = apps.filter(app => {\n                const matchesStatus = this.activeStatusFilter === 'all' || app.status === this.activeStatusFilter;\n                const matchesSearch = !this.currentSearchQuery || \n                    app.name.toLowerCase().includes(this.currentSearchQuery) ||\n                    app.id.toLowerCase().includes(this.currentSearchQuery);\n                return matchesStatus && matchesSearch;\n            });",
+  "newCode": "        refresh: function() {\n            const config = Dashboard.StorageManager.loadConfig();\n            const apps = config.apps || [];\n            const buses = config.buses || [];\n            const waves = config.waves || [];\n\n            // Filter data - WORLD CLASS with Wave + Status + Search\n            let filtered = apps.filter(app => {\n                const matchesStatus = this.activeStatusFilter === 'all' || app.status === this.activeStatusFilter;\n                const matchesSearch = !this.currentSearchQuery || \n                    app.name.toLowerCase().includes(this.currentSearchQuery) ||\n                    app.id.toLowerCase().includes(this.currentSearchQuery);\n                const matchesWave = this.activeWaveFilter === 'all' || app.wave === this.activeWaveFilter;\n                return matchesStatus && matchesSearch && matchesWave;\n            });\n\n            // Sort data - WORLD CLASS bidirectional sorting\n            if (this.sortOrder === 'asc') {\n                filtered = filtered.sort((a, b) => {\n                    const orderA = a.order || Infinity;\n                    const orderB = b.order || Infinity;\n                    return orderA - orderB;\n                });\n            } else if (this.sortOrder === 'desc') {\n                filtered = filtered.sort((a, b) => {\n                    const orderA = a.order || Infinity;\n                    const orderB = b.order || Infinity;\n                    return orderB - orderA;\n                });\n            }",
+  "validation": {
+    "beforeExecute": [
+      "File exists: dist/dashboard_enhanced.html",
+      "refresh() method exists in AppsOverviewWorldClass",
+      "activeWaveFilter property will exist after OP1",
+      "sortOrder property will exist after OP1",
+      "Original filter logic is intact and present"
+    ],
+    "afterExecute": [
+      "Wave filter logic integrated into filtered results",
+      "Sort logic applies correctly based on sortOrder state",
+      "Table renders with correct filtered and sorted data",
+      "Search + Wave + Status filters work together",
+      "Sort cycles through ASC/DESC/NONE without errors"
+    ]
+  },
+  "stateReferences": {
+    "requiredProperties": [
+      "this.activeWaveFilter (initialized in OP1)",
+      "this.sortOrder (initialized in OP1)"
+    ],
+    "modifiedLogic": [
+      "Filter now includes wave matching",
+      "After filtering, applies sort if sortOrder !== 'none'"
+    ]
+  },
+  "rollback": {
+    "enabled": true,
+    "keepBackup": true,
+    "backupName": "dashboard_enhanced_20251023_pre_refresh_logic.html"
+  },
+  "testing": {
+    "integrationTests": [
+      "Wave 1 only: filter for Wave 1, verify only Wave 1 apps",
+      "Wave 2 + Sort ASC: filter Wave 2, sort ascending by order",
+      "All waves + Search + Sort: complex combination test",
+      "Sort ASC with gaps: apps with order 1,3,5 should be in that sequence",
+      "Sort DESC: reverse order should be correct",
+      "Empty result: if filter matches nothing, table should be empty",
+      "All filters reset: selecting 'all' waves should restore full list"
+    ],
+    "manualTests": [
+      "Visual: sort icon changes (▲▼)",
+      "Visual: active filter buttons show highlighted",
+      "Table: scrolls smoothly when many results",
+      "Table: empty state message appears when no results",
+      "Table: pagination or scroll for large datasets"
+    ]
+  },
+  "notes": "OPERATION 2 of 3. After this, OPERATION 3 (initialize state in init() method) is needed to set default values for activeWaveFilter and sortOrder. These three OPs work together as a complete solution.",
+  "approval": {
+    "requiresReview": false,
+    "status": "ready"
+  }
+}
