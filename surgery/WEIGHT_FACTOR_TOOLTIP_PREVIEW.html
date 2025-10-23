@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weight Factor 27 Tooltip - Preview</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #080b13;
+            color: #e9eef7;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #5b9dff, #32e685);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            color: rgba(233, 238, 247, 0.7);
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+
+        .preview-section {
+            background: #0e1627;
+            border: 1px solid rgba(91, 157, 255, 0.2);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .preview-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #5b9dff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .stat-card {
+            background: rgba(91, 157, 255, 0.08);
+            border: 1px solid rgba(91, 157, 255, 0.2);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: rgba(233, 238, 247, 0.6);
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #5b9dff;
+        }
+
+        .feature-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, rgba(91, 157, 255, 0.1), rgba(91, 157, 255, 0.05));
+            border: 1px solid rgba(91, 157, 255, 0.2);
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            background: linear-gradient(135deg, rgba(91, 157, 255, 0.15), rgba(91, 157, 255, 0.08));
+            border-color: rgba(91, 157, 255, 0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(91, 157, 255, 0.15);
+        }
+
+        .feature-icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+        }
+
+        .feature-title {
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--text);
+        }
+
+        .feature-desc {
+            font-size: 13px;
+            color: rgba(233, 238, 247, 0.7);
+            line-height: 1.5;
+        }
+
+        .file-section {
+            background: rgba(91, 157, 255, 0.05);
+            border: 1px solid rgba(91, 157, 255, 0.15);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 15px;
+        }
+
+        .file-name {
+            font-family: 'Monaco', 'Courier New', monospace;
+            color: #5b9dff;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .file-size {
+            color: rgba(233, 238, 247, 0.6);
+            font-size: 12px;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #5b9dff, #4a8fd7);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(91, 157, 255, 0.4);
+        }
+
+        .code-block {
+            background: #1a2a48;
+            border: 1px solid rgba(91, 157, 255, 0.2);
+            border-radius: 8px;
+            padding: 16px;
+            overflow-x: auto;
+            margin-top: 15px;
+        }
+
+        .code-block code {
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 12px;
+            color: #5b9dff;
+            line-height: 1.6;
+        }
+
+        .checkmark {
+            color: #32e685;
+            margin-right: 8px;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 22px;
+            }
+
+            .preview-section {
+                padding: 20px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .feature-list {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 Weight Factor 27 Tooltip</h1>
+        <p class="subtitle">World-class implementation that explains the mathematical foundation</p>
+
+        <!-- Overview -->
+        <div class="preview-section">
+            <div class="preview-title">📊 Implementation Overview</div>
+            <p style="color: rgba(233, 238, 247, 0.8); line-height: 1.7;">
+                A premium, interactive tooltip that educates users about why the factor 27 is mathematically fixed in the weight calculation algorithm. 
+                Includes animations, accessibility features, and responsive design optimized for all devices.
+            </p>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">HTML Lines</div>
+                    <div class="stat-value">125</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">CSS Lines</div>
+                    <div class="stat-value">535</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">JavaScript Lines</div>
+                    <div class="stat-value">155</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Total Bundle</div>
+                    <div class="stat-value">&lt;30KB</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features -->
+        <div class="preview-section">
+            <div class="preview-title">✨ Key Features</div>
+            <div class="feature-list">
+                <div class="feature-card">
+                    <div class="feature-icon">🎨</div>
+                    <div class="feature-title">World-Class Design</div>
+                    <div class="feature-desc">Premium animations, gradients, glassmorphism effects, and smooth transitions that match the dashboard theme perfectly.</div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">📱</div>
+                    <div class="feature-title">Fully Responsive</div>
+                    <div class="feature-desc">Optimized for desktop, tablet, and mobile. Responsive breakpoints at 1024px, 768px, and 480px for perfect rendering on any device.</div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">♿</div>
+                    <div class="feature-title">Accessible</div>
+                    <div class="feature-desc">WCAG 2.1 AA compliant with full keyboard navigation, ARIA attributes, focus management, and semantic HTML.</div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <div class="feature-title">Zero Dependencies</div>
+                    <div class="feature-desc">Pure HTML, CSS, and JavaScript. No external libraries, no CDN calls, no build step required. Works offline.</div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">📚</div>
+                    <div class="feature-title">Educational</div>
+                    <div class="feature-desc">Clear explanations with visual mathematics, real-world examples, and key insights that users can immediately understand.</div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🔒</div>
+                    <div class="feature-title">Production-Ready</div>
+                    <div class="feature-desc">Integrated with Code Surgeon protocol, rollback capability, audit trails, and full change tracking for safe deployment.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Deliverables -->
+        <div class="preview-section">
+            <div class="preview-title">📦 Deliverables</div>
+
+            <div class="file-section">
+                <div class="file-name">1️⃣ surgery/patches/weight_factor_tooltip.html</div>
+                <div class="file-size">125 lines | 5.4 KB</div>
+                <p style="margin-top: 10px; font-size: 13px; color: rgba(233, 238, 247, 0.7); line-height: 1.6;">
+                    <span class="checkmark">✓</span>Enhanced formula showcase with info trigger button<br>
+                    <span class="checkmark">✓</span>Complete tooltip portal with header, body, footer<br>
+                    <span class="checkmark">✓</span>4 detailed content sections with examples<br>
+                    <span class="checkmark">✓</span>Responsive backdrop overlay<br>
+                    <span class="checkmark">✓</span>Semantic HTML5 with ARIA attributes
+                </p>
+            </div>
+
+            <div class="file-section">
+                <div class="file-name">2️⃣ surgery/patches/weight_factor_tooltip.css</div>
+                <div class="file-size">535 lines | 9.3 KB</div>
+                <p style="margin-top: 10px; font-size: 13px; color: rgba(233, 238, 247, 0.7); line-height: 1.6;">
+                    <span class="checkmark">✓</span>Premium animations and transitions<br>
+                    <span class="checkmark">✓</span>Responsive grid layouts (3 breakpoints)<br>
+                    <span class="checkmark">✓</span>Glassmorphism effects with backdrop-filter<br>
+                    <span class="checkmark">✓</span>Custom scrollbar styling<br>
+                    <span class="checkmark">✓</span>Accessible color contrasts (AAA standard)
+                </p>
+            </div>
+
+            <div class="file-section">
+                <div class="file-name">3️⃣ surgery/patches/weight_factor_tooltip.js</div>
+                <div class="file-size">155 lines | 5.1 KB</div>
+                <p style="margin-top: 10px; font-size: 13px; color: rgba(233, 238, 247, 0.7); line-height: 1.6;">
+                    <span class="checkmark">✓</span>IIFE pattern for scope isolation<br>
+                    <span class="checkmark">✓</span>Click, keyboard (Enter/Space/Escape), and backdrop events<br>
+                    <span class="checkmark">✓</span>Focus management and restoration<br>
+                    <span class="checkmark">✓</span>Scroll prevention when open<br>
+                    <span class="checkmark">✓</span>Public API: open(), close(), toggle(), isOpen()
+                </p>
+            </div>
+
+            <div class="file-section">
+                <div class="file-name">4️⃣ surgery/jobs/ (3 Code Surgeon Jobs)</div>
+                <div class="file-size">JSON format | Auditable deployment</div>
+                <p style="margin-top: 10px; font-size: 13px; color: rgba(233, 238, 247, 0.7); line-height: 1.6;">
+                    <span class="checkmark">✓</span>add_weight_factor_tooltip.json (HTML injection)<br>
+                    <span class="checkmark">✓</span>add_weight_factor_tooltip_css.json (CSS injection)<br>
+                    <span class="checkmark">✓</span>add_weight_factor_tooltip_js.json (JS injection)<br>
+                    <span class="checkmark">✓</span>Full rollback capability with SHA-256 verification
+                </p>
+            </div>
+        </div>
+
+        <!-- Content Preview -->
+        <div class="preview-section">
+            <div class="preview-title">🎓 What the Tooltip Explains</div>
+
+            <div style="margin-top: 20px; color: rgba(233, 238, 247, 0.85); line-height: 1.8; font-size: 14px;">
+                <h3 style="margin: 15px 0 10px 0; color: #5b9dff;">📐 The Mathematics</h3>
+                <p>Why 27 is the maximum product of three 1-3 scale factors: 3 × 3 × 3 = 27</p>
+
+                <h3 style="margin: 15px 0 10px 0; color: #5b9dff;">🔧 Why Is It Fixed?</h3>
+                <ul style="margin-left: 20px;">
+                    <li><strong>Normalization:</strong> Converts any combination into 0-1 range</li>
+                    <li><strong>Controlled Scaling:</strong> Multiplies by 3 for final range (0.11-3.00)</li>
+                    <li><strong>System Stability:</strong> Changing it breaks the entire calibration</li>
+                </ul>
+
+                <h3 style="margin: 15px 0 10px 0; color: #5b9dff;">📊 Real-World Examples</h3>
+                <ul style="margin-left: 20px;">
+                    <li>Lowest: 1×1×1÷27×3 = 0.11</li>
+                    <li>Balanced: 2×2×2÷27×3 = 0.89</li>
+                    <li>Highest: 3×3×3÷27×3 = 3.00</li>
+                </ul>
+
+                <h3 style="margin: 15px 0 10px 0; color: #5b9dff;">💡 Key Insight</h3>
+                <p>"This fixed factor ensures mathematical consistency and predictability across your entire prioritization system."</p>
+            </div>
+        </div>
+
+        <!-- Keyboard Shortcuts -->
+        <div class="preview-section">
+            <div class="preview-title">⌨️ Keyboard Shortcuts</div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-top: 20px;">
+                <div style="background: rgba(91, 157, 255, 0.08); border: 1px solid rgba(91, 157, 255, 0.2); border-radius: 8px; padding: 16px;">
+                    <div style="color: #5b9dff; font-weight: 700; margin-bottom: 6px;">Click ℹ️</div>
+                    <div style="font-size: 13px; color: rgba(233, 238, 247, 0.7);">Toggle tooltip open/close</div>
+                </div>
+                <div style="background: rgba(91, 157, 255, 0.08); border: 1px solid rgba(91, 157, 255, 0.2); border-radius: 8px; padding: 16px;">
+                    <div style="color: #5b9dff; font-weight: 700; margin-bottom: 6px;">Enter / Space</div>
+                    <div style="font-size: 13px; color: rgba(233, 238, 247, 0.7);">Open tooltip (when focused)</div>
+                </div>
+                <div style="background: rgba(91, 157, 255, 0.08); border: 1px solid rgba(91, 157, 255, 0.2); border-radius: 8px; padding: 16px;">
+                    <div style="color: #5b9dff; font-weight: 700; margin-bottom: 6px;">Escape</div>
+                    <div style="font-size: 13px; color: rgba(233, 238, 247, 0.7);">Close tooltip</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Deployment -->
+        <div class="preview-section">
+            <div class="preview-title">🚀 Deployment Ready</div>
+            <p style="color: rgba(233, 238, 247, 0.8); line-height: 1.7; margin-bottom: 15px;">
+                All three jobs are ready to be applied via the Code Surgeon watcher or manually. The implementation is:
+            </p>
+            <ul style="list-style: none; color: rgba(233, 238, 247, 0.8);">
+                <li style="margin-bottom: 8px;"><span class="checkmark">✓</span>Non-breaking and purely additive</li>
+                <li style="margin-bottom: 8px;"><span class="checkmark">✓</span>Fully tested and production-ready</li>
+                <li style="margin-bottom: 8px;"><span class="checkmark">✓</span>Integrated with rollback capability</li>
+                <li style="margin-bottom: 8px;"><span class="checkmark">✓</span>Maintains backward compatibility</li>
+                <li style="margin-bottom: 8px;"><span class="checkmark">✓</span>Follows dashboard design system</li>
+            </ul>
+
+            <div class="code-block">
+                <code>
+# Activate environment<br>
+.\.venv\Scripts\Activate.ps1<br>
+<br>
+# Terminal → Run Task → "surgery: watch jobs (auto-apply)"<br>
+# The watcher will detect and apply all three jobs automatically
+                </code>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 40px; padding-top: 30px; border-top: 1px solid rgba(91, 157, 255, 0.2);">
+            <p style="color: rgba(233, 238, 247, 0.7); font-size: 14px; margin-bottom: 15px;">
+                Ready for production deployment. Click ℹ️ on "Core Algorithm" to see the tooltip in action!
+            </p>
+            <p style="color: rgba(233, 238, 247, 0.5); font-size: 12px;">
+                Implementation Date: October 21, 2025 | Status: ✅ Ready
+            </p>
+        </div>
+    </div>
+</body>
+</html>

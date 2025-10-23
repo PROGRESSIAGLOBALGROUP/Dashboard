@@ -6,6 +6,30 @@
 
 ---
 
+## 🚨 CRITICAL: READ PROTOCOLS FIRST
+
+**MANDATORY**: Before performing ANY file operations, consult the comprehensive protocol library:
+
+📁 **[.github/copilot-protocols/](./copilot-protocols/README.md)** - Complete protocol suite for world-class development
+
+### Key Protocols:
+- **[FILE_ORGANIZATION_PROTOCOL.md](./copilot-protocols/FILE_ORGANIZATION_PROTOCOL.md)** - File creation and organization rules
+- **[CODE_AGENT_INSTRUCTIONS.md](./copilot-protocols/CODE_AGENT_INSTRUCTIONS.md)** - Behavioral guidelines for AI agents
+- **[CODE_MODIFICATION_PROTOCOL.md](./copilot-protocols/CODE_MODIFICATION_PROTOCOL.md)** - Mandatory code_surgeon compliance for dist/ modifications
+- **[DECISION_TREE.md](./copilot-protocols/DECISION_TREE.md)** - Step-by-step decision making
+- **[FILE_TEMPLATES.md](./copilot-protocols/FILE_TEMPLATES.md)** - Standardized templates
+- **[BEST_PRACTICES.md](./copilot-protocols/BEST_PRACTICES.md)** - World-class development practices
+
+## ⚡ QUICK RULES
+
+1. **NO UNSOLICITED DOCUMENTATION** - Never create .md files unless explicitly requested
+2. **STRICT PATH COMPLIANCE** - Always use established directory structure  
+3. **PURPOSE-DRIVEN CREATION** - Every file must solve a specific user need
+
+---
+
+---
+
 ## 🎯 Project Overview
 
 **Dashboard Enhanced** is a professional project management dashboard with real-time weighted progress calculation and complete admin capabilities. It's a single-file HTML application (no external dependencies) with embedded modules for data management, UI control, and administration.

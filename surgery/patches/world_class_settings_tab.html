@@ -1,0 +1,472 @@
+      <!-- TAB: SETTINGS -->
+      <div class="modal-tabpanel" id="tab-settings">
+        <div class="tab-header">
+          <div>
+            <h3>🛠️ Advanced Settings</h3>
+            <p class="tab-description">Complete dashboard configuration, data management, and system preferences</p>
+          </div>
+        </div>
+        
+        <!-- Settings Grid Container -->
+        <div class="settings-master-grid">
+          
+          <!-- Data Management Section -->
+          <div class="settings-category">
+            <div class="category-header">
+              <h4 class="category-title">
+                <span class="category-icon">💾</span>
+                Data Management
+              </h4>
+              <p class="category-description">Import, export, and manage your project configuration</p>
+            </div>
+            
+            <div class="settings-cards-grid">
+              <!-- Export Configuration -->
+              <div class="settings-card premium">
+                <div class="settings-card-header">
+                  <div class="settings-card-icon export">📤</div>
+                  <div class="settings-card-title">Export Configuration</div>
+                </div>
+                <div class="settings-card-content">
+                  <p class="settings-card-description">Export your complete dashboard configuration with enriched metadata and analytics</p>
+                  <div class="export-options">
+                    <div class="export-option">
+                      <label class="modern-checkbox">
+                        <input type="checkbox" id="includeCalculatedMetrics" checked>
+                        <span class="checkmark"></span>
+                        Include calculated metrics & progress data
+                      </label>
+                    </div>
+                    <div class="export-option">
+                      <label class="modern-checkbox">
+                        <input type="checkbox" id="includeAuditTrail" checked>
+                        <span class="checkmark"></span>
+                        Include audit trail & modification history
+                      </label>
+                    </div>
+                    <div class="export-option">
+                      <label class="modern-checkbox">
+                        <input type="checkbox" id="includeSystemInfo">
+                        <span class="checkmark"></span>
+                        Include system info & environment details
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                <div class="settings-card-actions">
+                  <button class="btn btn-premium" id="exportAdminJSON" title="Export complete configuration">
+                    <span class="btn-icon">📥</span>
+                    <span class="btn-text">Export Configuration</span>
+                    <span class="btn-glow"></span>
+                  </button>
+                </div>
+              </div>
+              
+              <!-- Import Configuration -->
+              <div class="settings-card premium">
+                <div class="settings-card-header">
+                  <div class="settings-card-icon import">📂</div>
+                  <div class="settings-card-title">Import Configuration</div>
+                </div>
+                <div class="settings-card-content">
+                  <p class="settings-card-description">Import a previously exported configuration with full validation and integrity checks</p>
+                  <div class="import-zone" id="importZone">
+                    <div class="import-zone-content">
+                      <div class="import-icon">📁</div>
+                      <div class="import-text">
+                        <strong>Drop JSON file here or click to browse</strong>
+                        <span>Supports .json files up to 10MB</span>
+                      </div>
+                    </div>
+                    <input type="file" id="importAdminJSON" accept=".json" class="import-file-input" />
+                  </div>
+                  <div class="import-validation-result" id="validationResult" style="display:none;">
+                    <div class="validation-status">
+                      <span class="status-icon">✅</span>
+                      <span class="status-text">Configuration validated successfully</span>
+                    </div>
+                    <div class="validation-details"></div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Backup & Restore -->
+              <div class="settings-card">
+                <div class="settings-card-header">
+                  <div class="settings-card-icon backup">💿</div>
+                  <div class="settings-card-title">Backup & Restore</div>
+                </div>
+                <div class="settings-card-content">
+                  <p class="settings-card-description">Create automatic backups and restore from previous versions</p>
+                  <div class="backup-status">
+                    <div class="backup-info">
+                      <span class="backup-label">Last backup:</span>
+                      <span class="backup-time" id="lastBackupTime">Never</span>
+                    </div>
+                    <div class="backup-size">
+                      <span class="backup-label">Storage used:</span>
+                      <span class="backup-value" id="storageUsed">0 KB</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="settings-card-actions">
+                  <button class="btn btn-secondary" id="createBackupBtn">
+                    <span class="btn-icon">💾</span>
+                    Create Backup
+                  </button>
+                  <button class="btn btn-secondary" id="restoreBackupBtn">
+                    <span class="btn-icon">⏮️</span>
+                    Restore
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- System Preferences Section -->
+          <div class="settings-category">
+            <div class="category-header">
+              <h4 class="category-title">
+                <span class="category-icon">⚙️</span>
+                System Preferences
+              </h4>
+              <p class="category-description">Customize dashboard behavior and appearance</p>
+            </div>
+            
+            <div class="settings-cards-grid">
+              <!-- Performance Settings -->
+              <div class="settings-card">
+                <div class="settings-card-header">
+                  <div class="settings-card-icon performance">⚡</div>
+                  <div class="settings-card-title">Performance</div>
+                </div>
+                <div class="settings-card-content">
+                  <div class="settings-row">
+                    <label class="settings-label">Animation Duration</label>
+                    <div class="range-input-container">
+                      <input type="range" id="animationSpeed" min="0.1" max="2" step="0.1" value="1" class="modern-range">
+                      <span class="range-value" id="animationSpeedValue">1.0s</span>
+                    </div>
+                  </div>
+                  <div class="settings-row">
+                    <label class="settings-label">Auto-refresh Interval</label>
+                    <select id="refreshInterval" class="modern-select">
+                      <option value="0">Disabled</option>
+                      <option value="5000">5 seconds</option>
+                      <option value="10000">10 seconds</option>
+                      <option value="30000" selected>30 seconds</option>
+                      <option value="60000">1 minute</option>
+                    </select>
+                  </div>
+                  <div class="settings-row">
+                    <label class="modern-checkbox">
+                      <input type="checkbox" id="enableTransitions" checked>
+                      <span class="checkmark"></span>
+                      Enable smooth transitions
+                    </label>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Display Settings -->
+              <div class="settings-card">
+                <div class="settings-card-header">
+                  <div class="settings-card-icon display">🎨</div>
+                  <div class="settings-card-title">Display</div>
+                </div>
+                <div class="settings-card-content">
+                  <div class="settings-row">
+                    <label class="settings-label">Theme Preference</label>
+                    <div class="theme-selector">
+                      <label class="theme-option">
+                        <input type="radio" name="theme" value="auto" checked>
+                        <span class="theme-preview auto">
+                          <span class="theme-name">Auto</span>
+                          <span class="theme-icon">🌓</span>
+                        </span>
+                      </label>
+                      <label class="theme-option">
+                        <input type="radio" name="theme" value="light">
+                        <span class="theme-preview light">
+                          <span class="theme-name">Light</span>
+                          <span class="theme-icon">☀️</span>
+                        </span>
+                      </label>
+                      <label class="theme-option">
+                        <input type="radio" name="theme" value="dark">
+                        <span class="theme-preview dark">
+                          <span class="theme-name">Dark</span>
+                          <span class="theme-icon">🌙</span>
+                        </span>
+                      </label>
+                    </div>
+                  </div>
+                  <div class="settings-row">
+                    <label class="settings-label">Density</label>
+                    <select id="displayDensity" class="modern-select">
+                      <option value="compact">Compact</option>
+                      <option value="comfortable" selected>Comfortable</option>
+                      <option value="spacious">Spacious</option>
+                    </select>
+                  </div>
+                  <div class="settings-row">
+                    <label class="modern-checkbox">
+                      <input type="checkbox" id="showTooltips" checked>
+                      <span class="checkmark"></span>
+                      Show helpful tooltips
+                    </label>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Notifications -->
+              <div class="settings-card">
+                <div class="settings-card-header">
+                  <div class="settings-card-icon notifications">🔔</div>
+                  <div class="settings-card-title">Notifications</div>
+                </div>
+                <div class="settings-card-content">
+                  <div class="settings-row">
+                    <label class="modern-checkbox">
+                      <input type="checkbox" id="enableNotifications" checked>
+                      <span class="checkmark"></span>
+                      Enable system notifications
+                    </label>
+                  </div>
+                  <div class="settings-row">
+                    <label class="modern-checkbox">
+                      <input type="checkbox" id="notifyOnProgress">
+                      <span class="checkmark"></span>
+                      Notify when progress changes
+                    </label>
+                  </div>
+                  <div class="settings-row">
+                    <label class="modern-checkbox">
+                      <input type="checkbox" id="notifyOnCompletion" checked>
+                      <span class="checkmark"></span>
+                      Notify when applications complete
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Security & Privacy Section -->
+          <div class="settings-category">
+            <div class="category-header">
+              <h4 class="category-title">
+                <span class="category-icon">🔒</span>
+                Security & Privacy
+              </h4>
+              <p class="category-description">Manage data security and privacy settings</p>
+            </div>
+            
+            <div class="settings-cards-grid">
+              <!-- Data Security -->
+              <div class="settings-card security">
+                <div class="settings-card-header">
+                  <div class="settings-card-icon security">🛡️</div>
+                  <div class="settings-card-title">Data Security</div>
+                </div>
+                <div class="settings-card-content">
+                  <div class="security-status">
+                    <div class="security-indicator active">
+                      <span class="indicator-dot"></span>
+                      <span class="indicator-text">Local storage encrypted</span>
+                    </div>
+                    <div class="security-indicator active">
+                      <span class="indicator-dot"></span>
+                      <span class="indicator-text">Session validation active</span>
+                    </div>
+                  </div>
+                  <div class="settings-row">
+                    <label class="modern-checkbox">
+                      <input type="checkbox" id="enableEncryption" checked>
+                      <span class="checkmark"></span>
+                      Encrypt local data storage
+                    </label>
+                  </div>
+                  <div class="settings-row">
+                    <label class="modern-checkbox">
+                      <input type="checkbox" id="enableAuditLog" checked>
+                      <span class="checkmark"></span>
+                      Enable audit logging
+                    </label>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Privacy Controls -->
+              <div class="settings-card">
+                <div class="settings-card-header">
+                  <div class="settings-card-icon privacy">👁️</div>
+                  <div class="settings-card-title">Privacy Controls</div>
+                </div>
+                <div class="settings-card-content">
+                  <div class="settings-row">
+                    <label class="modern-checkbox">
+                      <input type="checkbox" id="shareUsageData">
+                      <span class="checkmark"></span>
+                      Share anonymous usage analytics
+                    </label>
+                  </div>
+                  <div class="settings-row">
+                    <label class="modern-checkbox">
+                      <input type="checkbox" id="enableCrashReports">
+                      <span class="checkmark"></span>
+                      Send crash reports
+                    </label>
+                  </div>
+                  <div class="settings-row">
+                    <label class="settings-label">Data Retention Period</label>
+                    <select id="dataRetention" class="modern-select">
+                      <option value="30">30 days</option>
+                      <option value="90" selected>90 days</option>
+                      <option value="180">180 days</option>
+                      <option value="365">1 year</option>
+                      <option value="0">Indefinite</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Audit Trail -->
+              <div class="settings-card">
+                <div class="settings-card-header">
+                  <div class="settings-card-icon audit">📋</div>
+                  <div class="settings-card-title">Audit Trail</div>
+                </div>
+                <div class="settings-card-content">
+                  <p class="settings-card-description">View detailed log of all system changes and user actions</p>
+                  <div class="audit-summary">
+                    <div class="audit-stat">
+                      <span class="audit-number" id="auditEntries">0</span>
+                      <span class="audit-label">Total entries</span>
+                    </div>
+                    <div class="audit-stat">
+                      <span class="audit-number" id="auditToday">0</span>
+                      <span class="audit-label">Today</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="settings-card-actions">
+                  <button class="btn btn-secondary" id="showAuditTrailBtn">
+                    <span class="btn-icon">📋</span>
+                    View Audit Trail
+                  </button>
+                  <button class="btn btn-secondary" id="exportAuditBtn">
+                    <span class="btn-icon">📄</span>
+                    Export Log
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Danger Zone Section -->
+          <div class="settings-category danger-zone">
+            <div class="category-header">
+              <h4 class="category-title">
+                <span class="category-icon">⚠️</span>
+                Danger Zone
+              </h4>
+              <p class="category-description">Irreversible actions that affect your entire dashboard</p>
+            </div>
+            
+            <div class="settings-cards-grid">
+              <!-- Reset Configuration -->
+              <div class="settings-card danger">
+                <div class="settings-card-header">
+                  <div class="settings-card-icon reset">🔄</div>
+                  <div class="settings-card-title">Reset Configuration</div>
+                </div>
+                <div class="settings-card-content">
+                  <p class="settings-card-description">Reset all settings to factory defaults while preserving your data</p>
+                  <div class="warning-box">
+                    <div class="warning-icon">⚠️</div>
+                    <div class="warning-text">This will reset all preferences, themes, and configurations to default values</div>
+                  </div>
+                </div>
+                <div class="settings-card-actions">
+                  <button class="btn btn-warning" id="resetConfigBtn">
+                    <span class="btn-icon">🔄</span>
+                    Reset Settings
+                  </button>
+                </div>
+              </div>
+              
+              <!-- Clear All Data -->
+              <div class="settings-card danger">
+                <div class="settings-card-header">
+                  <div class="settings-card-icon delete">🗑️</div>
+                  <div class="settings-card-title">Clear All Data</div>
+                </div>
+                <div class="settings-card-content">
+                  <p class="settings-card-description">Permanently delete all dashboard data including Business Units, Applications, and history</p>
+                  <div class="danger-box">
+                    <div class="danger-icon">🚨</div>
+                    <div class="danger-text">
+                      <strong>This action cannot be undone!</strong><br>
+                      All Business Units, Applications, Progress data, and Settings will be permanently deleted.
+                    </div>
+                  </div>
+                  <div class="deletion-checklist">
+                    <label class="modern-checkbox danger">
+                      <input type="checkbox" id="confirmDeletion1">
+                      <span class="checkmark"></span>
+                      I understand this will delete all Business Units
+                    </label>
+                    <label class="modern-checkbox danger">
+                      <input type="checkbox" id="confirmDeletion2">
+                      <span class="checkmark"></span>
+                      I understand this will delete all Applications
+                    </label>
+                    <label class="modern-checkbox danger">
+                      <input type="checkbox" id="confirmDeletion3">
+                      <span class="checkmark"></span>
+                      I have exported a backup if needed
+                    </label>
+                  </div>
+                </div>
+                <div class="settings-card-actions">
+                  <button class="btn btn-danger" id="clearAllDataBtn" disabled>
+                    <span class="btn-icon">🗑️</span>
+                    <span class="btn-text">Clear All Data</span>
+                    <span class="btn-loading" style="display:none;">🔄</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+        </div>
+        
+        <!-- Settings Actions Footer -->
+        <div class="settings-footer">
+          <div class="settings-info">
+            <div class="info-item">
+              <span class="info-label">Configuration version:</span>
+              <span class="info-value" id="configVersion">2.0.0</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Last modified:</span>
+              <span class="info-value" id="lastModified">Never</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Storage used:</span>
+              <span class="info-value" id="storageInfo">0 KB</span>
+            </div>
+          </div>
+          <div class="settings-actions">
+            <button class="btn btn-secondary" id="resetAllSettingsBtn">
+              <span class="btn-icon">↺</span>
+              Reset All Settings
+            </button>
+            <button class="btn btn-primary" id="saveSettingsBtn">
+              <span class="btn-icon">💾</span>
+              Save Changes
+            </button>
+          </div>
+        </div>
+      </div>

@@ -1,0 +1,47 @@
+{
+  "job_id": "add-weight-factor-tooltip-js-20250121",
+  "name": "Add Weight Factor Tooltip JavaScript",
+  "description": "Injects world-class JavaScript for tooltip interaction, including event handling, accessibility, and public API.",
+  "file": "dist/dashboard_enhanced.html",
+  "mode": "regex-block",
+  "start": "</script>",
+  "end": "</script>",
+  "new_fragment_path": "surgery/patches/weight_factor_tooltip.js",
+  "post_cmd": "echo ✅ Weight Factor Tooltip JavaScript injected successfully",
+  "job_file": "surgery/jobs/add_weight_factor_tooltip_js.json",
+  "enable_rollback": true,
+  "enable_testing": false,
+  "metadata": {
+    "category": "INTERACTIVITY",
+    "priority": "HIGH",
+    "impact": "Non-breaking, adds new functionality",
+    "js_features": [
+      "IIFE for scope isolation",
+      "Event listeners: click, keydown, escape",
+      "ARIA attribute management",
+      "Focus management",
+      "Scroll prevention when tooltip is open",
+      "Public API exposure via window.WeightFactorTooltip"
+    ],
+    "public_api": {
+      "open": "Opens the tooltip",
+      "close": "Closes the tooltip",
+      "toggle": "Toggles tooltip state",
+      "isOpen": "Returns boolean state"
+    },
+    "accessibility_features": [
+      "Keyboard navigation (Enter, Space, Escape)",
+      "ARIA attributes (aria-hidden, aria-expanded)",
+      "Focus management and restoration",
+      "Semantic HTML with proper roles"
+    ]
+  },
+  "notes": [
+    "Uses IIFE pattern to avoid global scope pollution",
+    "Exposes minimal public API via window.WeightFactorTooltip",
+    "Supports analytics integration (looks for window.Dashboard.Analytics)",
+    "Prevents body scroll when tooltip is open",
+    "Handles wheel events to prevent scroll propagation",
+    "All animations are hardware-accelerated"
+  ]
+}

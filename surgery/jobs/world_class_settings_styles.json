@@ -1,0 +1,12 @@
+{
+  "file": "dist/dashboard_enhanced.html",
+  "mode": "regex-block",
+  "start": "/\\* Settings Styles - Enhanced \\*/",
+  "end": "/\\* End Settings Styles \\*/",
+  "new_fragment_path": "surgery/patches/world_class_settings_styles.css",
+  "post_cmd": "echo 'World-class Settings CSS applied'",
+  "job_file": "surgery/jobs/world_class_settings_styles.json",
+  "enable_rollback": true,
+  "enable_testing": false,
+  "description": "Add world-class CSS styles for the new Settings tab"
+}

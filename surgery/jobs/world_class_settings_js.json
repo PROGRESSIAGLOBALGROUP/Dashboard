@@ -1,0 +1,12 @@
+{
+  "file": "dist/dashboard_enhanced.html",
+  "mode": "regex-block",
+  "start": "// Settings Tab Enhanced Functionality",
+  "end": "// End Settings Tab Functionality",
+  "new_fragment_path": "surgery/patches/world_class_settings_js.js",
+  "post_cmd": "echo 'World-class Settings JavaScript applied'",
+  "job_file": "surgery/jobs/world_class_settings_js.json",
+  "enable_rollback": true,
+  "enable_testing": false,
+  "description": "Add world-class JavaScript functionality for the new Settings tab"
+}

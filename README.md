@@ -1,5 +1,17 @@
 # 📊 Dashboard Enhanced - Professional Documentation
 
+## 🗺️ Índice de Navegación Rápida
+
+| Sección | Descripción | Dónde Ir |
+|---------|-------------|----------|
+| **Inicio Rápido** | Tutorial de uso básico | [QUICK_START_ORDER_WAVE.md](./docs/guides/QUICK_START_ORDER_WAVE.md) |
+| **Auditorías** | Histórico de cambios y validaciones | [docs/process/audits/](./docs/process/audits/) |
+| **Índice General** | Mapa completo de documentación | [docs/process/documentation_index/](./docs/process/documentation_index/) |
+| **Especificaciones Técnicas** | Fórmulas, arquitectura, implementación | [docs/technical/](./docs/technical/) |
+| **Guías de Usuario** | Manuales y tutoriales | [docs/guides/](./docs/guides/) |
+
+---
+
 ## Overview
 
 **Dashboard Enhanced** es una versión mejorada del dashboard interactivo de [ Project Type ] que agrega capacidades administrativas avanzadas con cálculo inteligente de progreso ponderado y gestión completa de Business Units y aplicaciones.
@@ -54,11 +66,16 @@ Dashboard/
 │   └── template.html              ← Plantilla HTML base
 ├── dist/                          ← ✨ NUEVO: Archivos generados
 │   └── dashboard.html             ← Versión compilada
-├── docs/                          ← Documentación detallada
-│   ├── technical/                 ← ✨ NUEVO: Documentación técnica
-│   ├── guides/                    ← ✨ NUEVO: Guías de usuario
-│   ├── development/               ← ✨ NUEVO: Guías para desarrolladores
-│   └── process/                   ← ✨ NUEVO: Documentación del proceso
+├── docs/                          ← Documentación completa
+│   ├── technical/                 ← Especificaciones técnicas y cálculos
+│   ├── guides/                    ← Guías de usuario y testing
+│   ├── development/               ← Documentación para desarrolladores
+│   ├── process/                   ← Documentación de procesos y cambios
+│   ├── reports/                   ← Reportes ejecutivos y verificación
+│   ├── implementations/           ← Detalles de implementaciones realizadas
+│   ├── features/                  ← Documentación de features específicas
+│   ├── fixes/                     ← Diagnósticos y soluciones de problemas
+│   └── releases/                  ← Información de versiones y entregas
 ├── tests/                         ← Pruebas automatizadas
 │   ├── unit/                      ← ✨ NUEVO: Pruebas unitarias
 │   └── integration/               ← ✨ NUEVO: Pruebas de integración
@@ -69,7 +86,40 @@ Dashboard/
 
 ---
 
-## 🚀 Inicio Rápido
+## � Estructura de Documentación
+
+La documentación está organizada siguiendo las mejores prácticas de clase mundial:
+
+- **`docs/technical/`** - Especificaciones técnicas, fórmulas de cálculo y documentación arquitectural
+- **`docs/guides/`** - Guías de usuario y manuales de testing  
+- **`docs/reports/`** - Reportes ejecutivos, verificaciones y summaries finales
+- **`docs/implementations/`** - Detalles técnicos de implementaciones realizadas
+- **`docs/features/`** - Documentación específica de features (Priority Badge, Spotlight, etc.)
+- **`docs/fixes/`** - Diagnósticos y soluciones de problemas específicos
+- **`docs/process/`** - Documentación de procesos y cambios organizacionales
+- **`scripts/fixes/`** - Scripts temporales de corrección (simple_fix.js)
+
+### Documentos Clave por Categoría
+
+**📊 Reports Ejecutivos:**
+- `docs/reports/EXECUTIVE_SUMMARY.md` - Resumen ejecutivo principal
+- `docs/reports/FINAL_VERIFICATION_CHECKLIST.md` - Checklist de verificación final
+
+**🔧 Implementaciones:**
+- `docs/implementations/IMPLEMENTATION_REPORT.md` - Reporte técnico principal
+- `docs/implementations/AUTOMATIC_WEIGHT_IMPLEMENTATION.md` - Sistema de pesos automáticos
+
+**🎨 Features:**
+- `docs/features/PRIORITY_BADGE_TECHNICAL_REPORT.md` - Badges de prioridad
+- `docs/features/SPOTLIGHT_ENHANCEMENT_SUMMARY.md` - Efectos de spotlight
+
+**🛠️ Fixes:**
+- `docs/fixes/TOOLTIP_DIAGNOSTIC.md` - Diagnóstico de tooltips
+- `docs/fixes/FIX_TOOLTIP_NOT_VISIBLE.md` - Solución tooltips no visibles
+
+---
+
+## �🚀 Inicio Rápido
 
 ### 1. Abrir el Dashboard
 ```
@@ -399,7 +449,24 @@ Uso interno - PROGRESSIA Project
 - **v2.0** (2023-10-18) - Enhanced con Admin, localStorage, Progress Calculator
 - **v1.0** (Original) - Dashboard base
 
-## 🔍 Recent Changes
+## � Reorganización de Documentación (Octubre 2025)
+
+La estructura de la documentación ha sido reorganizada siguiendo protocolos de clase mundial:
+
+**Lo que cambió:**
+- ✅ Raíz limpiada (solo archivos core)
+- ✅ Auditorías movidas a `docs/process/audits/`
+- ✅ Guía rápida movida a `docs/guides/QUICK_START_ORDER_WAVE.md`
+- ✅ Índice de navegación centralizado en este README
+
+**Acceso directo:**
+- 📖 [Guía Rápida Order & Wave](./docs/guides/QUICK_START_ORDER_WAVE.md)
+- 📋 [Auditorías y Cambios](./docs/process/audits/)
+- 🗺️ [Índice General de Documentación](./docs/process/documentation_index/INDEX.md)
+
+---
+
+## �🔍 Recent Changes
 
 ### CORS Issue Fix (v2.1)
 

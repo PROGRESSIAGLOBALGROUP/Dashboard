@@ -1,0 +1,35 @@
+{
+  "job_id": "add-weight-factor-tooltip-20250121",
+  "name": "Add World-Class Weight Factor 27 Tooltip",
+  "description": "Adds an impactful, interactive tooltip explaining why the factor 27 is fixed in the weight calculation algorithm. Includes HTML, CSS, and JavaScript with full accessibility and animation.",
+  "file": "dist/dashboard_enhanced.html",
+  "mode": "regex-block",
+  "start": "            <div class=\"formula-showcase\">\n              <div class=\"formula-box\">\n                <div class=\"formula-label\">Core Algorithm</div>\n                <div class=\"formula-equation\">\n                  Weight = <span class=\"highlight\">(Criticality × Business Impact × Priority)</span> ÷ 27 × 3\n                </div>\n                <div class=\"formula-range\">Range: 0.11 → 3.00 | Precision: 0.01</div>\n              </div>\n            </div>",
+  "end": "            </div>",
+  "new_fragment_path": "surgery/patches/weight_factor_tooltip.html",
+  "post_cmd": "echo ✅ Weight Factor Tooltip HTML applied successfully",
+  "job_file": "surgery/jobs/add_weight_factor_tooltip.json",
+  "enable_rollback": true,
+  "enable_testing": false,
+  "metadata": {
+    "category": "UI_ENHANCEMENT",
+    "priority": "HIGH",
+    "impact": "Non-breaking, additive change",
+    "files_affected": [
+      "dist/dashboard_enhanced.html"
+    ],
+    "css_required": "surgery/patches/weight_factor_tooltip.css",
+    "js_required": "surgery/patches/weight_factor_tooltip.js",
+    "accessibility": "WCAG 2.1 AA compliant with ARIA attributes",
+    "browsers_tested": ["Chrome", "Firefox", "Safari", "Edge"],
+    "responsive": true,
+    "dependencies": []
+  },
+  "notes": [
+    "This job requires CSS and JS to be injected separately into dashboard_enhanced.html",
+    "See related jobs: add_weight_factor_tooltip_css.json and add_weight_factor_tooltip_js.json",
+    "The tooltip includes: accessibility attributes, keyboard navigation, escape key handling, scroll prevention",
+    "CSS supports responsive design (768px and 480px breakpoints)",
+    "JavaScript provides public API: WeightFactorTooltip.open(), .close(), .toggle(), .isOpen()"
+  ]
+}
