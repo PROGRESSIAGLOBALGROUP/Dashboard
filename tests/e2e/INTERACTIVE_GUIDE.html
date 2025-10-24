@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phase 4 - Testing Guide Interactive</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a2744 100%);
+            color: #e9eef7;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            border: 1px solid rgba(91, 157, 255, 0.3);
+        }
+        
+        .header h1 {
+            color: #5b9dff;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+        
+        .header p {
+            color: #a0aec0;
+            font-size: 1.1em;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .tab-button {
+            padding: 12px 24px;
+            border: 2px solid #5b9dff;
+            background: rgba(91, 157, 255, 0.1);
+            color: #5b9dff;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+        
+        .tab-button:hover {
+            background: rgba(91, 157, 255, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .tab-button.active {
+            background: #5b9dff;
+            color: #080b13;
+        }
+        
+        .tab-content {
+            display: none;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(91, 157, 255, 0.3);
+            border-radius: 16px;
+            padding: 30px;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .step {
+            background: rgba(14, 22, 39, 0.8);
+            border-left: 4px solid #5b9dff;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+        }
+        
+        .step.completed {
+            border-left-color: #32e685;
+            background: rgba(50, 230, 133, 0.1);
+        }
+        
+        .step h3 {
+            color: #5b9dff;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .step.completed h3 {
+            color: #32e685;
+        }
+        
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #5b9dff;
+            color: white;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+        
+        .step.completed .step-number {
+            background: #32e685;
+        }
+        
+        .command {
+            background: #080b13;
+            border: 1px solid #1a2a48;
+            border-radius: 6px;
+            padding: 12px;
+            margin: 10px 0;
+            font-family: 'Monaco', 'Courier New', monospace;
+            color: #32e685;
+            overflow-x: auto;
+            font-size: 0.9em;
+        }
+        
+        .checkbox {
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        
+        .checkbox input {
+            margin-right: 10px;
+            cursor: pointer;
+            width: 18px;
+            height: 18px;
+        }
+        
+        .checkbox label {
+            cursor: pointer;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #5b9dff, #32e685);
+            transition: width 0.3s ease;
+        }
+        
+        .info-box {
+            background: rgba(91, 157, 255, 0.1);
+            border-left: 4px solid #5b9dff;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 6px;
+        }
+        
+        .success-box {
+            background: rgba(50, 230, 133, 0.1);
+            border-left: 4px solid #32e685;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 6px;
+            color: #32e685;
+        }
+        
+        .links {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .link-card {
+            background: rgba(14, 22, 39, 0.8);
+            border: 1px solid rgba(91, 157, 255, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: #5b9dff;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .link-card:hover {
+            background: rgba(91, 157, 255, 0.1);
+            border-color: #5b9dff;
+            transform: translateY(-2px);
+        }
+        
+        .link-card strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .link-card small {
+            color: #a0aec0;
+        }
+        
+        .timer {
+            display: inline-block;
+            background: rgba(255, 159, 64, 0.2);
+            border: 1px solid rgba(255, 159, 64, 0.5);
+            padding: 8px 12px;
+            border-radius: 6px;
+            color: #ffb366;
+            font-size: 0.9em;
+            margin-left: 10px;
+        }
+        
+        button.action-btn {
+            background: #5b9dff;
+            color: #080b13;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+            font-size: 1em;
+        }
+        
+        button.action-btn:hover {
+            background: #4a8ae6;
+            transform: translateY(-2px);
+        }
+        
+        .test-result {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 6px;
+            display: none;
+        }
+        
+        .test-result.pass {
+            display: block;
+            background: rgba(50, 230, 133, 0.1);
+            color: #32e685;
+            border: 1px solid #32e685;
+        }
+        
+        .test-result.fail {
+            display: block;
+            background: rgba(255, 95, 122, 0.1);
+            color: #ff5f7a;
+            border: 1px solid #ff5f7a;
+        }
+        
+        @media (max-width: 768px) {
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .tab-button {
+                width: 100%;
+            }
+            
+            .header h1 {
+                font-size: 1.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Phase 4 Testing - Interactive Guide</h1>
+            <p>Validación en vivo del sistema de waves</p>
+        </div>
+        
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressBar" style="width: 0%"></div>
+        </div>
+        
+        <div class="tabs">
+            <button class="tab-button active" data-tab="tab-setup">Setup</button>
+            <button class="tab-button" data-tab="tab-quick">Quick (5 min)</button>
+            <button class="tab-button" data-tab="tab-thorough">Thorough (45 min)</button>
+            <button class="tab-button" data-tab="tab-results">Resultados</button>
+        </div>
+        
+        <!-- TAB: SETUP -->
+        <div id="tab-setup" class="tab-content active">
+            <h2>✅ Verificación Inicial</h2>
+            
+            <div class="step completed">
+                <h3><span class="step-number">✓</span> Servidor corriendo</h3>
+                <p>Python HTTP server está activo en puerto 8000</p>
+                <div class="success-box">✅ Servidor iniciado correctamente</div>
+            </div>
+            
+            <div class="step">
+                <h3><span class="step-number">2</span> Abre Dashboard</h3>
+                <p>Abre otra pestaña del browser:</p>
+                <div class="command">http://localhost:8000/dashboard_enhanced.html</div>
+                <button class="action-btn" onclick="openDashboard()">📱 Abrir Dashboard</button>
+                <div class="checkbox">
+                    <input type="checkbox" id="check-dashboard">
+                    <label for="check-dashboard">Dashboard cargado ✓</label>
+                </div>
+            </div>
+            
+            <div class="step">
+                <h3><span class="step-number">3</span> Abre DevTools</h3>
+                <p>Presiona <strong>F12</strong> o <strong>Ctrl+Shift+I</strong></p>
+                <p style="margin-top: 10px; color: #a0aec0;">En DevTools, ve a la pestaña <strong>"Console"</strong></p>
+                <div class="checkbox">
+                    <input type="checkbox" id="check-devtools">
+                    <label for="check-devtools">DevTools abierto ✓</label>
+                </div>
+            </div>
+            
+            <div class="step">
+                <h3><span class="step-number">4</span> Verifica Dashboard cargado</h3>
+                <p>En la consola, pega esto:</p>
+                <div class="command">typeof Dashboard !== 'undefined' ? 'OK' : 'ERROR'</div>
+                <p style="margin-top: 10px;">Deberías ver: <strong>OK</strong></p>
+                <div class="checkbox">
+                    <input type="checkbox" id="check-verify">
+                    <label for="check-verify">Dashboard verificado ✓</label>
+                </div>
+            </div>
+            
+            <div class="info-box">
+                <strong>💡 Tip:</strong> Abre esta guía en una ventana y el Dashboard en otra. Así puedes seguir los pasos mientras testeas.
+            </div>
+            
+            <button class="action-btn" onclick="moveToQuick()">Continuar a Quick Start →</button>
+        </div>
+        
+        <!-- TAB: QUICK -->
+        <div id="tab-quick" class="tab-content">
+            <h2>⚡ Quick Start (5 minutos)</h2>
+            <p style="margin-bottom: 20px; color: #a0aec0;">Validación rápida del sistema. Copia/pega cada comando en la consola de DevTools.</p>
+            
+            <div class="step">
+                <h3><span class="step-number">1</span> Copiar script QUICK_START</h3>
+                <p>El script contiene 7 validaciones automáticas.</p>
+                <button class="action-btn" onclick="copyQuickStart()">📋 Copiar QUICK_START.js</button>
+                <div class="test-result pass" id="result-copy">✅ Script copiado al portapapeles</div>
+            </div>
+            
+            <div class="step">
+                <h3><span class="step-number">2</span> Pegar en consola</h3>
+                <p>En la consola de DevTools (pestaña Console):</p>
+                <div class="command">Pega el script copiado y presiona Enter</div>
+                <div class="checkbox">
+                    <input type="checkbox" id="check-paste">
+                    <label for="check-paste">Script pegado y ejecutado ✓</label>
+                </div>
+            </div>
+            
+            <div class="step">
+                <h3><span class="step-number">3</span> Verifica resultados</h3>
+                <p>Deberías ver en la consola:</p>
+                <div class="command">✓ Dashboard loaded: true
+✓ StorageManager disponible: true
+✓ DataLoader disponible: true
+✓ UIController disponible: true
+✓ 5+ waves en storage
+✓ Custom waves detectadas
+✓ Sistema READY!</div>
+                <div class="checkbox">
+                    <input type="checkbox" id="check-results-quick">
+                    <label for="check-results-quick">Todos los checks PASS ✓</label>
+                </div>
+            </div>
+            
+            <div class="success-box">
+                ✅ Si todos los checks pasaron: <strong>PHASE 4 Quick Validation COMPLETA</strong>
+            </div>
+            
+            <button class="action-btn" onclick="moveToThorough()">Hacer validación THOROUGH →</button>
+        </div>
+        
+        <!-- TAB: THOROUGH -->
+        <div id="tab-thorough" class="tab-content">
+            <h2>📋 Validación Completa (45 minutos)</h2>
+            <p style="margin-bottom: 20px; color: #a0aec0;">Sigue tests/e2e/EXECUTION_GUIDE.md para procedimientos detallados.</p>
+            
+            <div class="info-box">
+                <strong>📖 Archivo de referencia:</strong> Abre <strong>tests/e2e/EXECUTION_GUIDE.md</strong> en tu editor para seguir cada paso.
+            </div>
+            
+            <h3 style="margin-top: 30px; color: #5b9dff;">Secciones de Testing:</h3>
+            
+            <div class="step">
+                <h3><span class="step-number">A</span> Wave CRUD Operations (10 min)</h3>
+                <p><strong>Tests:</strong> Crear, renombrar, eliminar waves</p>
+                <ul style="margin-left: 20px; margin-top: 10px;">
+                    <li>A1: Crear nueva wave</li>
+                    <li>A2: Renombrar wave</li>
+                    <li>A3: Crear múltiples waves</li>
+                    <li>A4: Eliminar wave sin apps</li>
+                    <li>A5: No poder eliminar wave con apps</li>
+                </ul>
+                <div class="checkbox">
+                    <input type="checkbox" id="check-section-a">
+                    <label for="check-section-a">Sección A completada - Resultados:</label>
+                </div>
+                <div class="command" style="margin-top: 10px;">Passed: ___ / Failed: ___</div>
+            </div>
+            
+            <div class="step">
+                <h3><span class="step-number">B</span> Dynamic Resolution (10 min)</h3>
+                <p><strong>Tests:</strong> Validar resolución dinámica (SIN hardcodes)</p>
+                <ul style="margin-left: 20px; margin-top: 10px;">
+                    <li>B1: Wave dropdown con custom names</li>
+                    <li>B2: Chart usa nombres dinámicos</li>
+                    <li>B3: Matrix view dinámico</li>
+                    <li>B4: Fallback para waves faltantes</li>
+                </ul>
+                <div class="checkbox">
+                    <input type="checkbox" id="check-section-b">
+                    <label for="check-section-b">Sección B completada - Resultados:</label>
+                </div>
+                <div class="command" style="margin-top: 10px;">Passed: ___ / Failed: ___</div>
+            </div>
+            
+            <div class="step">
+                <h3><span class="step-number">D</span> Persistence (10 min)</h3>
+                <p><strong>Tests:</strong> Validar que los datos persisten</p>
+                <ul style="margin-left: 20px; margin-top: 10px;">
+                    <li>D1: Waves guardados en localStorage</li>
+                    <li>D2: Persist después de reload (F5)</li>
+                    <li>D3: App assignments persisten</li>
+                </ul>
+                <div class="checkbox">
+                    <input type="checkbox" id="check-section-d">
+                    <label for="check-section-d">Sección D completada - Resultados:</label>
+                </div>
+                <div class="command" style="margin-top: 10px;">Passed: ___ / Failed: ___</div>
+            </div>
+            
+            <div class="step">
+                <h3><span class="step-number">E</span> Edge Cases (10 min)</h3>
+                <p><strong>Tests:</strong> Validar casos extremos</p>
+                <ul style="margin-left: 20px; margin-top: 10px;">
+                    <li>E1: Caracteres especiales en nombres</li>
+                    <li>E2: Nombres muy largos (100+ chars)</li>
+                    <li>E3: Nombres duplicados (IDs únicos)</li>
+                    <li>E4: Creación rápida de waves</li>
+                    <li>E5: Performance con 50+ waves</li>
+                </ul>
+                <div class="checkbox">
+                    <input type="checkbox" id="check-section-e">
+                    <label for="check-section-e">Sección E completada - Resultados:</label>
+                </div>
+                <div class="command" style="margin-top: 10px;">Passed: ___ / Failed: ___</div>
+            </div>
+            
+            <div class="success-box">
+                ✅ Total esperado: 15 tests PASS. Si logras esto: <strong>PHASE 4 Thorough Validation COMPLETA</strong>
+            </div>
+            
+            <button class="action-btn" onclick="completePhase4()">Marcar Phase 4 como COMPLETADO →</button>
+        </div>
+        
+        <!-- TAB: RESULTADOS -->
+        <div id="tab-results" class="tab-content">
+            <h2>📊 Resumen de Resultados</h2>
+            
+            <div class="info-box">
+                <strong>¿Todos los tests pasaron?</strong>
+                <div style="margin-top: 10px;">
+                    <div class="checkbox">
+                        <input type="checkbox" id="check-all-pass">
+                        <label for="check-all-pass">✅ SÍ - Todos los tests PASARON</label>
+                    </div>
+                    <div class="checkbox" style="margin-top: 10px;">
+                        <input type="checkbox" id="check-some-fail">
+                        <label for="check-some-fail">⚠️ ALGUNOS - Encontré issues</label>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="next-steps-pass" style="display: none;">
+                <div class="success-box">
+                    <strong>🎉 ¡EXCELENTE!</strong>
+                    <p style="margin-top: 10px;">Phase 4 Validation COMPLETADA exitosamente.</p>
+                    <p style="margin-top: 10px;">Tu sistema está validado y listo para producción.</p>
+                </div>
+                
+                <h3 style="margin-top: 30px; color: #5b9dff;">📋 Próximos pasos:</h3>
+                <div class="step">
+                    <h3><span class="step-number">1</span> Commit Phase 4</h3>
+                    <div class="command">git add tests/e2e/
+git commit -m "phase: Complete test suite for wave system validation"
+git push origin main</div>
+                </div>
+                
+                <div class="step">
+                    <h3><span class="step-number">2</span> Phase 5 - Documentación</h3>
+                    <p>Crear docs/technical/ARCHITECTURE.md</p>
+                    <p style="margin-top: 10px; color: #a0aec0;">Documentar:</p>
+                    <ul style="margin-left: 20px; margin-top: 5px; color: #a0aec0;">
+                        <li>Data flow (3 layers)</li>
+                        <li>Wave resolution system</li>
+                        <li>UI propagation pattern</li>
+                        <li>Persistence model</li>
+                    </ul>
+                </div>
+                
+                <div class="step">
+                    <h3><span class="step-number">3</span> Release v1.2.0</h3>
+                    <p>Tag and push release</p>
+                    <div class="command">git tag -a v1.2.0 -m "Release: Wave system modernization complete"
+git push origin main --tags</div>
+                </div>
+            </div>
+            
+            <div id="next-steps-fail" style="display: none;">
+                <div class="step" style="border-left-color: #ff5f7a;">
+                    <h3 style="color: #ff5f7a;"><span class="step-number" style="background: #ff5f7a;">⚠</span> Issues Encontrados</h3>
+                    <p>Documenta aquí los issues encontrados:</p>
+                    <textarea id="issues-text" style="width: 100%; height: 120px; background: #080b13; border: 1px solid #1a2a48; border-radius: 6px; padding: 10px; color: #e9eef7; font-family: monospace; margin-top: 10px;"></textarea>
+                    <button class="action-btn" onclick="saveIssues()">Guardar Issues</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Tab switching
+        document.querySelectorAll('.tab-button').forEach(button => {
+            button.addEventListener('click', function() {
+                const tabName = this.getAttribute('data-tab');
+                switchTab(tabName);
+            });
+        });
+        
+        function switchTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Remove active class from buttons
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+            
+            // Add active class to clicked button
+            event.target.classList.add('active');
+            
+            updateProgress();
+        }
+        
+        function openDashboard() {
+            window.open('http://localhost:8000/dashboard_enhanced.html', '_blank');
+        }
+        
+        function copyQuickStart() {
+            const script = `
+// QUICK_START - Phase 4 Validation
+console.log('=== PHASE 4 QUICK VALIDATION ===');
+console.log('✅ Dashboard loaded:', !!window.Dashboard);
+console.log('✅ StorageManager:', !!Dashboard.StorageManager);
+console.log('✅ DataLoader:', !!Dashboard.DataLoader);
+console.log('✅ UIController:', !!Dashboard.UIController);
+const waves = Dashboard.StorageManager.getWaves();
+console.log('✅ Waves in storage:', waves.length);
+const catalog = Dashboard.DataLoader.getWaveCatalog();
+console.log('✅ Custom waves detected:', catalog.length);
+console.log('🎉 SYSTEM READY FOR VALIDATION!');
+`.trim();
+            
+            navigator.clipboard.writeText(script).then(() => {
+                const result = document.getElementById('result-copy');
+                result.style.display = 'block';
+                setTimeout(() => result.style.display = 'none', 3000);
+            });
+        }
+        
+        function moveToQuick() {
+            document.querySelector('[data-tab="tab-quick"]').click();
+        }
+        
+        function moveToThorough() {
+            document.querySelector('[data-tab="tab-thorough"]').click();
+        }
+        
+        function completePhase4() {
+            document.querySelector('[data-tab="tab-results"]').click();
+        }
+        
+        function updateProgress() {
+            const checks = document.querySelectorAll('input[type="checkbox"]:checked').length;
+            const total = document.querySelectorAll('input[type="checkbox"]').length;
+            const percent = (checks / total) * 100;
+            document.getElementById('progressBar').style.width = percent + '%';
+        }
+        
+        // Update progress on checkbox change
+        document.querySelectorAll('input[type="checkbox"]').forEach(check => {
+            check.addEventListener('change', function() {
+                updateProgress();
+                
+                // Show next steps based on results
+                if (this.id === 'check-all-pass' && this.checked) {
+                    document.getElementById('check-some-fail').checked = false;
+                    document.getElementById('next-steps-pass').style.display = 'block';
+                    document.getElementById('next-steps-fail').style.display = 'none';
+                }
+                
+                if (this.id === 'check-some-fail' && this.checked) {
+                    document.getElementById('check-all-pass').checked = false;
+                    document.getElementById('next-steps-fail').style.display = 'block';
+                    document.getElementById('next-steps-pass').style.display = 'none';
+                }
+            });
+        });
+        
+        function saveIssues() {
+            const issues = document.getElementById('issues-text').value;
+            localStorage.setItem('phase4_issues', issues);
+            alert('Issues guardados. Crea un archivo en docs/fixes/ para documentarlos.');
+        }
+    </script>
+</body>
+</html>
