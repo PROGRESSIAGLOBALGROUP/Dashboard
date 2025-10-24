@@ -108,6 +108,36 @@ const StorageManager = {
     this.saveConfig(config);
   },
   
+  getWaves() {
+    return this.loadConfig().waves || [];
+  },
+  
+  addWave(wave) {
+    const config = this.loadConfig();
+    wave.id = Math.max(...config.waves.map(w => w.id), 0) + 1;
+    config.waves.push(wave);
+    this.saveConfig(config);
+    return wave;
+  },
+  
+  updateWave(waveId, updates) {
+    const config = this.loadConfig();
+    const wave = config.waves.find(w => w.id === waveId);
+    if (wave) Object.assign(wave, updates);
+    this.saveConfig(config);
+  },
+  
+  deleteWave(waveId) {
+    const config = this.loadConfig();
+    // Validate: wave cannot have active apps
+    const appsInWave = config.apps.filter(a => a.waveId === waveId);
+    if (appsInWave.length > 0) {
+      throw new Error(`Cannot delete Wave ${waveId}: ${appsInWave.length} application(s) still assigned`);
+    }
+    config.waves = config.waves.filter(w => w.id !== waveId);
+    this.saveConfig(config);
+  },
+  
   markAsCleared() {
     // Mark in sessionStorage so page reload doesn't auto-recreate data
     sessionStorage.setItem(this.CLEARED_FLAG, 'true');

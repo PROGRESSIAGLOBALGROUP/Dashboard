@@ -38,6 +38,9 @@ const AdminController = {
     this.renderBUList();
     this.renderBUFilter();
     
+    // Initialize waves editor (for settings tab)
+    this.renderWavesEditor();
+    
     // Si hay una BU seleccionada, actualizar el dropdown para reflejarla
     if (this.currentBUId) {
       const buFilter = document.querySelector('#appBUFilter');
@@ -652,6 +655,86 @@ const AdminController = {
     } catch (err) {
       console.error('Clear All Data Error:', err);
       alert('❌ Error clearing data:\n\n' + err.message + '\n\nPlease try again or contact support.');
+    }
+  },
+  
+  /**
+   * Waves CRUD Operations
+   */
+  renderWavesEditor() {
+    const waves = Dashboard.StorageManager.getWaves();
+    const container = document.querySelector('#waveEditorContainer');
+    
+    if (!container) return;
+    
+    let html = `<h3>Waves Management</h3>
+      <button class="btn btn-primary" onclick="Dashboard.AdminController.newWave()" style="margin-bottom:12px">+ Add Wave</button>
+      <table class="wave-table" style="width:100%;border-collapse:collapse;margin-top:12px">
+        <thead style="background:rgba(91,157,255,0.1);border-bottom:2px solid var(--ring)">
+          <tr>
+            <th style="padding:12px;text-align:left;font-size:12px;font-weight:600;color:#aaa">ID</th>
+            <th style="padding:12px;text-align:left;font-size:12px;font-weight:600;color:#aaa">Wave Name</th>
+            <th style="padding:12px;text-align:left;font-size:12px;font-weight:600;color:#aaa">Apps Count</th>
+            <th style="padding:12px;text-align:center;font-size:12px;font-weight:600;color:#aaa">Actions</th>
+          </tr>
+        </thead>
+        <tbody>`;
+    
+    waves.forEach(wave => {
+      const appCount = Dashboard.StorageManager.getApps().filter(a => a.waveId === wave.id).length;
+      html += `
+        <tr style="border-bottom:1px solid var(--ring);transition:background 0.2s">
+          <td style="padding:12px;font-size:13px;color:var(--text)">${wave.id}</td>
+          <td style="padding:12px">
+            <input type="text" value="${wave.name}" onchange="Dashboard.AdminController.updateWave(${wave.id}, {name: this.value})" style="width:100%;padding:6px;background:rgba(91,157,255,0.05);border:1px solid var(--ring);border-radius:6px;color:var(--text);font-size:13px"/>
+          </td>
+          <td style="padding:12px;font-size:13px;color:var(--text)">${appCount}</td>
+          <td style="padding:12px;text-align:center">
+            ${appCount > 0 ? 
+              `<button class="btn btn-sm" disabled style="opacity:0.5;cursor:not-allowed" title="Cannot delete: wave has ${appCount} app(s)">Delete</button>` :
+              `<button class="btn btn-danger btn-sm" onclick="Dashboard.AdminController.deleteWave(${wave.id})">Delete</button>`
+            }
+          </td>
+        </tr>`;
+    });
+    
+    html += '</tbody></table>';
+    html += `<div style="margin-top:16px;padding:12px;background:rgba(91,157,255,0.05);border:1px solid var(--ring);border-radius:8px;font-size:12px;color:#aaa">
+      <strong>ℹ️ Total Waves:</strong> ${waves.length} | <strong>Total Apps:</strong> ${Dashboard.StorageManager.getApps().length}
+    </div>`;
+    
+    container.innerHTML = html;
+  },
+  
+  newWave() {
+    const name = prompt('Wave name (e.g., "Wave Q4 2025"):');
+    if (!name) return;
+    
+    try {
+      Dashboard.StorageManager.addWave({ name });
+      this.renderWavesEditor();
+    } catch (err) {
+      alert('❌ Error adding wave:\n\n' + err.message);
+    }
+  },
+  
+  updateWave(waveId, updates) {
+    try {
+      Dashboard.StorageManager.updateWave(waveId, updates);
+      this.renderWavesEditor();
+    } catch (err) {
+      alert('❌ Error updating wave:\n\n' + err.message);
+    }
+  },
+  
+  deleteWave(waveId) {
+    if (!confirm('Delete this wave? This action cannot be undone.')) return;
+    
+    try {
+      Dashboard.StorageManager.deleteWave(waveId);
+      this.renderWavesEditor();
+    } catch (err) {
+      alert('❌ Cannot delete wave:\n\n' + err.message);
     }
   }
 };

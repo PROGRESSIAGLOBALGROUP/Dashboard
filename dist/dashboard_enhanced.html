@@ -3801,6 +3801,185 @@ body.cinematic .exit-cinema{display:inline-flex}
 
 /* ========== END APPLICATIONS OVERVIEW WORLD CLASS ========== */
 
+/* ========== WAVES MODAL STYLES (Premium Input Dialog) ========== */
+.waves-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.85);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  backdrop-filter: blur(12px);
+  animation: fadeIn 0.3s ease;
+}
+
+.waves-modal-overlay.active {
+  display: flex;
+}
+
+.waves-modal-content {
+  background: linear-gradient(135deg, rgba(91, 157, 255, 0.1), transparent), var(--panel);
+  border: 1px solid rgba(91, 157, 255, 0.3);
+  border-radius: 16px;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(91, 157, 255, 0.15) inset;
+  padding: 32px;
+  max-width: 500px;
+  width: 90%;
+  animation: slideInUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.waves-modal-header {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.waves-modal-header h3 {
+  margin: 0 0 8px 0;
+  font-size: 20px;
+  color: var(--text);
+  font-weight: 700;
+}
+
+.waves-modal-header p {
+  margin: 0;
+  font-size: 13px;
+  color: #aaa;
+}
+
+.waves-modal-input-group {
+  margin-bottom: 20px;
+}
+
+.waves-modal-input-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 12px;
+  color: #aaa;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.waves-modal-input-group input {
+  width: 100%;
+  padding: 12px 14px;
+  background: rgba(91, 157, 255, 0.05);
+  border: 1px solid var(--ring);
+  border-radius: 8px;
+  color: var(--text);
+  font-size: 14px;
+  font-family: inherit;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.waves-modal-input-group input:focus {
+  outline: none;
+  border-color: var(--primary);
+  background: rgba(91, 157, 255, 0.08);
+  box-shadow: 0 0 12px rgba(91, 157, 255, 0.2);
+}
+
+.waves-modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.waves-modal-btn {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.waves-modal-btn-primary {
+  background: linear-gradient(135deg, var(--primary), #4a88ff);
+  color: white;
+  box-shadow: 0 4px 15px rgba(91, 157, 255, 0.3);
+}
+
+.waves-modal-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(91, 157, 255, 0.4);
+}
+
+.waves-modal-btn-primary:active {
+  transform: translateY(0);
+}
+
+.waves-modal-btn-secondary {
+  background: transparent;
+  border: 1px solid var(--ring);
+  color: var(--text);
+}
+
+.waves-modal-btn-secondary:hover {
+  background: var(--ring);
+}
+
+.waves-modal-confirm {
+  background: linear-gradient(135deg, #32e685, #2cc778);
+  color: white;
+  box-shadow: 0 4px 15px rgba(50, 230, 133, 0.3);
+}
+
+.waves-modal-confirm:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(50, 230, 133, 0.4);
+}
+
+.waves-modal-danger {
+  background: linear-gradient(135deg, #ff5f7a, #ff4562);
+  color: white;
+  box-shadow: 0 4px 15px rgba(255, 95, 122, 0.3);
+}
+
+.waves-modal-danger:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 95, 122, 0.4);
+}
+
+.waves-modal-message {
+  text-align: center;
+  margin-bottom: 20px;
+  padding: 16px;
+  background: rgba(91, 157, 255, 0.05);
+  border-left: 3px solid var(--primary);
+  border-radius: 8px;
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.5;
+}
+
+.waves-modal-message.warning {
+  background: rgba(255, 209, 102, 0.05);
+  border-left-color: var(--warn);
+  color: #ffd166;
+}
+
+.waves-modal-message.danger {
+  background: rgba(255, 95, 122, 0.05);
+  border-left-color: var(--danger);
+  color: #ff5f7a;
+}
+
+.waves-modal-message.success {
+  background: rgba(50, 230, 133, 0.05);
+  border-left-color: var(--ok);
+  color: #32e685;
+}
+
+/* ========== END WAVES MODAL STYLES ========== */
+
 </style>
 </head>
 <body>
@@ -5070,6 +5249,28 @@ body.cinematic .exit-cinema{display:inline-flex}
             </div>
           </div>
           
+          <!-- Waves Management Section -->
+          <div class="settings-category">
+            <div class="category-header">
+              <h4 class="category-title">
+                <span class="category-icon">🌊</span>
+                Waves Management
+              </h4>
+              <p class="category-description">Create and manage execution waves for your applications</p>
+            </div>
+            
+            <div class="settings-card">
+              <div class="settings-card-header">
+                <div class="settings-card-icon">🌊</div>
+                <div class="settings-card-title">Wave Catalog CRUD</div>
+              </div>
+              <div id="waveEditorContainer" style="min-height:300px;max-height:600px;overflow-y:auto;padding:12px;background:rgba(91,157,255,0.02);border:1px solid var(--ring);border-radius:8px">
+                <!-- Waves table will be rendered here by AdminController.renderWavesEditor() -->
+                <p style="text-align:center;color:#aaa;padding:24px">Loading waves...</p>
+              </div>
+            </div>
+          </div>
+          
           <!-- Danger Zone Section -->
           <div class="settings-category danger-zone">
             <div class="category-header">
@@ -5449,37 +5650,14 @@ body.cinematic .exit-cinema{display:inline-flex}
 <script>
 /* ========== Data Loader Module - CRITICAL DATA INITIALIZATION ========== */
 const DataLoader = {
-  // NO EMBEDDED DATA - Load from external JSON file
+  // EMBEDDED DATA - Direct JSON object to eliminate CORS issues
+  EMBEDDED_DATA: {"business_units_catalog":[{"BU_ID":1,"BU_DOMAIN":"CORF","BU_NAME":"COMM","BU_FULLNAME":"Communications"},{"BU_ID":2,"BU_DOMAIN":"CORF","BU_NAME":"HR","BU_FULLNAME":"Human Resources"},{"BU_ID":3,"BU_DOMAIN":"CORF","BU_NAME":"PAY","BU_FULLNAME":"Payroll & Time Keeping"},{"BU_ID":4,"BU_DOMAIN":"CORF","BU_NAME":"ACC","BU_FULLNAME":"Accounting"},{"BU_ID":5,"BU_DOMAIN":"CORF","BU_NAME":"INV","BU_FULLNAME":"Invoicing"},{"BU_ID":6,"BU_DOMAIN":"CORF","BU_NAME":"CUSTI1","BU_FULLNAME":"Customs I (CCCCCS)"},{"BU_ID":7,"BU_DOMAIN":"CORF","BU_NAME":"CUSTI1","BU_FULLNAME":"Customs II (MX Applications)"},{"BU_ID":8,"BU_DOMAIN":"P&S","BU_NAME":"P&S","BU_FULLNAME":"Parts & Services"},{"BU_ID":9,"BU_DOMAIN":"P&S","BU_NAME":"PSC","BU_FULLNAME":"Purchase & Supply Chain"},{"BU_ID":10,"BU_DOMAIN":"GDPA","BU_NAME":"CDA3","BU_FULLNAME":"Global Digital Platforms and Automation"},{"BU_ID":11,"BU_DOMAIN":"SPP","BU_NAME":"SPP","BU_FULLNAME":"Standard Procedures & Performance"},{"BU_ID":12,"BU_DOMAIN":"EDSC","BU_NAME":"EDSC","BU_FULLNAME":"Engineering"}],"apps_catalog":[{"APP_ID":1,"BU_ID":10,"WAVE_ID":1,"APP_NAME":"XXX_APPLICATION_1_XXX","APP_PRIORITY_ORDER":null,"APP_CRITICALITY":"High","APP_BUSINESS_IMPACT":"High","APP_COMPLETION_PROGRESS":100.0,"APP_STATUS":"Completed"},{"APP_ID":2,"BU_ID":10,"WAVE_ID":1,"APP_NAME":"XXX_APPLICATION_2_XXX","APP_PRIORITY_ORDER":null,"APP_CRITICALITY":"Medium","APP_BUSINESS_IMPACT":"Medium","APP_COMPLETION_PROGRESS":100.0,"APP_STATUS":"Completed"},{"APP_ID":3,"BU_ID":1,"WAVE_ID":1,"APP_NAME":"XXX_APPLICATION_3_XXX","APP_PRIORITY_ORDER":null,"APP_CRITICALITY":"Medium","APP_BUSINESS_IMPACT":"Medium","APP_COMPLETION_PROGRESS":83.56,"APP_STATUS":"WIP"},{"APP_ID":4,"BU_ID":10,"WAVE_ID":2,"APP_NAME":"XXX_APPLICATION_4_XXX","APP_PRIORITY_ORDER":null,"APP_CRITICALITY":"Medium","APP_BUSINESS_IMPACT":"Medium","APP_COMPLETION_PROGRESS":0.0,"APP_STATUS":"TBS"},{"APP_ID":5,"BU_ID":2,"WAVE_ID":2,"APP_NAME":"XXX_APPLICATION_5_XXX","APP_PRIORITY_ORDER":null,"APP_CRITICALITY":"Low","APP_BUSINESS_IMPACT":"Low","APP_COMPLETION_PROGRESS":22.1,"APP_STATUS":"WIP"},{"APP_ID":6,"BU_ID":10,"WAVE_ID":2,"APP_NAME":"XXX_APPLICATION_6_XXX","APP_PRIORITY_ORDER":null,"APP_CRITICALITY":"High","APP_BUSINESS_IMPACT":"Low","APP_COMPLETION_PROGRESS":7.8,"APP_STATUS":"Completed"},{"APP_ID":7,"BU_ID":3,"WAVE_ID":2,"APP_NAME":"XXX_APPLICATION_7_XXX","APP_PRIORITY_ORDER":null,"APP_CRITICALITY":"Low","APP_BUSINESS_IMPACT":"High","APP_COMPLETION_PROGRESS":0.0,"APP_STATUS":"TBS"},{"APP_ID":8,"BU_ID":3,"WAVE_ID":3,"APP_NAME":"XXX_APPLICATION_8_XXX","APP_PRIORITY_ORDER":null,"APP_CRITICALITY":"Medium","APP_BUSINESS_IMPACT":"High","APP_COMPLETION_PROGRESS":53.3,"APP_STATUS":"WIP"},{"APP_ID":9,"BU_ID":10,"WAVE_ID":3,"APP_NAME":"XXX_APPLICATION_9_XXX","APP_PRIORITY_ORDER":null,"APP_CRITICALITY":"High","APP_BUSINESS_IMPACT":"Low","APP_COMPLETION_PROGRESS":0.0,"APP_STATUS":"TBS"},{"APP_ID":10,"BU_ID":11,"WAVE_ID":3,"APP_NAME":"XXX_APPLICATION_10_XXX","APP_PRIORITY_ORDER":null,"APP_CRITICALITY":"High","APP_BUSINESS_IMPACT":"Medium","APP_COMPLETION_PROGRESS":75.0,"APP_STATUS":"WIP"}],"waves_catalog":[{"WAVE_ID":1,"DESCRIPTION":"Wave 1"},{"WAVE_ID":2,"DESCRIPTION":"Wave 2"},{"WAVE_ID":3,"DESCRIPTION":"Wave 3"}]},
   
   async loadData() {
     try {
-      // Construct URL based on current location protocol
-      let dataUrl;
-      if (window.location.protocol === 'file:') {
-        // Local file access - fetch from relative path via proper protocol
-        dataUrl = '../data/tables.json';
-        console.log('🚀 [DataLoader] Local mode detected, fetching:', dataUrl);
-      } else {
-        // HTTP/HTTPS - use absolute path
-        const baseUrl = window.location.origin + window.location.pathname.replace(/dist\/.*/, '');
-        dataUrl = baseUrl + 'data/tables.json';
-        console.log('🚀 [DataLoader] HTTP mode detected, fetching from:', dataUrl);
-      }
-      
-      // FETCH from external JSON file (no hardcodes)
-      const response = await fetch(dataUrl);
-      if (!response.ok) {
-        console.error('❌ [DataLoader] Failed to fetch data:', {
-          url: dataUrl,
-          status: response.status,
-          statusText: response.statusText,
-          protocol: window.location.protocol
-        });
-        return { businessUnits: [], apps: [], waves: [] };
-      }
-      
-      const jsonData = await response.json();
-      console.log('✅ [DataLoader] JSON loaded successfully');
+      // Use embedded data (eliminates all CORS issues)
+      const jsonData = this.EMBEDDED_DATA;
+      console.log('✅ [DataLoader] Using embedded data (zero-CORS architecture)');
       
       // Transform Business Units
       const businessUnits = (jsonData.business_units_catalog || []).map(bu => ({
@@ -5684,6 +5862,35 @@ const StorageManager = {
   deleteApp(appId) {
     const config = this.loadConfig();
     config.apps = config.apps.filter(a => a.id !== appId);
+    this.saveConfig(config);
+  },
+  
+  getWaves() {
+    return this.loadConfig().waves || [];
+  },
+  
+  addWave(wave) {
+    const config = this.loadConfig();
+    wave.id = Math.max(...config.waves.map(w => w.id), 0) + 1;
+    config.waves.push(wave);
+    this.saveConfig(config);
+    return wave;
+  },
+  
+  updateWave(waveId, updates) {
+    const config = this.loadConfig();
+    const wave = config.waves.find(w => w.id === waveId);
+    if (wave) Object.assign(wave, updates);
+    this.saveConfig(config);
+  },
+  
+  deleteWave(waveId) {
+    const config = this.loadConfig();
+    const appsInWave = config.apps.filter(a => a.waveId === waveId);
+    if (appsInWave.length > 0) {
+      throw new Error('Cannot delete Wave ' + waveId + ': ' + appsInWave.length + ' application(s) still assigned');
+    }
+    config.waves = config.waves.filter(w => w.id !== waveId);
     this.saveConfig(config);
   },
   
@@ -6808,6 +7015,9 @@ const AdminController = {
     this.renderBUFilter();
     this.initBUAnalytics();
     
+    // Initialize waves editor for settings tab
+    this.renderWavesEditor();
+    
     // Si hay una BU seleccionada, actualizar el dropdown para reflejarla
     if (this.currentBUId) {
       const buFilter = document.querySelector('#appBUFilter');
@@ -7321,17 +7531,17 @@ const AdminController = {
     if (oldProgress === newProgress) {
       return { type: 'NONE', requiresPopup: false };
     }
-    if (oldProgress === 0 && newProgress > 0) {
-      return { type: 'START', requiresPopup: true };
-    }
     if (oldProgress < 100 && newProgress === 100) {
       return { type: 'COMPLETION', requiresPopup: true, celebration: true };
     }
-    if (oldProgress === 100 && newProgress < 100) {
-      return { type: 'REOPEN', requiresPopup: true, sadness: true };
+    if (oldProgress === 0 && newProgress > 0) {
+      return { type: 'START', requiresPopup: true };
     }
     if (oldProgress > 0 && newProgress === 0) {
       return { type: 'RESET', requiresPopup: true };
+    }
+    if (oldProgress === 100 && newProgress < 100) {
+      return { type: 'REOPEN', requiresPopup: true, sadness: true };
     }
     if (oldProgress > 0 && oldProgress < 100 && newProgress > 0 && newProgress < 100) {
       return { type: 'UPDATE', requiresPopup: false };
@@ -7462,6 +7672,15 @@ const AdminController = {
       newStatus = 'TBS';
     } else if (transition.type === 'UPDATE') {
       newStatus = 'WIP';
+    }
+    
+    // Mandatory synchronization: Progress value ALWAYS dictates Status
+    if (newProgress === 0) {
+      newStatus = 'TBS';  // Progress=0 must always be To Be Started
+    } else if (newProgress === 100) {
+      newStatus = 'CLO';  // Progress=100 must always be Closed
+    } else if (newProgress > 0 && newProgress < 100) {
+      newStatus = 'WIP';  // Progress(1-99) must always be Work In Progress
     }
     
     const updates = {
@@ -7653,6 +7872,12 @@ const AdminController = {
     document.getElementById('appImpactInput').value = 'Medium';
     document.getElementById('appPriorityInput').value = 'Medium';
     
+    // Initialize progress state for modal transitions
+    let modalProgressState = {
+      currentProgress: 0,
+      previousStatus: 'TBS'
+    };
+    
     // Populate Wave dropdown dynamically from dataset
     const config = Dashboard.StorageManager.loadConfig();
     const waveSelect = document.getElementById('appWaveInput');
@@ -7687,11 +7912,6 @@ const AdminController = {
     // Initial calculation
     recalculateWeightPreview();
     
-    // Add event listeners to recalculate on change
-    document.getElementById('appCriticalityInput').addEventListener('change', recalculateWeightPreview);
-    document.getElementById('appImpactInput').addEventListener('change', recalculateWeightPreview);
-    document.getElementById('appPriorityInput').addEventListener('change', recalculateWeightPreview);
-    
     // Clear errors
     document.getElementById('appNameError').textContent = '';
     
@@ -7710,6 +7930,11 @@ const AdminController = {
     const newForm = form.cloneNode(true);
     form.parentNode.replaceChild(newForm, form);
     
+    // Add event listeners to recalculate on change (AFTER cloning form to bind to new elements)
+    document.getElementById('appCriticalityInput').addEventListener('change', recalculateWeightPreview);
+    document.getElementById('appImpactInput').addEventListener('change', recalculateWeightPreview);
+    document.getElementById('appPriorityInput').addEventListener('change', recalculateWeightPreview);
+    
     // Real-time validation
     document.getElementById('appNameInput').addEventListener('input', () => {
       const name = document.getElementById('appNameInput').value.trim();
@@ -7721,6 +7946,54 @@ const AdminController = {
       } else {
         nameError.textContent = "";
       }
+    });
+    
+    // Progress change handler with transition validation
+    document.getElementById('appProgressInput').addEventListener('change', async (e) => {
+      const newProgress = parseInt(e.target.value, 10) || 0;
+      const oldProgress = modalProgressState.currentProgress;
+      
+      // Validate transition
+      const transition = this.detectProgressTransition(oldProgress, newProgress);
+      
+      if (transition.type === 'INVALID') {
+        e.target.value = oldProgress;
+        console.warn('Invalid transition:', transition.error);
+        return;
+      }
+      
+      if (transition.type === 'NONE') {
+        return; // No change needed
+      }
+      
+      // Show popup if transition requires confirmation
+      if (transition.requiresPopup) {
+        const appName = document.getElementById('appNameInput').value.trim() || 'New Application';
+        const confirmed = await this.showProgressPopup(transition.type, oldProgress, newProgress, { name: appName });
+        if (!confirmed) {
+          e.target.value = oldProgress;
+          return;
+        }
+      }
+      
+      // Update status based on transition
+      let newStatus = 'WIP';
+      if (transition.type === 'START') {
+        newStatus = 'WIP';
+      } else if (transition.type === 'COMPLETION') {
+        newStatus = 'CLO';
+      } else if (transition.type === 'REOPEN') {
+        newStatus = 'WIP';
+      } else if (transition.type === 'RESET') {
+        newStatus = 'TBS';
+      } else if (transition.type === 'UPDATE') {
+        newStatus = 'WIP';
+      }
+      
+      // Update modal state
+      modalProgressState.currentProgress = newProgress;
+      modalProgressState.previousStatus = newStatus;
+      document.getElementById('appStatusInput').value = newStatus;
     });
     
     // Form submission
@@ -9436,6 +9709,193 @@ const AdminController = {
         }
       }, 300);
     }, 3000);
+  },
+  
+  /**
+   * Waves CRUD Operations
+   */
+  renderWavesEditor() {
+    const waves = Dashboard.StorageManager.getWaves();
+    const container = document.querySelector('#waveEditorContainer');
+    
+    if (!container) return;
+    
+    let html = `<h3 style="margin:0 0 12px 0;color:var(--text);font-size:16px">Waves Management</h3>
+      <button class="btn btn-primary" onclick="Dashboard.AdminController.newWave()" style="margin-bottom:12px;padding:8px 12px;font-size:13px">+ Add Wave</button>
+      <table class="wave-table" style="width:100%;border-collapse:collapse;margin-top:12px">
+        <thead style="background:rgba(91,157,255,0.1);border-bottom:2px solid var(--ring)">
+          <tr>
+            <th style="padding:12px;text-align:left;font-size:12px;font-weight:600;color:#aaa;border-right:1px solid var(--ring)">ID</th>
+            <th style="padding:12px;text-align:left;font-size:12px;font-weight:600;color:#aaa;border-right:1px solid var(--ring)">Wave Name</th>
+            <th style="padding:12px;text-align:left;font-size:12px;font-weight:600;color:#aaa;border-right:1px solid var(--ring)">Apps Count</th>
+            <th style="padding:12px;text-align:center;font-size:12px;font-weight:600;color:#aaa">Actions</th>
+          </tr>
+        </thead>
+        <tbody>`;
+    
+    waves.forEach(wave => {
+      const appCount = Dashboard.StorageManager.getApps().filter(a => a.waveId === wave.id).length;
+      const deleteBtn = appCount > 0 
+        ? `<button class="btn btn-sm" disabled style="opacity:0.5;cursor:not-allowed;padding:4px 8px;font-size:11px" title="Cannot delete: wave has ${appCount} app(s)">Delete</button>`
+        : `<button class="btn btn-danger btn-sm" onclick="Dashboard.AdminController.deleteWave(${wave.id})" style="padding:4px 8px;font-size:11px">Delete</button>`;
+      html += `<tr style="border-bottom:1px solid var(--ring);transition:background 0.2s;height:44px">
+          <td style="padding:12px;font-size:13px;color:var(--text);border-right:1px solid var(--ring)">${wave.id}</td>
+          <td style="padding:12px;border-right:1px solid var(--ring)">
+            <input type="text" value="${wave.name}" onchange="Dashboard.AdminController.updateWave(${wave.id}, {name: this.value})" style="width:100%;padding:6px;background:rgba(91,157,255,0.05);border:1px solid var(--ring);border-radius:6px;color:var(--text);font-size:13px"/>
+          </td>
+          <td style="padding:12px;font-size:13px;color:var(--text);border-right:1px solid var(--ring);text-align:center">${appCount}</td>
+          <td style="padding:12px;text-align:center">${deleteBtn}</td>
+        </tr>`;
+    });
+    
+    html += '</tbody></table>';
+    html += `<div style="margin-top:16px;padding:12px;background:rgba(91,157,255,0.05);border:1px solid var(--ring);border-radius:8px;font-size:12px;color:#aaa">
+      <strong>ℹ️ Total Waves:</strong> ${waves.length} | <strong>Total Apps:</strong> ${Dashboard.StorageManager.getApps().length}
+    </div>`;
+    
+    container.innerHTML = html;
+  },
+  
+  newWave() {
+    this.showWaveModal({
+      title: '🌊 Create New Wave',
+      message: 'Enter a descriptive name for this wave',
+      inputPlaceholder: 'e.g., Wave Q4 2025',
+      confirmText: 'Create Wave',
+      type: 'input',
+      onConfirm: (name) => {
+        if (!name || name.trim().length === 0) {
+          this.showWaveAlert('Wave name cannot be empty', 'danger');
+          return;
+        }
+        try {
+          Dashboard.StorageManager.addWave({ name: name.trim() });
+          this.renderWavesEditor();
+          this.showWaveAlert('✅ Wave created successfully', 'success');
+        } catch (err) {
+          this.showWaveAlert('❌ Error: ' + err.message, 'danger');
+        }
+      }
+    });
+  },
+  
+  showWaveModal(config) {
+    const overlay = document.querySelector('.waves-modal-overlay') || this.createWaveModalOverlay();
+    const content = overlay.querySelector('.waves-modal-content');
+    
+    let html = `
+      <div class="waves-modal-header">
+        <h3>${config.title}</h3>
+        <p>${config.message}</p>
+      </div>
+    `;
+    
+    if (config.type === 'input') {
+      html += `
+        <div class="waves-modal-input-group">
+          <label>Wave Name</label>
+          <input type="text" id="waveInputValue" placeholder="${config.inputPlaceholder}" autofocus style="font-size:14px" />
+        </div>
+      `;
+    } else if (config.type === 'confirm') {
+      html += `
+        <div class="waves-modal-message warning">
+          ${config.message}
+        </div>
+      `;
+    }
+    
+    html += `
+      <div class="waves-modal-actions">
+        <button class="waves-modal-btn waves-modal-btn-secondary" onclick="document.querySelector('.waves-modal-overlay').classList.remove('active')">Cancel</button>
+    `;
+    
+    if (config.type === 'input') {
+      html += `<button class="waves-modal-btn waves-modal-btn-primary" id="waveConfirmBtn">✓ ${config.confirmText}</button>`;
+    } else if (config.type === 'confirm') {
+      html += `<button class="waves-modal-btn waves-modal-danger" id="waveConfirmBtn">${config.confirmText}</button>`;
+    }
+    
+    html += `</div>`;
+    
+    content.innerHTML = html;
+    overlay.classList.add('active');
+    
+    const confirmBtn = document.getElementById('waveConfirmBtn');
+    const input = document.getElementById('waveInputValue');
+    
+    if (input) {
+      input.focus();
+      input.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') confirmBtn.click();
+      });
+    }
+    
+    confirmBtn.onclick = () => {
+      overlay.classList.remove('active');
+      const value = input ? input.value : true;
+      config.onConfirm(value);
+    };
+    
+    document.querySelector('.waves-modal-overlay').addEventListener('click', (e) => {
+      if (e.target === overlay) overlay.classList.remove('active');
+    });
+  },
+  
+  createWaveModalOverlay() {
+    const overlay = document.createElement('div');
+    overlay.className = 'waves-modal-overlay';
+    overlay.innerHTML = `<div class="waves-modal-content"></div>`;
+    document.body.appendChild(overlay);
+    return overlay;
+  },
+  
+  showWaveAlert(message, type = 'info') {
+    const overlay = document.querySelector('.waves-modal-overlay') || this.createWaveModalOverlay();
+    const content = overlay.querySelector('.waves-modal-content');
+    
+    content.innerHTML = `
+      <div class="waves-modal-header">
+        <h3>${type === 'success' ? '✅ Success' : type === 'danger' ? '❌ Error' : 'ℹ️ Notice'}</h3>
+      </div>
+      <div class="waves-modal-message ${type}">
+        ${message}
+      </div>
+      <div class="waves-modal-actions">
+        <button class="waves-modal-btn ${type === 'success' ? 'waves-modal-confirm' : 'waves-modal-btn-primary'}" onclick="document.querySelector('.waves-modal-overlay').classList.remove('active')">
+          ${type === 'success' ? '👍 Got it' : 'OK'}
+        </button>
+      </div>
+    `;
+    
+    overlay.classList.add('active');
+  },
+  
+  updateWave(waveId, updates) {
+    try {
+      Dashboard.StorageManager.updateWave(waveId, updates);
+      this.renderWavesEditor();
+    } catch (err) {
+      this.showWaveAlert('❌ Error: ' + err.message, 'danger');
+    }
+  },
+  
+  deleteWave(waveId) {
+    this.showWaveModal({
+      title: '🗑️ Delete Wave',
+      message: 'Are you sure? This action cannot be undone.',
+      confirmText: '🗑️ Delete Forever',
+      type: 'confirm',
+      onConfirm: () => {
+        try {
+          Dashboard.StorageManager.deleteWave(waveId);
+          this.renderWavesEditor();
+          this.showWaveAlert('✅ Wave deleted successfully', 'success');
+        } catch (err) {
+          this.showWaveAlert('❌ ' + err.message, 'danger');
+        }
+      }
+    });
   }
 }
 

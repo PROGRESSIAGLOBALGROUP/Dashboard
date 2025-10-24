@@ -1,0 +1,101 @@
+{
+  "metadata": {
+    "timestamp": "2025-10-23T00:00:01Z",
+    "version": "1.0",
+    "author": "GitHub Copilot",
+    "project": "Dashboard Enhanced",
+    "ticket": "BUG: Progress=0 can have Status=WIP, should always be TBS"
+  },
+  "file": "dist/dashboard_enhanced.html",
+  "operation": "replace",
+  "description": "Add mandatory Progress↔Status synchronization validation in onProgressEdit(). Ensures that Progress value always dictates Status regardless of transition type: Progress=0→Status=TBS, Progress=100→Status=CLO, Progress(1-99)→Status=WIP.",
+  "rationale": "Currently, transition types assign Status values, but there's no enforcement that Progress=0 MUST be TBS. When user confirms 'Reopen Task' (100→0), the code correctly detects RESET transition and assigns TBS, but if there's any code path that doesn't execute, Status can remain as WIP with Progress=0. Adding explicit synchronization validation after transition logic ensures consistency regardless of edge cases.",
+  "impact": "After fix: Any Progress value will guarantee correct Status. Progress=0 will always be TBS. Progress=100 will always be CLO. Progress(1-99) will always be WIP. No edge cases where Status doesn't match Progress.",
+  "riskLevel": "Low",
+  "originalCode": "    let newStatus = app.status;\n    if (transition.type === 'START') {\n      newStatus = 'WIP';\n    } else if (transition.type === 'COMPLETION') {\n      newStatus = 'CLO';\n    } else if (transition.type === 'REOPEN') {\n      newStatus = 'WIP';\n    } else if (transition.type === 'RESET') {\n      newStatus = 'TBS';\n    } else if (transition.type === 'UPDATE') {\n      newStatus = 'WIP';\n    }\n    \n    const updates = {",
+  "newCode": "    let newStatus = app.status;\n    if (transition.type === 'START') {\n      newStatus = 'WIP';\n    } else if (transition.type === 'COMPLETION') {\n      newStatus = 'CLO';\n    } else if (transition.type === 'REOPEN') {\n      newStatus = 'WIP';\n    } else if (transition.type === 'RESET') {\n      newStatus = 'TBS';\n    } else if (transition.type === 'UPDATE') {\n      newStatus = 'WIP';\n    }\n    \n    // Mandatory synchronization: Progress value ALWAYS dictates Status\n    if (newProgress === 0) {\n      newStatus = 'TBS';  // Progress=0 must always be To Be Started\n    } else if (newProgress === 100) {\n      newStatus = 'CLO';  // Progress=100 must always be Closed\n    } else if (newProgress > 0 && newProgress < 100) {\n      newStatus = 'WIP';  // Progress(1-99) must always be Work In Progress\n    }\n    \n    const updates = {",
+  "validation": {
+    "beforeExecute": {
+      "checks": [
+        "File exists: dist/dashboard_enhanced.html",
+        "Original code found in onProgressEdit function",
+        "Transition type assignments present",
+        "Updates object creation found immediately after",
+        "File syntax valid"
+      ]
+    },
+    "afterExecute": {
+      "checks": [
+        "Synchronization validation block inserted",
+        "All three conditions present: Progress=0, Progress=100, Progress(1-99)",
+        "newStatus correctly assigned for each condition",
+        "Validation appears AFTER transition logic, BEFORE updates object",
+        "File syntax still valid",
+        "Function logic intact"
+      ]
+    },
+    "rollbackCondition": "If any validation check fails, trigger immediate rollback"
+  },
+  "rollback": {
+    "enabled": true,
+    "keepBackup": true,
+    "backupName": "dashboard_enhanced_20251023_status_sync_backup.html",
+    "maxBackups": 5
+  },
+  "testing": {
+    "unitTests": {
+      "required": true,
+      "tests": [
+        "Test newProgress=0 always results in newStatus='TBS'",
+        "Test newProgress=100 always results in newStatus='CLO'",
+        "Test newProgress=50 always results in newStatus='WIP'",
+        "Test newProgress=1 always results in newStatus='WIP'",
+        "Test newProgress=99 always results in newStatus='WIP'",
+        "Test synchronization overrides all transition types"
+      ]
+    },
+    "integrationTests": {
+      "required": true,
+      "tests": [
+        "User does 100→0 (RESET), confirms popup, verify Status='TBS' not 'WIP'",
+        "User does 0→100 (COMPLETION), confirms popup, verify Status='CLO'",
+        "User does 50→100 (COMPLETION), confirms popup, verify Status='CLO'",
+        "User does 100→50 (REOPEN), confirms popup, verify Status='WIP'",
+        "User does 50→75 (UPDATE), no popup, verify Status='WIP'",
+        "Verify no edge case where Progress=0 but Status≠TBS"
+      ]
+    },
+    "manualTests": {
+      "required": true,
+      "steps": [
+        "Open dist/dashboard_enhanced.html in browser",
+        "Open Admin Panel → Applications tab",
+        "Test Case 1: Progress 100→0 (RESET)",
+        "  - Confirm popup",
+        "  - Verify Status changes to TBS (not WIP)",
+        "Test Case 2: Progress 0→100 (COMPLETION)",
+        "  - Confirm popup",
+        "  - Verify Status changes to CLO",
+        "Test Case 3: Progress 50→100 (COMPLETION)",
+        "  - Confirm popup",
+        "  - Verify Status changes to CLO",
+        "Test Case 4: Progress 100→50 (REOPEN)",
+        "  - Confirm popup",
+        "  - Verify Status changes to WIP",
+        "Test Case 5: Progress 50→75 (UPDATE)",
+        "  - No popup should appear",
+        "  - Verify Status remains WIP",
+        "Test Case 6: Final verification",
+        "  - Check that NO combination exists where Progress≠Status semantics"
+      ]
+    }
+  },
+  "approval": {
+    "requiresReview": false,
+    "testCoverage": "All Progress ranges (0, 1-99, 100)"
+  },
+  "documentation": {
+    "updated": false,
+    "files": []
+  }
+}

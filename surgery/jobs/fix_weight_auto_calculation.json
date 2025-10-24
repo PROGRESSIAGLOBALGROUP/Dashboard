@@ -1,0 +1,41 @@
+{
+  "metadata": {
+    "timestamp": "2025-10-23T00:00:00Z",
+    "version": "1.0",
+    "author": "GitHub Copilot",
+    "project": "Dashboard Enhanced",
+    "priority": "CRITICAL",
+    "bugId": "weight_auto_calculation_not_updating",
+    "description": "Fix auto-calculated weight not updating when Criticality/Impact/Priority changes"
+  },
+  "file": "dist/dashboard_enhanced.html",
+  "operation": "replace",
+  "description": "Move event listeners for weight recalculation AFTER form cloning to ensure listeners bind to actual DOM nodes",
+  "rationale": "Form listeners were being added to the original form element, but then cloneNode(true) created new DOM nodes with the same IDs. The listeners remained on the old detached nodes, so changes to the inputs didn't trigger recalculation. Moving listeners after cloning binds them to the active form in the DOM.",
+  "impact": "Weight preview will now update in real-time when user changes Criticality, Business Impact, or Priority values in the Create Application modal.",
+  "riskLevel": "Low",
+  "bugSymptoms": [
+    "User opens Create Application modal",
+    "User changes Criticality/Impact/Priority",
+    "Weight field shows 0.89 (static value)",
+    "Weight does NOT change despite formula updates"
+  ],
+  "rootCause": "Event listeners added before form.cloneNode(true), so listeners attached to detached old DOM elements instead of active form",
+  "solution": "Add listeners AFTER form clone to bind to actual interactive form elements",
+  "validation": {
+    "beforeExecute": "Old form has listeners but they're on detached nodes",
+    "afterExecute": "New cloned form has listeners on active nodes; weight updates on field changes"
+  },
+  "testing": {
+    "manual": [
+      "Open dist/dashboard_enhanced.html in browser",
+      "Click 'Create New Application' button",
+      "Change Criticality dropdown",
+      "Verify Weight field updates immediately",
+      "Change Business Impact dropdown", 
+      "Verify Weight field updates immediately",
+      "Change Priority dropdown",
+      "Verify Weight field updates immediately"
+    ]
+  }
+}
