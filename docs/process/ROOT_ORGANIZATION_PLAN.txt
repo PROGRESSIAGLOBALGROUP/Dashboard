@@ -1,0 +1,93 @@
+# 🗂️ ROOT DIRECTORY ORGANIZATION PLAN
+
+## Archivos en ROOT a MOVER (según protocolo FILE_ORGANIZATION_PROTOCOL.md)
+
+### ✅ QUEDAN EN ROOT (Permitidos)
+- README.md (excepción - documentación del proyecto)
+- package.json (configuración esencial)
+- dashboard_enhanced.html (aplicación principal)
+- index.html (landing page)
+
+---
+
+## ❌ DEBEN MOVERSE
+
+### A `docs/technical/` (Especificaciones técnicas, arquitectura, fórmulas):
+1. TECHNICAL_READINESS_ASSESSMENT.md → Especificación técnica
+2. CRITICAL_ARCHITECTURE_CLARIFICATION.md → Arquitectura
+
+### A `docs/implementations/` (Detalles de implementación):
+1. v1.3.0_EXECUTION_PLAN.md
+2. IMPLEMENTATION_ROADMAP.md
+3. RELEASE_v1.2.0_COMPLETE.md
+
+### A `docs/reports/` (Reportes ejecutivos, verificación):
+1. FINAL_STATUS_REPORT.txt
+2. PUBLICATION_VERIFICATION_REPORT.txt
+3. TESTING_RESULTS_v1.2.0.md
+4. TESTING_APPROVAL_FINAL.txt
+
+### A `docs/process/` (Procesos, checklists, logs):
+1. APPROVAL_CONFIRMED.md
+2. AUTHORIZATION_PACKAGE_SUMMARY.md
+3. COMPLETE_PACKAGE_INDEX.md
+4. MEETING_PREP_CHECKLIST.md
+5. PHASE_10_SPRINT_0_PLANNING.md
+6. PHASES_7_8_COMPLETE.txt
+7. PHASE_4_READY.txt
+8. POST_RELEASE_TESTING_GUIDE.md
+9. START_TESTING_NOW.txt
+10. STAKEHOLDER_PRESENTATION.md
+11. STAKEHOLDER_READING_GUIDE.md
+12. TECHNICAL_GAP_SUMMARY.txt
+13. TESTING_PHASE_7_READY.md
+14. TESTING_SESSION_INITIATED.md
+15. TESTING_SESSION_v1.2.0.md
+16. TESTING_START_HERE.txt
+17. TESTING_STATUS_ACTIVE.txt
+18. IMMEDIATE_GO_AUTHORIZATION.md
+19. INVESTMENT_ANALYSIS.md
+
+### A `docs/guides/` (Guías de usuario):
+(None currently in root - future guides go here)
+
+---
+
+## 🎯 RESUMEN DE MOVIMIENTOS
+
+| Cantidad | Destino | Archivos |
+|----------|---------|----------|
+| 2 | docs/technical/ | TECHNICAL_*, CRITICAL_* |
+| 3 | docs/implementations/ | v1.3.0_*, IMPLEMENTATION_*, RELEASE_* |
+| 4 | docs/reports/ | FINAL_*, PUBLICATION_*, TESTING_RESULTS, TESTING_APPROVAL |
+| 10 | docs/process/ | Todos los demás |
+| **Total** | **Fuera de root** | **19 archivos** |
+
+---
+
+## ARCHIVOS QUE QUEDAN EN ROOT
+
+✅ README.md  
+✅ package.json  
+✅ dashboard_enhanced.html  
+✅ index.html  
+
+---
+
+## Comandos para ejecutar (PowerShell)
+
+```powershell
+# Crear directorios si no existen
+mkdir -Force docs/technical, docs/implementations, docs/reports, docs/guides
+
+# Mover archivos
+mv TECHNICAL_READINESS_ASSESSMENT.md docs/technical/
+mv CRITICAL_ARCHITECTURE_CLARIFICATION.md docs/technical/
+
+# ... etc
+
+# Verificar que root está limpio
+dir *.md *.txt
+# Solo debería mostrar: README.md
+```
+
