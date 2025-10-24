@@ -429,7 +429,7 @@ const AdminController = {
             <option value="WIP" ${app.status === 'WIP' ? 'selected' : ''}>WIP</option>
             <option value="CLO" ${app.status === 'CLO' ? 'selected' : ''}>CLO</option>
           </select></td>
-          <td><input type="number" min="0" max="100" value="${app.progress || 0}" onchange="Dashboard.AdminController.updateApp(${app.id}, {progress: parseInt(this.value)})"/></td>
+          <td><input type="number" min="0" max="100" value="${app.progress || 0}" onchange="Dashboard.AdminController.onProgressEdit(${app.id}, parseInt(this.value))"/></td>
           <td><span class="auto-weight">${Dashboard.ProgressCalculator.calculateAppWeight(app).toFixed(2)}</span></td>
           <td><select onchange="Dashboard.AdminController.updateApp(${app.id}, {criticality: this.value})">
             <option value="Low" ${app.criticality === 'Low' ? 'selected' : ''}>Low</option>
