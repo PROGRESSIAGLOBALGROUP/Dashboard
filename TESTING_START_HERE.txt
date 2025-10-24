@@ -1,0 +1,110 @@
+🧪 TESTING v1.2.0 - INSTRUCCIONES INMEDIATAS
+================================================
+
+✅ SERVIDOR INICIADO en puerto 8000
+
+Estado: LISTO PARA TESTING
+
+═══════════════════════════════════════════════════════════
+
+📋 INSTRUCCIONES PARA COMENZAR:
+
+1. ABRE TU NAVEGADOR (Chrome o Firefox recomendado)
+
+2. NAVEGA A:
+   http://localhost:8000/dashboard_enhanced.html
+
+3. PRESIONA F12 para abrir DevTools → Console tab
+
+4. ABRE ESTE ARCHIVO para referencia:
+   c:\PROYECTOS\Dashboard\TESTING_SESSION_v1.2.0.md
+
+5. SIGUE LOS TESTS EN ORDEN:
+
+   SECTION A (15 min): Wave CRUD Operations
+   ├─ A1: Create New Wave
+   ├─ A2: Create Multiple Waves
+   ├─ A3: Update Wave Name
+   ├─ A4: Delete Wave (No Apps)
+   └─ A5: Cannot Delete Wave With Apps
+
+   SECTION B (15 min): Dynamic Wave Resolution
+   ├─ B1: Wave Dropdown Shows Custom Waves
+   ├─ B2: Wave Distribution Chart Uses Custom Names
+   ├─ B3: Matrix View Uses Custom Wave Names
+   └─ B4: Wave Name Resolution Handles Missing Waves
+
+   SECTION D (10 min): Persistence
+   ├─ D1: Waves Stored in localStorage
+   ├─ D2: Waves Persist After Page Reload
+   └─ D3: App Wave Assignments Persist
+
+   SECTION E (10 min): Edge Cases
+   ├─ E1: Special Characters in Wave Names
+   ├─ E2: Long Wave Names
+   └─ E3: Handle Rapid Wave Creation
+
+   FINAL (5 min): System Check
+
+═══════════════════════════════════════════════════════════
+
+✅ SUCCESS CRITERIA:
+
+Goal: 15/15 Tests PASS
+
+If ALL PASS ✅:
+→ v1.2.0 APPROVED FOR RELEASE
+→ Ready for stakeholder presentation
+→ Ready for v1.3.0 approval
+
+If ANY FAIL ❌:
+→ Document issue severity
+→ If CRITICAL: Fix and re-test
+→ If LOW: Can approve conditionally
+
+═══════════════════════════════════════════════════════════
+
+📊 RECORDING YOUR RESULTS:
+
+Use TESTING_SESSION_v1.2.0.md to record:
+- Each test result (PASS/FAIL)
+- Any issues found
+- Severity levels
+- Notes and observations
+
+═══════════════════════════════════════════════════════════
+
+🚀 READY TO BEGIN?
+
+1. Open browser: http://localhost:8000/dashboard_enhanced.html
+2. Press F12 → Console
+3. Start with Test A1
+4. Record results as you go
+
+Estimated Time: 45-60 minutes
+Expected Outcome: v1.2.0 Validation Complete
+
+═══════════════════════════════════════════════════════════
+
+💡 QUICK COMMANDS FOR CONSOLE:
+
+Check wave count:
+Dashboard.StorageManager.getWaves().length
+
+View all waves:
+Dashboard.StorageManager.getWaves()
+
+Get wave by ID:
+Dashboard.StorageManager.getWaveNameById(1)
+
+Check localStorage:
+JSON.parse(localStorage.getItem('dashboard_config_v1')).waves
+
+═══════════════════════════════════════════════════════════
+
+Need help?
+- Check EXECUTION_GUIDE.md in tests/e2e/
+- Check MANUAL_TESTING_GUIDE.js in tests/e2e/
+- Check console for error messages (F12)
+
+═══════════════════════════════════════════════════════════
