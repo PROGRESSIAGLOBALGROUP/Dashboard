@@ -5453,13 +5453,28 @@ const DataLoader = {
   
   async loadData() {
     try {
-      console.log('🚀 [DataLoader] Fetching data from ../data/tables.json...');
+      // Construct URL based on current location protocol
+      let dataUrl;
+      if (window.location.protocol === 'file:') {
+        // Local file access - fetch from relative path via proper protocol
+        dataUrl = '../data/tables.json';
+        console.log('🚀 [DataLoader] Local mode detected, fetching:', dataUrl);
+      } else {
+        // HTTP/HTTPS - use absolute path
+        const baseUrl = window.location.origin + window.location.pathname.replace(/dist\/.*/, '');
+        dataUrl = baseUrl + 'data/tables.json';
+        console.log('🚀 [DataLoader] HTTP mode detected, fetching from:', dataUrl);
+      }
       
       // FETCH from external JSON file (no hardcodes)
-      // Path: from dist/dashboard_enhanced.html → ../data/tables.json
-      const response = await fetch('../data/tables.json');
+      const response = await fetch(dataUrl);
       if (!response.ok) {
-        console.error('❌ [DataLoader] Failed to fetch ../data/tables.json:', response.statusText);
+        console.error('❌ [DataLoader] Failed to fetch data:', {
+          url: dataUrl,
+          status: response.status,
+          statusText: response.statusText,
+          protocol: window.location.protocol
+        });
         return { businessUnits: [], apps: [], waves: [] };
       }
       
