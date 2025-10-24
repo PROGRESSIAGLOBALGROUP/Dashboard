@@ -660,7 +660,7 @@ class DashboardBuilder:
 
 
 if __name__ == '__main__':
-    html_path = r'c:\PROYECTOS\Dashboard\dashboard.html'
+    html_path = r'c:\PROYECTOS\Dashboard\dashboard_enhanced.html'
     builder = DashboardBuilder(html_path)
     output = builder.build()
     print(f'\n📥 Abre el archivo en: {output}')
