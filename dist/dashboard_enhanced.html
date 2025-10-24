@@ -5673,7 +5673,7 @@ const DataLoader = {
       const apps = (jsonData.apps_catalog || []).map(app => ({
         id: app.APP_ID,
         buId: app.BU_ID,
-        wave: `Wave ${app.WAVE_ID}`,
+        waveId: app.WAVE_ID,
         name: app.APP_NAME,
         status: app.APP_STATUS === "Completed" ? "CLO" : app.APP_STATUS === "WIP" ? "WIP" : "TBS",
         progress: app.APP_COMPLETION_PROGRESS || 0,
@@ -5840,7 +5840,7 @@ const StorageManager = {
     app.impact = app.impact || 'Medium';
     app.priority = app.priority || 'Medium';
     app.order = app.order || 0;
-    app.wave = app.wave || 'Wave 1';
+    app.waveId = app.waveId || 1;  // Default to first wave ID
     app.weight = app.weight || 1;
     
     // Only add if it has a valid buId
@@ -5900,6 +5900,11 @@ const StorageManager = {
   
   getBUById(buId) {
     return this.getBUs().find(bu => bu.id === buId);
+  },
+  
+  getWaveNameById(waveId) {
+    const wave = this.getWaves().find(w => w.id === waveId);
+    return wave ? wave.name : `Wave ${waveId}`;  // Fallback if not found
   },
   
   markAsCleared() {
@@ -6584,6 +6589,24 @@ const UIController = {
     }
   },
 
+  updateWaveDistributionChart() {
+    /**
+     * Update wave distribution chart titles dynamically
+     * Instead of hardcoded 'Wave 1', 'Wave 2', 'Wave 3'
+     */
+    const waves = Dashboard.StorageManager.getWaves();
+    const chartDivs = document.querySelector('#waveDistChart')?.querySelectorAll('div');
+    
+    if (!chartDivs || chartDivs.length === 0) return;
+    
+    // Update each bar title with dynamic wave name
+    chartDivs.forEach((div, index) => {
+      if (index < waves.length) {
+        div.setAttribute('title', waves[index].name);
+      }
+    });
+  },
+
   apply() {
     console.log('🔍 [UIController.apply] Iniciando actualización de UI');
     
@@ -6632,6 +6655,7 @@ const UIController = {
     this.renderTiles(items);
     this.drawBars(items);
     this.updateKPIs(items);
+    this.updateWaveDistributionChart();  // ✅ Update wave chart titles dynamically
   },
 
   download(filename, text, type = 'text/plain') {
@@ -7773,8 +7797,15 @@ const AdminController = {
         options += `<option value="${wave.name}" ${isSelected ? 'selected' : ''}>🌊 ${wave.name}</option>`;
       });
     } else {
-      // Fallback if no waves in dataset
-      options = `<option value="Wave 1" ${!currentWave || currentWave === 'Wave 1' ? 'selected' : ''}>🌊 Wave 1</option>`;
+      // Fallback if no waves in dataset - use StorageManager to get first wave dynamically
+      const allWaves = Dashboard.StorageManager.getWaves();
+      if (allWaves.length > 0) {
+        const firstWave = allWaves[0];
+        options = `<option value="${firstWave.name}" ${!currentWave || currentWave === firstWave.name ? 'selected' : ''}>🌊 ${firstWave.name}</option>`;
+      } else {
+        // If no waves at all, create placeholder
+        options = `<option value="No Waves">No Waves Available</option>`;
+      }
     }
     
     return options;
@@ -7892,9 +7923,24 @@ const AdminController = {
       });
       waveSelect.value = config.waves[0].name; // Select first wave by default
     } else {
-      // Fallback if no waves in dataset
-      waveSelect.innerHTML = '<option value="Wave 1">Wave 1</option>';
-      waveSelect.value = 'Wave 1';
+      // Fallback if no waves in dataset - use StorageManager dynamically
+      const allWaves = Dashboard.StorageManager.getWaves();
+      if (allWaves.length > 0) {
+        allWaves.forEach(wave => {
+          const option = document.createElement('option');
+          option.value = wave.name;
+          option.textContent = wave.name;
+          waveSelect.appendChild(option);
+        });
+        waveSelect.value = allWaves[0].name; // Select first wave by default
+      } else {
+        // No waves available at all
+        const option = document.createElement('option');
+        option.value = 'No Waves';
+        option.textContent = 'No Waves Available';
+        waveSelect.appendChild(option);
+        waveSelect.value = 'No Waves';
+      }
     }
     
     // Function to recalculate weight preview
@@ -9110,11 +9156,11 @@ const AdminController = {
           ...app,
           buId: bu.id,
           buName: bu.name,
-          wave: app.wave || 'Wave 1'
+          wave: Dashboard.StorageManager.getWaveNameById(app.waveId)
         });
         
         // Build wave map
-        const wave = app.wave || 'Wave 1';
+        const wave = Dashboard.StorageManager.getWaveNameById(app.waveId);
         if (!waveMap.has(wave)) {
           waveMap.set(wave, []);
         }
@@ -9151,7 +9197,7 @@ const AdminController = {
           <span class="matrix-bu-name">${app.buName}</span>
         </td>
         <td>
-          <span class="matrix-wave">🌊 ${app.wave || 'Wave 1'}</span>
+          <span class="matrix-wave">🌊 ${app.wave}</span>
         </td>
         <td>
           <span class="matrix-weight">${weight.toFixed(2)}</span>
@@ -11429,20 +11475,19 @@ document.head.appendChild(notificationStyles);
                 if (el_completion) el_completion.textContent = avgCompletion;
                 if (el_risk) el_risk.textContent = atRisk;
                 
-                // Wave counts
+                // Wave counts - Dynamic from StorageManager
+                const wavesList = Dashboard.StorageManager.getWaves();
                 const waves = {};
                 apps.forEach(a => {
-                    const wave = a.wave || 'Unknown';
+                    const wave = a.waveId ? wavesList.find(w => w.id === a.waveId)?.name : 'Unknown';
                     waves[wave] = (waves[wave] || 0) + 1;
                 });
 
-                const el_w1 = document.getElementById('waveCount1');
-                const el_w2 = document.getElementById('waveCount2');
-                const el_w3 = document.getElementById('waveCount3');
-                
-                if (el_w1) el_w1.textContent = waves['Wave 1'] || 0;
-                if (el_w2) el_w2.textContent = waves['Wave 2'] || 0;
-                if (el_w3) el_w3.textContent = waves['Wave 3'] || 0;
+                // Update wave count elements dynamically
+                wavesList.slice(0, 3).forEach((wave, index) => {
+                    const el_wave = document.getElementById(`waveCount${index + 1}`);
+                    if (el_wave) el_wave.textContent = waves[wave.name] || 0;
+                });
             } catch (error) {
                 console.error('[AppsOverview] Error updating metrics:', error);
             }
@@ -11488,7 +11533,7 @@ document.head.appendChild(notificationStyles);
                     const buName = bu ? bu.name : 'N/A';
                     const progress = app.progress || 0;
                     const factors = Array.isArray(app.factors) ? app.factors : [];
-                    const wave = app.wave || 'Wave 1';
+                    const wave = Dashboard.StorageManager.getWaveNameById(app.waveId);
                     
                     let statusBadge = '⏳ To Start';
                     let statusColor = 'to-start';
@@ -11500,7 +11545,9 @@ document.head.appendChild(notificationStyles);
                         statusColor = 'in-progress';
                     }
 
-                    const waveColor = wave === 'Wave 1' ? 'w1' : wave === 'Wave 2' ? 'w2' : 'w3';
+                    // Dynamic wave color based on wave index
+                    const waveIndex = Dashboard.StorageManager.getWaves().findIndex(w => w.id === app.waveId);
+                    const waveColor = waveIndex === 0 ? 'w1' : waveIndex === 1 ? 'w2' : 'w3';
 
                     return `
                         <tr class="app-row-${statusColor}">

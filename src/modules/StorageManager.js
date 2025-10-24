@@ -111,6 +111,17 @@ const StorageManager = {
   getWaves() {
     return this.loadConfig().waves || [];
   },
+
+  getWaveNameById(waveId) {
+    /**
+     * Resolve waveId to wave name dynamically
+     * Returns wave name or fallback 'Wave {waveId}' if not found
+     */
+    if (!waveId) return 'Wave 1'; // Default if no waveId provided
+    
+    const wave = this.getWaves().find(w => w.id === waveId);
+    return wave ? wave.name : `Wave ${waveId}`;
+  },
   
   addWave(wave) {
     const config = this.loadConfig();
