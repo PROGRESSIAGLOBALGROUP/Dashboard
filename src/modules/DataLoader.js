@@ -225,6 +225,40 @@ const DataLoader = {
     }
   },
   
+  getWaveCatalog() {
+    /**
+     * Phase 3: Dynamic Wave Resolution
+     * Returns personalized waves from StorageManager if available
+     * Falls back to embedded data waves if none exist
+     * 
+     * This enables:
+     * - User-defined custom waves
+     * - Wave names persist across page reloads
+     * - Runtime wave modifications (add/rename/delete)
+     */
+    try {
+      // Check if StorageManager is initialized and has custom waves
+      if (window.Dashboard && window.Dashboard.StorageManager) {
+        const customWaves = Dashboard.StorageManager.getWaves();
+        
+        // If custom waves exist, convert them to embedded format and use them
+        if (customWaves && customWaves.length > 0) {
+          console.log('📊 [DataLoader] Using custom waves from StorageManager:', customWaves.length, 'waves');
+          return customWaves.map(wave => ({
+            WAVE_ID: wave.id,
+            DESCRIPTION: wave.name
+          }));
+        }
+      }
+    } catch (err) {
+      console.warn('⚠️ [DataLoader] Error reading custom waves:', err.message);
+    }
+    
+    // Fallback to embedded data
+    console.log('📊 [DataLoader] Using embedded waves from embeddedData');
+    return this.embeddedData.data.waves_catalog.records || [];
+  },
+  
   async loadData() {
     try {
       // Use embedded data instead of fetching from file
@@ -255,8 +289,9 @@ const DataLoader = {
                app.APP_CRITICALITY === "Medium" ? 2 : 1
       }));
       
-      // Process waves data from the JSON
-      const waves = jsonData.data.waves_catalog.records.map(wave => ({
+      // ✅ Phase 3: Process waves data - Use dynamic catalog instead of hardcoded embedded data
+      const waveCatalog = this.getWaveCatalog();  // Dynamic OR fallback to embedded
+      const waves = (waveCatalog || []).map(wave => ({
         id: wave.WAVE_ID,
         name: wave.DESCRIPTION
       }));

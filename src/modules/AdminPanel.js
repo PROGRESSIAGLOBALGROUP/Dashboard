@@ -713,6 +713,8 @@ const AdminController = {
     try {
       Dashboard.StorageManager.addWave({ name });
       this.renderWavesEditor();
+      // ✅ Phase 3: Trigger UI refresh so wave changes propagate
+      Dashboard.UIController.apply();
     } catch (err) {
       alert('❌ Error adding wave:\n\n' + err.message);
     }
@@ -722,6 +724,8 @@ const AdminController = {
     try {
       Dashboard.StorageManager.updateWave(waveId, updates);
       this.renderWavesEditor();
+      // ✅ Phase 3: Trigger UI refresh so wave changes propagate
+      Dashboard.UIController.apply();
     } catch (err) {
       alert('❌ Error updating wave:\n\n' + err.message);
     }
@@ -733,6 +737,8 @@ const AdminController = {
     try {
       Dashboard.StorageManager.deleteWave(waveId);
       this.renderWavesEditor();
+      // ✅ Phase 3: Trigger UI refresh so wave changes propagate
+      Dashboard.UIController.apply();
     } catch (err) {
       alert('❌ Cannot delete wave:\n\n' + err.message);
     }
