@@ -56,6 +56,275 @@ const AdminController = {
       this.renderAppsEditor();
     }
   },
+
+  /**
+   * Validate progress input - Must be integer 0-100
+   */
+  validateProgressInput(value) {
+    // Type check
+    if (typeof value !== 'number') {
+      return { valid: false, error: 'Progress must be a number' };
+    }
+    
+    // Must be integer (no decimals)
+    if (!Number.isInteger(value)) {
+      return { valid: false, error: 'Progress must be a whole number (0-100)' };
+    }
+    
+    // Range check
+    if (value < 0 || value > 100) {
+      return { valid: false, error: 'Progress must be between 0 and 100' };
+    }
+    
+    // NaN check
+    if (isNaN(value)) {
+      return { valid: false, error: 'Progress is not a valid number' };
+    }
+    
+    return { valid: true, error: null };
+  },
+
+  /**
+   * Detect transition type based on old and new progress values
+   * Returns: { type, requiresPopup, celebration?, sadness? }
+   */
+  detectProgressTransition(oldProgress, newProgress) {
+    // Validation first
+    const validation = this.validateProgressInput(newProgress);
+    if (!validation.valid) {
+      return { type: 'INVALID', requiresPopup: true, error: validation.error };
+    }
+    
+    // No change
+    if (oldProgress === newProgress) {
+      return { type: 'NONE', requiresPopup: false };
+    }
+    
+    // START: 0 → X (where 0 < X ≤ 100)
+    if (oldProgress === 0 && newProgress > 0) {
+      return { type: 'START', requiresPopup: true };
+    }
+    
+    // COMPLETION: X → 100 (where 0 ≤ X < 100)
+    // Includes reaching 100 from any value, triggers celebration
+    if (oldProgress < 100 && newProgress === 100) {
+      return { type: 'COMPLETION', requiresPopup: true, celebration: true };
+    }
+    
+    // REOPEN: 100 → Y (where Y < 100)
+    if (oldProgress === 100 && newProgress < 100) {
+      return { type: 'REOPEN', requiresPopup: true, sadness: true };
+    }
+    
+    // RESET: X → 0 (where X > 0)
+    if (oldProgress > 0 && newProgress === 0) {
+      return { type: 'RESET', requiresPopup: true };
+    }
+    
+    // INTERMEDIATE: X → Y (both between 1-99 inclusive)
+    // No popup, direct apply
+    if (oldProgress > 0 && oldProgress < 100 && newProgress > 0 && newProgress < 100) {
+      return { type: 'UPDATE', requiresPopup: false };
+    }
+    
+    // Unknown/invalid transition
+    return { type: 'INVALID', requiresPopup: true, error: 'Invalid progress transition' };
+  },
+
+  /**
+   * Show progress confirmation popup with 4 types
+   * Returns promise that resolves with user choice
+   */
+  showProgressPopup(type, oldProgress, newProgress, app) {
+    return new Promise((resolve) => {
+      const backdrop = document.createElement('div');
+      backdrop.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;z-index:10000';
+      
+      const popup = document.createElement('div');
+      popup.style.cssText = 'background:var(--panel);border:2px solid var(--ring);border-radius:16px;padding:24px;max-width:400px;min-width:300px;box-shadow:0 10px 40px rgba(0,0,0,0.5)';
+      
+      let title, message, confirmText, confirmStyle, themeColor;
+      
+      switch (type) {
+        case 'START':
+          title = '🚀 Start Activity';
+          message = `Change status from 'To Be Started' to 'In Progress'? (${oldProgress}% → ${newProgress}%)`;
+          confirmText = 'Start Task';
+          confirmStyle = 'background:var(--primary);color:white';
+          themeColor = 'var(--primary)';
+          break;
+          
+        case 'COMPLETION':
+          title = '🎉 Congratulations!';
+          message = `You've completed this task! Confirm to mark as Completed? (${oldProgress}% → 100%)`;
+          confirmText = 'Celebrate & Complete';
+          confirmStyle = 'background:#FFD700;color:black;font-weight:bold';
+          themeColor = '#FFD700';
+          break;
+          
+        case 'REOPEN':
+          title = '😢 Reopening Completed Task';
+          message = `Are you sure? This will change status back to 'In Progress'. (100% → ${newProgress}%)`;
+          confirmText = 'Reopen Task';
+          confirmStyle = 'background:var(--text);color:var(--bg);opacity:0.8';
+          themeColor = 'var(--text)';
+          break;
+          
+        case 'RESET':
+          title = '⚠️ Reset Activity to Zero';
+          message = `This will mark the task as 'Not Started' and remove all progress. (${oldProgress}% → 0%)`;
+          confirmText = 'Reset to Zero';
+          confirmStyle = 'background:#FF9500;color:white';
+          themeColor = '#FF9500';
+          break;
+          
+        default:
+          resolve(false);
+          return;
+      }
+      
+      popup.innerHTML = `
+        <div style="border-bottom:3px solid ${themeColor};margin-bottom:16px;padding-bottom:12px">
+          <h3 style="margin:0;color:var(--text);font-size:20px">${title}</h3>
+          <p style="margin:8px 0 0 0;color:var(--text);opacity:0.7;font-size:14px;font-weight:normal">App: <strong>${app.name}</strong></p>
+        </div>
+        <p style="color:var(--text);margin:16px 0;line-height:1.5">${message}</p>
+        <div style="display:flex;gap:12px;margin-top:24px;justify-content:flex-end">
+          <button id="popupCancel" style="padding:8px 16px;border:1px solid var(--ring);background:transparent;color:var(--text);border-radius:8px;cursor:pointer;font-size:14px">Cancel</button>
+          <button id="popupConfirm" style="padding:8px 16px;border:none;${confirmStyle};border-radius:8px;cursor:pointer;font-size:14px;font-weight:bold">✓ ${confirmText}</button>
+        </div>
+      `;
+      
+      backdrop.appendChild(popup);
+      document.body.appendChild(backdrop);
+      
+      const cleanup = () => {
+        backdrop.remove();
+      };
+      
+      popup.querySelector('#popupCancel').addEventListener('click', () => {
+        cleanup();
+        resolve(false);
+      });
+      
+      popup.querySelector('#popupConfirm').addEventListener('click', () => {
+        cleanup();
+        resolve(true);
+      });
+      
+      // Click backdrop to cancel
+      backdrop.addEventListener('click', (e) => {
+        if (e.target === backdrop) {
+          cleanup();
+          resolve(false);
+        }
+      });
+      
+      // ESC to cancel
+      const escHandler = (e) => {
+        if (e.key === 'Escape') {
+          document.removeEventListener('keydown', escHandler);
+          cleanup();
+          resolve(false);
+        }
+      };
+      document.addEventListener('keydown', escHandler);
+    });
+  },
+
+  /**
+   * Handle progress cell edit - orchestrates validation, popup, and save
+   */
+  async onProgressEdit(appId, newProgressValue) {
+    const app = Dashboard.StorageManager.getApps().find(a => a.id === appId);
+    if (!app) {
+      Dashboard.UIController.showToast('App not found', 'error');
+      return;
+    }
+    
+    const oldProgress = app.progress || 0;
+    const newProgress = parseInt(newProgressValue, 10);
+    
+    // Validate input
+    const validation = this.validateProgressInput(newProgress);
+    if (!validation.valid) {
+      Dashboard.UIController.showToast(`❌ ${validation.error}`, 'error');
+      return;
+    }
+    
+    // Detect transition type
+    const transition = this.detectProgressTransition(oldProgress, newProgress);
+    
+    // Handle invalid transition
+    if (transition.type === 'INVALID') {
+      Dashboard.UIController.showToast(`❌ ${transition.error || 'Invalid progress change'}`, 'error');
+      return;
+    }
+    
+    // Handle NONE (no change)
+    if (transition.type === 'NONE') {
+      Dashboard.UIController.showToast('Progress unchanged', 'info');
+      return;
+    }
+    
+    // For transitions that require popup
+    if (transition.requiresPopup) {
+      const confirmed = await this.showProgressPopup(transition.type, oldProgress, newProgress, app);
+      if (!confirmed) {
+        Dashboard.UIController.showToast('Progress change cancelled', 'info');
+        this.renderAppsEditor(); // Refresh to reset input
+        return;
+      }
+    }
+    
+    // Calculate new status based on transition
+    let newStatus = app.status;
+    if (transition.type === 'START') {
+      newStatus = 'WIP';
+    } else if (transition.type === 'COMPLETION') {
+      newStatus = 'CLO';
+    } else if (transition.type === 'REOPEN') {
+      newStatus = 'WIP';
+    } else if (transition.type === 'RESET') {
+      newStatus = 'TBS';
+    } else if (transition.type === 'UPDATE') {
+      // Keep existing status (should be WIP)
+      newStatus = 'WIP';
+    }
+    
+    // Apply changes
+    const updates = {
+      progress: newProgress,
+      status: newStatus,
+      updatedAt: new Date().toISOString(),
+      updatedBy: 'Local Edit'
+    };
+    
+    Dashboard.StorageManager.updateApp(appId, updates);
+    
+    // Show appropriate feedback
+    let message = '';
+    if (transition.type === 'START') {
+      message = `✅ Task started! Progress: ${newProgress}%`;
+    } else if (transition.type === 'COMPLETION') {
+      message = `🏆 Task completed! Great job!`;
+      // Trigger celebration animation
+      Dashboard.UIController.showCelebration();
+    } else if (transition.type === 'REOPEN') {
+      message = `↩️ Task reopened`;
+      Dashboard.UIController.showSadness();
+    } else if (transition.type === 'RESET') {
+      message = `🔄 Activity reset to zero`;
+    } else if (transition.type === 'UPDATE') {
+      message = `✅ Progress updated: ${newProgress}%`;
+    }
+    
+    Dashboard.UIController.showToast(message, 'success');
+    
+    // Refresh UI
+    this.renderAppsEditor();
+    Dashboard.UIController.apply();
+  },
   
   closeModal() {
     document.querySelector('#adminModal').classList.remove('active');

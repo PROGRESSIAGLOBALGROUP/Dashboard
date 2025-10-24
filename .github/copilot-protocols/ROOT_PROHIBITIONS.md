@@ -12,7 +12,7 @@
 
 | File Type | Pattern | Why | Action |
 |-----------|---------|-----|--------|
-| `.txt` | `*.txt` | Reports/logs belong in `docs/reports/` or `docs/process/` | **DELETE IMMEDIATELY** |
+| `.txt` | `*.txt` | Reports/logs belong in `docs/reports/` or `docs/process/` | **MOVE IMMEDIATELY** |
 | `.md` (non-README) | `*.md` except `README.md` | All markdown except README goes to `docs/` | **MOVE TO docs/** |
 | `.ps1` | `*.ps1` | PowerShell scripts go to `scripts/` | **MOVE TO scripts/** |
 | `.js` (non-src) | `*.js` not in `src/` | JS files go to `src/modules/` or `scripts/` | **MOVE TO scripts/** |

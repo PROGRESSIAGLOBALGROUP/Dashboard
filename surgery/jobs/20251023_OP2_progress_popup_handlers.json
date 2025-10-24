@@ -1,0 +1,71 @@
+{
+  "metadata": {
+    "timestamp": "2025-10-23T10:46:00Z",
+    "version": "1.0",
+    "operation": "OP2",
+    "title": "Add Progress Popup Handlers - 4 Popup Types",
+    "author": "GitHub Copilot",
+    "project": "Dashboard Enhanced"
+  },
+  "file": "src/modules/AdminPanel.js",
+  "operation": "insert",
+  "targetLocation": "before_closeModal",
+  "description": "Add showProgressPopup() method that creates and displays 4 types of confirmation popups:\n1. START (Green) - 0 → X transition\n2. COMPLETION (Gold/Celebration) - X → 100 with celebration\n3. REOPEN (Gray/Sad) - 100 → Y with sadness\n4. RESET (Warning) - X → 0",
+  "rationale": "Core UX for progress control. Each popup must have:\n- Clear messaging in English\n- Appropriate visual theme\n- Confirmation/Cancel buttons\n- Promise-based callback for result handling",
+  "impact": "Adds 150+ lines of popup logic. Creates dynamic DOM elements. No changes to existing popups.",
+  "riskLevel": "Low",
+  "code": "  /**\n   * Show progress confirmation popup with 4 types\n   * Returns promise that resolves with user choice\n   */\n  showProgressPopup(type, oldProgress, newProgress, app) {\n    return new Promise((resolve) => {\n      const backdrop = document.createElement('div');\n      backdrop.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;z-index:10000';\n      \n      const popup = document.createElement('div');\n      popup.style.cssText = 'background:var(--panel);border:2px solid var(--ring);border-radius:16px;padding:24px;max-width:400px;min-width:300px;box-shadow:0 10px 40px rgba(0,0,0,0.5)';\n      \n      let title, message, confirmText, confirmStyle, icon, themeColor;\n      \n      switch (type) {\n        case 'START':\n          title = '🚀 Start Activity';\n          message = `Change status from 'To Be Started' to 'In Progress'? (${oldProgress}% → ${newProgress}%)`;\n          confirmText = 'Start Task';\n          confirmStyle = 'background:var(--primary);color:white';\n          themeColor = 'var(--primary)';\n          break;\n          \n        case 'COMPLETION':\n          title = '🎉 Congratulations!';\n          message = `You've completed this task! Confirm to mark as Completed? (${oldProgress}% → 100%)`;\n          confirmText = 'Celebrate & Complete';\n          confirmStyle = 'background:#FFD700;color:black;font-weight:bold';\n          themeColor = '#FFD700';\n          break;\n          \n        case 'REOPEN':\n          title = '😢 Reopening Completed Task';\n          message = `Are you sure? This will change status back to 'In Progress'. (100% → ${newProgress}%)`;\n          confirmText = 'Reopen Task';\n          confirmStyle = 'background:var(--text);color:var(--bg);opacity:0.8';\n          themeColor = 'var(--text)';\n          break;\n          \n        case 'RESET':\n          title = '⚠️ Reset Activity to Zero';\n          message = `This will mark the task as 'Not Started' and remove all progress. (${oldProgress}% → 0%)`;\n          confirmText = 'Reset to Zero';\n          confirmStyle = 'background:#FF9500;color:white';\n          themeColor = '#FF9500';\n          break;\n          \n        default:\n          resolve(false);\n          return;\n      }\n      \n      popup.innerHTML = `\n        <div style=\"border-bottom:3px solid ${themeColor};margin-bottom:16px;padding-bottom:12px\">\n          <h3 style=\"margin:0;color:var(--text);font-size:20px\">${title}</h3>\n          <p style=\"margin:8px 0 0 0;color:var(--text);opacity:0.7;font-size:14px;font-weight:normal\">App: <strong>${app.name}</strong></p>\n        </div>\n        <p style=\"color:var(--text);margin:16px 0;line-height:1.5\">${message}</p>\n        <div style=\"display:flex;gap:12px;margin-top:24px;justify-content:flex-end\">\n          <button id=\"popupCancel\" style=\"padding:8px 16px;border:1px solid var(--ring);background:transparent;color:var(--text);border-radius:8px;cursor:pointer;font-size:14px\">Cancel</button>\n          <button id=\"popupConfirm\" style=\"padding:8px 16px;border:none;${confirmStyle};border-radius:8px;cursor:pointer;font-size:14px;font-weight:bold\">\\u2713 ${confirmText}</button>\n        </div>\n      `;\n      \n      backdrop.appendChild(popup);\n      document.body.appendChild(backdrop);\n      \n      const cleanup = () => {\n        backdrop.remove();\n      };\n      \n      popup.querySelector('#popupCancel').addEventListener('click', () => {\n        cleanup();\n        resolve(false);\n      });\n      \n      popup.querySelector('#popupConfirm').addEventListener('click', () => {\n        cleanup();\n        resolve(true);\n      });\n      \n      // Click backdrop to cancel\n      backdrop.addEventListener('click', (e) => {\n        if (e.target === backdrop) {\n          cleanup();\n          resolve(false);\n        }\n      });\n      \n      // ESC to cancel\n      const escHandler = (e) => {\n        if (e.key === 'Escape') {\n          document.removeEventListener('keydown', escHandler);\n          cleanup();\n          resolve(false);\n        }\n      };\n      document.addEventListener('keydown', escHandler);\n    });\n  },",
+  "insertBefore": "  closeModal() {",
+  "validation": {
+    "beforeExecute": [
+      "File exists: src/modules/AdminPanel.js",
+      "OP1 methods already added (validateProgressInput, detectProgressTransition)",
+      "DOM is accessible"
+    ],
+    "afterExecute": [
+      "showProgressPopup() method added",
+      "Method returns Promise",
+      "All 4 popup types have correct styling",
+      "Event listeners are properly bound"
+    ]
+  },
+  "rollback": {
+    "enabled": true,
+    "keepBackup": true,
+    "backupName": "AdminPanel_20251023_OP2_backup.js"
+  },
+  "testing": {
+    "unitTests": [
+      "showProgressPopup('START', 0, 50, app) returns Promise",
+      "showProgressPopup('COMPLETION', 99, 100, app) creates popup",
+      "showProgressPopup('REOPEN', 100, 50, app) creates popup",
+      "showProgressPopup('RESET', 50, 0, app) creates popup",
+      "Confirm button resolves with true",
+      "Cancel button resolves with false",
+      "ESC key resolves with false",
+      "Backdrop click resolves with false"
+    ],
+    "integrationTests": [
+      "Popup created with correct styling",
+      "App name displayed correctly",
+      "Progress percentage shown in message"
+    ],
+    "manualTests": [
+      "Click 'Start Task' - confirm button has green color and checkmark",
+      "Click 'Celebrate & Complete' - confirm button is gold/celebration color",
+      "Click 'Reopen Task' - popup shows sad emoji",
+      "Click 'Reset to Zero' - warning color (orange)",
+      "Press ESC - popup closes",
+      "Click backdrop - popup closes"
+    ]
+  },
+  "approval": {
+    "requiresReview": true,
+    "reviewers": ["developer"],
+    "testCoverage": "Required: All 4 popup types tested, ESC/backdrop working"
+  },
+  "documentation": {
+    "updated": false,
+    "files": []
+  }
+}

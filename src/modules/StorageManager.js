@@ -89,7 +89,16 @@ const StorageManager = {
   updateApp(appId, updates) {
     const config = this.loadConfig();
     const app = config.apps.find(a => a.id === appId);
-    if (app) Object.assign(app, updates);
+    if (app) {
+      // Add timestamp and update marker if not already in updates
+      if (!updates.updatedAt) {
+        updates.updatedAt = new Date().toISOString();
+      }
+      if (!updates.updatedBy) {
+        updates.updatedBy = 'Local Edit';
+      }
+      Object.assign(app, updates);
+    }
     this.saveConfig(config);
   },
   

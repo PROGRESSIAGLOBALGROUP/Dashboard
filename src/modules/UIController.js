@@ -105,6 +105,197 @@ const UIController = {
     return getComputedStyle(document.documentElement).getPropertyValue(v).trim();
   },
 
+  /**
+   * Show celebration animation when task is completed (100%)
+   */
+  showCelebration() {
+    const celebration = document.createElement('div');
+    celebration.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 9999;
+    `;
+    document.body.appendChild(celebration);
+    
+    // Create confetti particles
+    for (let i = 0; i < 50; i++) {
+      const confetti = document.createElement('div');
+      const delay = Math.random() * 0.2;
+      const duration = 2 + Math.random() * 1;
+      const size = 8 + Math.random() * 8;
+      const color = ['#FFD700', '#FFA500', '#FF69B4', '#00CED1', '#32CD32'][Math.floor(Math.random() * 5)];
+      
+      confetti.style.cssText = `
+        position: absolute;
+        width: ${size}px;
+        height: ${size}px;
+        background: ${color};
+        left: ${Math.random() * 100}%;
+        top: -10px;
+        border-radius: 50%;
+        animation: fall ${duration}s linear ${delay}s forwards;
+      `;
+      celebration.appendChild(confetti);
+    }
+    
+    // Add animation keyframes if not already present
+    if (!document.querySelector('#celebration-animations')) {
+      const style = document.createElement('style');
+      style.id = 'celebration-animations';
+      style.textContent = `
+        @keyframes fall {
+          to {
+            transform: translateY(100vh) rotateZ(360deg);
+            opacity: 0;
+          }
+        }
+      `;
+      document.head.appendChild(style);
+    }
+    
+    // Remove after animation
+    setTimeout(() => celebration.remove(), 3500);
+  },
+
+  /**
+   * Show sadness animation when task is reopened (100% → Y)
+   */
+  showSadness() {
+    const sadness = document.createElement('div');
+    sadness.style.cssText = `
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 24px 32px;
+      border-radius: 12px;
+      font-size: 24px;
+      z-index: 9999;
+      text-align: center;
+      animation: fadeOut 2s ease-in-out forwards;
+    `;
+    sadness.textContent = '😢';
+    document.body.appendChild(sadness);
+    
+    // Add fadeOut animation if not present
+    if (!document.querySelector('#sadness-animations')) {
+      const style = document.createElement('style');
+      style.id = 'sadness-animations';
+      style.textContent = `
+        @keyframes fadeOut {
+          0% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+          50% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+          100% { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
+        }
+      `;
+      document.head.appendChild(style);
+    }
+    
+    // Remove after animation
+    setTimeout(() => sadness.remove(), 2000);
+  },
+
+  /**
+   * Show toast notification (success, error, info)
+   */
+  showToast(message, type = 'info', duration = 3000) {
+    const toastContainer = document.getElementById('toast-container') || (() => {
+      const container = document.createElement('div');
+      container.id = 'toast-container';
+      container.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 10000;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        pointer-events: none;
+      `;
+      document.body.appendChild(container);
+      return container;
+    })();
+    
+    const toast = document.createElement('div');
+    const bgColor = type === 'success' ? '#32e685' : type === 'error' ? '#ff5f7a' : '#5b9dff';
+    const textColor = '#ffffff';
+    
+    toast.style.cssText = `
+      background: ${bgColor};
+      color: ${textColor};
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      animation: slideIn 0.3s ease-out;
+      pointer-events: auto;
+      cursor: pointer;
+      max-width: 300px;
+      word-break: break-word;
+      line-height: 1.4;
+    `;
+    toast.textContent = message;
+    
+    // Inject animation if not present
+    if (!document.querySelector('#toast-animations')) {
+      const style = document.createElement('style');
+      style.id = 'toast-animations';
+      style.textContent = `
+        @keyframes slideIn {
+          from {
+            transform: translateX(400px);
+            opacity: 0;
+          }
+          to {
+            transform: translateX(0);
+            opacity: 1;
+          }
+        }
+        @keyframes slideOut {
+          to {
+            transform: translateX(400px);
+            opacity: 0;
+          }
+        }
+      `;
+      document.head.appendChild(style);
+    }
+    
+    toastContainer.appendChild(toast);
+    
+    // Auto-remove
+    const timeout = setTimeout(() => {
+      toast.style.animation = 'slideOut 0.3s ease-out forwards';
+      setTimeout(() => {
+        toast.remove();
+        if (toastContainer.children.length === 0) {
+          toastContainer.remove();
+          document.getElementById('toast-container')?.remove();
+        }
+      }, 300);
+    }, duration);
+    
+    // Click to dismiss
+    toast.addEventListener('click', () => {
+      clearTimeout(timeout);
+      toast.style.animation = 'slideOut 0.3s ease-out forwards';
+      setTimeout(() => {
+        toast.remove();
+        if (toastContainer.children.length === 0) {
+          toastContainer.remove();
+          document.getElementById('toast-container')?.remove();
+        }
+      }, 300);
+    });
+  },
+
   fmt(n) {
     return `${n.toFixed(0)}%`;
   },
