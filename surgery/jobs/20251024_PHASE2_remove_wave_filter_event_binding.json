@@ -1,0 +1,51 @@
+{
+  "metadata": {
+    "timestamp": "2025-10-24T02:10:00Z",
+    "version": "1.0",
+    "author": "GitHub Copilot",
+    "project": "Dashboard Enhanced",
+    "severity": "HIGH",
+    "taskType": "Refactor - Remove Dead Code Phase 2"
+  },
+  "description": "PHASE 2: Remove Wave filter button event listener binding from AppsOverviewWorldClass.bindEvents() method.",
+  "rationale": "The HTML button was removed in Phase 1. This removes the orphaned JS event listener that tries to find and bind to a non-existent DOM element.",
+  "impact": "Removes dead code that would throw warnings if btnFilterMatrixWaveOverview was referenced. Cleans up module initialization.",
+  "riskLevel": "Low",
+  "file": "dist/dashboard_enhanced.html",
+  "operation": "delete",
+  "section": "JavaScript - AppsOverviewWorldClass.bindEvents() - Wave filter listener block",
+  "originalCode": "            // Wave filter button - WORLD CLASS IMPLEMENTATION\n            const waveFilterBtn = document.getElementById('btnFilterMatrixWaveOverview');\n            if (waveFilterBtn) {\n                waveFilterBtn.addEventListener('click', (e) => {\n                    e.stopPropagation();\n                    this.showWaveFilterPanel(waveFilterBtn);\n                });\n            }\n",
+  "newCode": "",
+  "validation": {
+    "beforeExecute": {
+      "checks": [
+        "Wave filter button listener code found in bindEvents() around line 11327",
+        "btnFilterMatrixWaveOverview element selector still references removed button"
+      ]
+    },
+    "afterExecute": {
+      "checks": [
+        "Event listener code removed",
+        "Sort button listener still intact",
+        "bindEvents() method still functional"
+      ]
+    }
+  },
+  "rollback": {
+    "enabled": true,
+    "keepBackup": true
+  },
+  "testing": {
+    "manualTests": {
+      "required": true,
+      "steps": [
+        "1. Open DevTools Console",
+        "2. Navigate to Applications Overview tab",
+        "3. Verify NO errors about 'btnFilterMatrixWaveOverview' not found",
+        "4. Verify sort button still works",
+        "5. Check console for no warnings"
+      ]
+    }
+  },
+  "notes": "Phase 2 of 3: Remove dead JS event binding. Phase 3 will remove the unused showWaveFilterPanel() method entirely."
+}

@@ -1,0 +1,55 @@
+{
+  "metadata": {
+    "timestamp": "2025-10-24T02:00:00Z",
+    "version": "1.0",
+    "author": "GitHub Copilot",
+    "project": "Dashboard Enhanced",
+    "severity": "HIGH",
+    "taskType": "Refactor - Remove Dead Code + Implement World-Class Filtering"
+  },
+  "description": "PHASE 1: Remove non-functional 'Filter by Wave' button from Applications Overview UI. This button has no real functionality and will be replaced with comprehensive field-level filtering.",
+  "rationale": "The 'Filter by Wave' button UI element exists but the underlying functionality is incomplete. User requirement: ALL fields must be filterable and sortable. Phase 1 removes the dead UI button from HTML.",
+  "impact": "Removes visual clutter; clears space for new comprehensive filter UI controls. No functional impact yet.",
+  "riskLevel": "Low",
+  "file": "dist/dashboard_enhanced.html",
+  "operation": "delete",
+  "section": "HTML - Applications Overview Tab - ADVANCED CONTROLS",
+  "originalCode": "            <button class=\"btn-filter-matrix\" id=\"btnFilterMatrixWaveOverview\" style=\"padding: 8px 14px; font-size: 13px;\">\n              <span>🌊 Filter by Wave</span>\n            </button>",
+  "newCode": "",
+  "validation": {
+    "beforeExecute": {
+      "checks": [
+        "File exists: dist/dashboard_enhanced.html",
+        "Button element found at line ~4309",
+        "No other references to btnFilterMatrixWaveOverview in HTML (except JS)"
+      ]
+    },
+    "afterExecute": {
+      "checks": [
+        "Button removed from HTML",
+        "btnFilterMatrixWaveOverview still referenced in JS (will be removed in Phase 2)",
+        "Table layout remains intact",
+        "Status filter pills still present"
+      ]
+    }
+  },
+  "rollback": {
+    "enabled": true,
+    "keepBackup": true,
+    "backupName": "dashboard_enhanced_20251024_before_filter_refactor.html"
+  },
+  "testing": {
+    "manualTests": {
+      "required": true,
+      "steps": [
+        "1. Open dashboard modal",
+        "2. Navigate to Applications Overview tab",
+        "3. Verify 'Filter by Wave' button is NO LONGER visible",
+        "4. Verify 'Sort by Order' button still exists",
+        "5. Verify status filter pills (All/Complete/WIP/To Start) still work",
+        "6. Verify table still renders correctly"
+      ]
+    }
+  },
+  "notes": "Phase 1 of 3: Remove dead UI. Phase 2 will remove JS method. Phase 3 will implement comprehensive filtering."
+}

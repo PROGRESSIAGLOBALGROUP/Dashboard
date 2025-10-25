@@ -4304,6 +4304,16 @@ body.cinematic .exit-cinema{display:inline-flex}
         
         <!-- ADVANCED CONTROLS -->
         <div style="display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; align-items: center;">
+          <!-- Premium Control Buttons (World-Class) -->
+          <div style="display: flex; gap: 8px;">
+            <button class="btn-filter-matrix" id="btnFilterMatrixWaveOverview" style="padding: 8px 14px; font-size: 13px;">
+              <span>🌊 Filter by Wave</span>
+            </button>
+            <button class="btn-sort-matrix" id="btnSortMatrixOrderOverview" style="padding: 8px 14px; font-size: 13px;">
+              <span>🔢 Sort by Order</span>
+            </button>
+          </div>
+          
           <!-- Status Filter Pills -->
           <div style="display: flex; gap: 6px;">
             <button class="status-pill-filter" data-status="all" style="padding: 6px 12px; background: rgba(91,157,255,0.2); border: 1px solid rgba(91,157,255,0.3); border-radius: 20px; color: #5b9dff; font-size: 12px; cursor: pointer; font-weight: 600;">
@@ -4368,14 +4378,14 @@ body.cinematic .exit-cinema{display:inline-flex}
           
           <table class="app-table-premium world-class" id="appsOverviewTable" style="width: 100%; border-collapse: collapse;"><thead style="background: rgba(91,157,255,0.08); border-bottom: 2px solid var(--ring);">
               <tr>
-                <th id="header-order" data-column="order" style="padding: 12px 14px; text-align: left; font-size: 12px; font-weight: 600; color: #aaa; text-transform: uppercase; letter-spacing: 0.5px; border-right: 1px solid var(--ring); cursor: pointer; user-select: none; transition: all 0.2s ease;" title="Click to sort by Execution Order" onmouseover="this.style.color='#5b9dff'" onmouseout="this.style.color='#aaa'">🔢 Order</th>
-                <th id="header-name" data-column="name" style="padding: 12px 14px; text-align: left; font-size: 12px; font-weight: 600; color: #aaa; text-transform: uppercase; letter-spacing: 0.5px; border-right: 1px solid var(--ring); cursor: pointer; user-select: none; transition: all 0.2s ease;" title="Click to sort by Application Name" onmouseover="this.style.color='#5b9dff'" onmouseout="this.style.color='#aaa'">📱 Application</th>
-                <th id="header-buId" data-column="buId" style="padding: 12px 14px; text-align: left; font-size: 12px; font-weight: 600; color: #aaa; text-transform: uppercase; letter-spacing: 0.5px; border-right: 1px solid var(--ring); cursor: pointer; user-select: none; transition: all 0.2s ease;" title="Click to sort by Business Unit" onmouseover="this.style.color='#5b9dff'" onmouseout="this.style.color='#aaa'">🏢 BU</th>
-                <th id="header-waveId" data-column="waveId" style="cursor: pointer; user-select: none; transition: all 0.2s ease; color: #aaa;" title="Click to sort by Execution Wave" onmouseover="this.style.color='#5b9dff'" onmouseout="this.style.color='#aaa'">🌊 WAVE</th>
-                <th id="header-weight" data-column="weight" style="cursor: pointer; user-select: none; transition: all 0.2s ease; color: #aaa;" title="Click to sort by Auto-calculated Weight" onmouseover="this.style.color='#5b9dff'" onmouseout="this.style.color='#aaa'">⚖️ AUTO-WEIGHT</th>
-                <th id="header-factors" data-column="factors" style="cursor: pointer; user-select: none; transition: all 0.2s ease; color: #aaa;" title="Click to sort by Business Factors" onmouseover="this.style.color='#5b9dff'" onmouseout="this.style.color='#aaa'">🎯 FACTORS</th>
-                <th id="header-progress" data-column="progress" style="cursor: pointer; user-select: none; transition: all 0.2s ease; color: #aaa;" title="Click to sort by Progress" onmouseover="this.style.color='#5b9dff'" onmouseout="this.style.color='#aaa'">📈 PROGRESS</th>
-                <th id="header-status" data-column="status" style="cursor: pointer; user-select: none; transition: all 0.2s ease; color: #aaa;" title="Click to sort by Status" onmouseover="this.style.color='#5b9dff'" onmouseout="this.style.color='#aaa'">✓ STATUS</th>
+                <th style="padding: 12px 14px; text-align: left; font-size: 12px; font-weight: 600; color: #aaa; text-transform: uppercase; letter-spacing: 0.5px; border-right: 1px solid var(--ring);" title="Execution Order">🔢 Order</th>
+                <th style="padding: 12px 14px; text-align: left; font-size: 12px; font-weight: 600; color: #aaa; text-transform: uppercase; letter-spacing: 0.5px; border-right: 1px solid var(--ring);" title="Application Name">📱 Application</th>
+                <th style="padding: 12px 14px; text-align: left; font-size: 12px; font-weight: 600; color: #aaa; text-transform: uppercase; letter-spacing: 0.5px; border-right: 1px solid var(--ring);" title="Business Unit">🏢 BU</th>
+                <th title="Execution Wave">� WAVE</th>
+                <th title="Auto-calculated Weight">⚖️ AUTO-WEIGHT</th>
+                <th title="Business Factors">🎯 FACTORS</th>
+                <th title="Progress">📈 PROGRESS</th>
+                <th title="Status">✓ STATUS</th>
               </tr>
             </thead>
             <tbody id="appsOverviewTableBody" style="background: transparent;">
@@ -8417,7 +8427,117 @@ const AdminController = {
     // this.updateAppsOverviewStats();
   },
 
-  // Applications Overview filtering delegated to AppsOverviewWorldClass module
+  // ===== WORLD-CLASS APPLICATIONS OVERVIEW PREMIUM CONTROLS =====
+  
+  showWaveFilterPanel() {
+    console.log('🌊 Wave Filter Panel Requested');
+    // Get unique waves from all applications
+    const buses = Dashboard.StorageManager.getBUs();
+    const waves = new Set();
+    
+    buses.forEach(bu => {
+      const apps = Dashboard.StorageManager.getAppsByBU(bu.id);
+      apps.forEach(app => {
+        if (app.wave) waves.add(app.wave);
+      });
+    });
+    
+    // Create simple wave filter UI
+    let waveOptions = Array.from(waves).sort();
+    
+    // For now, log the action - can be extended to show a modal or dropdown
+    console.log('📊 Available waves for filtering:', waveOptions);
+    
+    // If currentWaveFilter is not set, show all
+    if (!this.currentWaveFilter) {
+      this.currentWaveFilter = 'all';
+    }
+    
+    // Cycle through available waves
+    if (this.currentWaveFilter === 'all') {
+      if (waveOptions.length > 0) {
+        this.currentWaveFilter = waveOptions[0];
+        console.log(`✅ Filtering by: ${this.currentWaveFilter}`);
+      }
+    } else {
+      const currentIndex = waveOptions.indexOf(this.currentWaveFilter);
+      if (currentIndex >= 0 && currentIndex < waveOptions.length - 1) {
+        this.currentWaveFilter = waveOptions[currentIndex + 1];
+        console.log(`✅ Filtering by: ${this.currentWaveFilter}`);
+      } else {
+        this.currentWaveFilter = 'all';
+        console.log('✅ Showing all waves');
+      }
+    }
+    
+    // this.renderAppsOverviewTable();
+  },
+
+  sortApplicationsByOrder() {
+    console.log('🔢 Sort by Order Activated');
+    // Toggle sort direction
+    if (!this.appOrderSort) {
+      this.appOrderSort = 'asc';
+    } else {
+      this.appOrderSort = this.appOrderSort === 'asc' ? 'desc' : 'asc';
+    }
+    
+    console.log(`📈 Applications sorted by Order (${this.appOrderSort})`);
+    // this.renderAppsOverviewTable();
+  },
+
+  filterAppsOverviewBySearch(searchTerm) {
+    console.log('🔎 Search Filter:', searchTerm);
+    this.currentOverviewSearch = searchTerm.toLowerCase();
+  },
+
+  getFilteredApps() {
+    const buses = Dashboard.StorageManager.getBUs();
+    let apps = [];
+    
+    buses.forEach(bu => {
+      const buApps = Dashboard.StorageManager.getAppsByBU(bu.id);
+      buApps.forEach(app => {
+        apps.push({
+          ...app,
+          buId: bu.id,
+          buName: bu.name
+        });
+      });
+    });
+    
+    // Apply wave filter
+    if (this.currentWaveFilter && this.currentWaveFilter !== 'all') {
+      apps = apps.filter(app => app.wave === this.currentWaveFilter);
+    }
+    
+    // Apply search filter
+    if (this.currentOverviewSearch) {
+      apps = apps.filter(app => 
+        (app.name && app.name.toLowerCase().includes(this.currentOverviewSearch)) ||
+        (app.id && app.id.toString().toLowerCase().includes(this.currentOverviewSearch)) ||
+        (app.buName && app.buName.toLowerCase().includes(this.currentOverviewSearch))
+      );
+    }
+    
+    // Apply sort by order if needed
+    if (this.appOrderSort === 'asc' || this.appOrderSort === 'desc') {
+      apps.sort((a, b) => {
+        const orderA = parseInt(a.order) || 0;
+        const orderB = parseInt(b.order) || 0;
+        return this.appOrderSort === 'asc' ? (orderA - orderB) : (orderB - orderA);
+      });
+    } else {
+      // Default sort by order ascending
+      apps.sort((a, b) => {
+        const orderA = parseInt(a.order) || 0;
+        const orderB = parseInt(b.order) || 0;
+        return orderA - orderB;
+      });
+    }
+    
+    return apps;
+  },
   
   importConfig(event) {
     const file = event.target.files[0];
@@ -11165,7 +11285,6 @@ document.head.appendChild(notificationStyles);
             // Initialize state properties
             this.activeWaveFilter = 'all';
             this.sortOrder = 'none';
-            this.sortColumn = 'order';  // Track which column is being sorted
             
             const tabElement = document.getElementById('tab-app-overview');
             if (!tabElement) {
@@ -11176,7 +11295,7 @@ document.head.appendChild(notificationStyles);
             this.bindEvents();
             console.log('[AppsOverview] Events bound, refreshing data...');
             this.refresh();
-            console.log('[AppsOverview] Initialization complete - Filters: Wave=%s, Sort=%s by %s', this.activeWaveFilter, this.sortOrder, this.sortColumn);
+            console.log('[AppsOverview] Initialization complete - Filters: Wave=%s, Sort=%s', this.activeWaveFilter, this.sortOrder);
         },
 
         bindEvents: function() {
@@ -11207,65 +11326,103 @@ document.head.appendChild(notificationStyles);
                 });
             }
 
-            // Column header sorting - WORLD CLASS IMPLEMENTATION (clickable headers)
-            const headers = document.querySelectorAll('th[data-column]');
-            headers.forEach(header => {
-                header.addEventListener('click', (e) => {
+            // Wave filter button - WORLD CLASS IMPLEMENTATION
+            const waveFilterBtn = document.getElementById('btnFilterMatrixWaveOverview');
+            if (waveFilterBtn) {
+                waveFilterBtn.addEventListener('click', (e) => {
                     e.stopPropagation();
-                    const columnName = header.dataset.column;
-                    this.cycleSortOrder(columnName);
+                    this.showWaveFilterPanel(waveFilterBtn);
                 });
-            });
+            }
+
+            // Sort button - WORLD CLASS IMPLEMENTATION (bidirectional)
+            const sortBtn = document.getElementById('btnSortMatrixOrderOverview');
+            if (sortBtn) {
+                sortBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    this.cycleSortOrder();
+                });
+            }
         },
         
-        cycleSortOrder: function(columnName) {
-            // columnName parameter: 'order', 'name', 'buId', 'waveId', 'weight', 'factors', 'progress', 'status'
-            // If clicking same column, cycle sort order; if new column, start with 'asc'
-            if (this.sortColumn === columnName) {
-                // Cycle: asc → desc → none → asc
-                if (this.sortOrder === 'asc') {
-                    this.sortOrder = 'desc';
-                } else if (this.sortOrder === 'desc') {
-                    this.sortOrder = 'none';
-                } else {
-                    this.sortOrder = 'asc';
-                }
+        showWaveFilterPanel: function(btn) {
+            // Remove existing panel if present
+            const existingPanel = document.getElementById('waveFilterPanel');
+            if (existingPanel) existingPanel.remove();
+
+            const config = Dashboard.StorageManager.loadConfig();
+            const apps = config.apps || [];
+            const uniqueWaves = [...new Set(apps.map(a => a.wave).filter(Boolean))].sort();
+
+            const panelHtml = `
+                <div id="waveFilterPanel" style="position: absolute; top: 100%; left: 0; margin-top: 8px; background: var(--panel); border: 1px solid var(--ring); border-radius: 10px; padding: 12px 0; min-width: 180px; box-shadow: 0 8px 32px rgba(0,0,0,0.3); z-index: 999;">
+                    <button class="wave-filter-option" data-wave="all" style="display: block; width: 100%; padding: 10px 16px; background: none; border: none; color: var(--text); text-align: left; font-size: 13px; cursor: pointer; transition: all 0.2s ease; ${this.activeWaveFilter === 'all' ? 'background: rgba(91,157,255,0.2);' : ''}" onmouseover="this.style.background='rgba(91,157,255,0.15)'" onmouseout="this.style.background='${this.activeWaveFilter === 'all' ? 'rgba(91,157,255,0.2)' : 'transparent'}'">
+                        ✓ All Waves
+                    </button>
+                    ${uniqueWaves.map(wave => {
+                        const count = apps.filter(a => a.wave === wave).length;
+                        return `<button class="wave-filter-option" data-wave="${wave}" style="display: block; width: 100%; padding: 10px 16px; background: none; border: none; color: var(--text); text-align: left; font-size: 13px; cursor: pointer; transition: all 0.2s ease; ${this.activeWaveFilter === wave ? 'background: rgba(91,157,255,0.2);' : ''}" onmouseover="this.style.background='rgba(91,157,255,0.15)'" onmouseout="this.style.background='${this.activeWaveFilter === wave ? 'rgba(91,157,255,0.2)' : 'transparent'}'">
+                            🌊 ${wave} <span style="color: #aaa; font-size: 11px;">(${count})</span>
+                        </button>`
+                    }).join('')}
+                </div>
+            `;
+
+            btn.style.position = 'relative';
+            btn.insertAdjacentHTML('afterend', panelHtml);
+
+            // Bind click handlers
+            document.querySelectorAll('.wave-filter-option').forEach(opt => {
+                opt.addEventListener('click', (e) => {
+                    this.activeWaveFilter = e.target.closest('.wave-filter-option').dataset.wave;
+                    btn.innerHTML = this.activeWaveFilter === 'all' 
+                        ? '<span>🌊 Filter by Wave</span>' 
+                        : `<span>🌊 ${this.activeWaveFilter}</span>`;
+                    btn.style.background = 'rgba(91,157,255,0.25)';
+                    btn.style.borderColor = 'var(--primary)';
+                    this.filterAndRender();
+                    document.getElementById('waveFilterPanel').remove();
+                });
+            });
+
+            // Close panel when clicking outside
+            setTimeout(() => {
+                const closeHandler = (e) => {
+                    if (!btn.contains(e.target) && !document.getElementById('waveFilterPanel')?.contains(e.target)) {
+                        document.getElementById('waveFilterPanel')?.remove();
+                        document.removeEventListener('click', closeHandler);
+                    }
+                };
+                document.addEventListener('click', closeHandler);
+            }, 10);
+        },
+
+        cycleSortOrder: function() {
+            // Cycle: none → asc → desc → none
+            if (this.sortOrder === 'asc') {
+                this.sortOrder = 'desc';
+            } else if (this.sortOrder === 'desc') {
+                this.sortOrder = 'none';
             } else {
-                // New column selected, start with ascending
-                this.sortColumn = columnName;
                 this.sortOrder = 'asc';
             }
 
-            // Update ALL headers to reflect current sort state
-            const headers = document.querySelectorAll('th[data-column]');
-            headers.forEach(header => {
-                const col = header.dataset.column;
-                const isCurrentColumn = col === this.sortColumn;
+            const sortBtn = document.getElementById('btnSortMatrixOrderOverview');
+            if (sortBtn) {
+                sortBtn.innerHTML = this.sortOrder === 'asc' 
+                    ? '<span>🔢 Sort by Order ▲</span>' 
+                    : this.sortOrder === 'desc'
+                    ? '<span>🔢 Sort by Order ▼</span>'
+                    : '<span>🔢 Sort by Order</span>';
                 
-                if (isCurrentColumn) {
-                    // Add sort indicator to active column
-                    let headerContent = header.textContent.replace(/\s+[▲▼]/, ''); // Remove old indicator
-                    const indicator = this.sortOrder === 'asc' ? ' ▲' : this.sortOrder === 'desc' ? ' ▼' : '';
-                    header.textContent = headerContent + indicator;
-                    
-                    // Highlight active column
-                    header.style.color = '#5b9dff';
-                    header.style.fontWeight = '700';
-                    header.style.borderBottomWidth = '2px';
-                    header.style.borderBottomColor = '#5b9dff';
-                    header.style.borderBottomStyle = 'solid';
+                if (this.sortOrder !== 'none') {
+                    sortBtn.style.background = 'rgba(91,157,255,0.25)';
+                    sortBtn.style.borderColor = 'var(--primary)';
                 } else {
-                    // Reset non-active columns
-                    let headerContent = header.textContent.replace(/\s+[▲▼]/, ''); // Remove indicator
-                    header.textContent = headerContent;
-                    
-                    header.style.color = '#aaa';
-                    header.style.fontWeight = '600';
-                    header.style.borderBottomWidth = '';
-                    header.style.borderBottomColor = '';
-                    header.style.borderBottomStyle = '';
+                    sortBtn.style.background = '';
+                    sortBtn.style.borderColor = '';
                 }
-            });
+            }
 
             this.filterAndRender();
         },
@@ -11290,117 +11447,18 @@ document.head.appendChild(notificationStyles);
                 return matchesStatus && matchesSearch && matchesWave;
             });
 
-            // Sort data - WORLD CLASS multi-column sorting
+            // Sort data - WORLD CLASS bidirectional sorting
             if (this.sortOrder === 'asc') {
                 filtered = filtered.sort((a, b) => {
-                    let valueA, valueB;
-                    
-                    switch(this.sortColumn) {
-                        case 'order':
-                            valueA = a.order || Infinity;
-                            valueB = b.order || Infinity;
-                            return valueA - valueB;
-                        
-                        case 'name':
-                            valueA = (a.name || '').toLowerCase();
-                            valueB = (b.name || '').toLowerCase();
-                            return valueA.localeCompare(valueB);
-                        
-                        case 'buId':
-                            // Lookup BU name for comparison
-                            const buA = config.buses?.find(bu => bu.id === a.buId);
-                            const buB = config.buses?.find(bu => bu.id === b.buId);
-                            valueA = (buA?.name || '').toLowerCase();
-                            valueB = (buB?.name || '').toLowerCase();
-                            return valueA.localeCompare(valueB);
-                        
-                        case 'waveId':
-                            // Lookup Wave name for comparison
-                            const waveA = config.waves?.find(w => w.id === a.waveId);
-                            const waveB = config.waves?.find(w => w.id === b.waveId);
-                            valueA = (waveA?.name || '').toLowerCase();
-                            valueB = (waveB?.name || '').toLowerCase();
-                            return valueA.localeCompare(valueB);
-                        
-                        case 'weight':
-                            valueA = a.weight || 1;
-                            valueB = b.weight || 1;
-                            return valueA - valueB;
-                        
-                        case 'factors':
-                            valueA = (Array.isArray(a.factors) ? a.factors.length : 0);
-                            valueB = (Array.isArray(b.factors) ? b.factors.length : 0);
-                            return valueA - valueB;
-                        
-                        case 'progress':
-                            valueA = a.progress || 0;
-                            valueB = b.progress || 0;
-                            return valueA - valueB;
-                        
-                        case 'status':
-                            // Sort order: CLO (Complete) → WIP (In Progress) → TBS (To Start)
-                            const statusOrder = { 'CLO': 0, 'WIP': 1, 'TBS': 2 };
-                            valueA = statusOrder[a.status] !== undefined ? statusOrder[a.status] : 3;
-                            valueB = statusOrder[b.status] !== undefined ? statusOrder[b.status] : 3;
-                            return valueA - valueB;
-                        
-                        default:
-                            return 0;
-                    }
+                    const orderA = a.order || Infinity;
+                    const orderB = b.order || Infinity;
+                    return orderA - orderB;
                 });
             } else if (this.sortOrder === 'desc') {
                 filtered = filtered.sort((a, b) => {
-                    let valueA, valueB;
-                    
-                    switch(this.sortColumn) {
-                        case 'order':
-                            valueA = a.order || Infinity;
-                            valueB = b.order || Infinity;
-                            return valueB - valueA;
-                        
-                        case 'name':
-                            valueA = (a.name || '').toLowerCase();
-                            valueB = (b.name || '').toLowerCase();
-                            return valueB.localeCompare(valueA);
-                        
-                        case 'buId':
-                            const buA = config.buses?.find(bu => bu.id === a.buId);
-                            const buB = config.buses?.find(bu => bu.id === b.buId);
-                            valueA = (buA?.name || '').toLowerCase();
-                            valueB = (buB?.name || '').toLowerCase();
-                            return valueB.localeCompare(valueA);
-                        
-                        case 'waveId':
-                            const waveA = config.waves?.find(w => w.id === a.waveId);
-                            const waveB = config.waves?.find(w => w.id === b.waveId);
-                            valueA = (waveA?.name || '').toLowerCase();
-                            valueB = (waveB?.name || '').toLowerCase();
-                            return valueB.localeCompare(valueA);
-                        
-                        case 'weight':
-                            valueA = a.weight || 1;
-                            valueB = b.weight || 1;
-                            return valueB - valueA;
-                        
-                        case 'factors':
-                            valueA = (Array.isArray(a.factors) ? a.factors.length : 0);
-                            valueB = (Array.isArray(b.factors) ? b.factors.length : 0);
-                            return valueB - valueA;
-                        
-                        case 'progress':
-                            valueA = a.progress || 0;
-                            valueB = b.progress || 0;
-                            return valueB - valueA;
-                        
-                        case 'status':
-                            const statusOrder = { 'CLO': 0, 'WIP': 1, 'TBS': 2 };
-                            valueA = statusOrder[a.status] !== undefined ? statusOrder[a.status] : 3;
-                            valueB = statusOrder[b.status] !== undefined ? statusOrder[b.status] : 3;
-                            return valueB - valueA;
-                        
-                        default:
-                            return 0;
-                    }
+                    const orderA = a.order || Infinity;
+                    const orderB = b.order || Infinity;
+                    return orderB - orderA;
                 });
             }
 

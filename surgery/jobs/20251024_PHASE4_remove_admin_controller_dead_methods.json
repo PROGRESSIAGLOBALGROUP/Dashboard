@@ -1,0 +1,55 @@
+{
+  "metadata": {
+    "timestamp": "2025-10-24T02:20:00Z",
+    "version": "1.0",
+    "author": "GitHub Copilot",
+    "project": "Dashboard Enhanced",
+    "severity": "HIGH",
+    "taskType": "Refactor - Remove Dead Code Phase 4"
+  },
+  "description": "PHASE 4: Remove duplicate/dead filter methods from AdminController that were superseded by AppsOverviewWorldClass module.",
+  "rationale": "AdminController contains old filtering methods (showWaveFilterPanel, sortApplicationsByOrder, filterAppsOverviewBySearch, getFilteredApps) that are no longer used. The new AppsOverviewWorldClass module handles all filtering. These dead methods create confusion and maintenance burden.",
+  "impact": "Removes ~100 lines of dead code from AdminController. Clarifies that all Applications Overview functionality is delegated to AppsOverviewWorldClass.",
+  "riskLevel": "Low",
+  "file": "dist/dashboard_enhanced.html",
+  "operation": "delete",
+  "section": "JavaScript - AdminController - Duplicate Applications Overview filter methods",
+  "originalCode": "  // ===== WORLD-CLASS APPLICATIONS OVERVIEW PREMIUM CONTROLS =====\n  \n  showWaveFilterPanel() {\n    console.log('🌊 Wave Filter Panel Requested');\n    // Get unique waves from all applications\n    const buses = Dashboard.StorageManager.getBUs();\n    const waves = new Set();\n    \n    buses.forEach(bu => {\n      const apps = Dashboard.StorageManager.getAppsByBU(bu.id);\n      apps.forEach(app => {\n        if (app.wave) waves.add(app.wave);\n      });\n    });\n    \n    // Create simple wave filter UI\n    let waveOptions = Array.from(waves).sort();\n    \n    // For now, log the action - can be extended to show a modal or dropdown\n    console.log('📊 Available waves for filtering:', waveOptions);\n    \n    // If currentWaveFilter is not set, show all\n    if (!this.currentWaveFilter) {\n      this.currentWaveFilter = 'all';\n    }\n    \n    // Cycle through available waves\n    if (this.currentWaveFilter === 'all') {\n      if (waveOptions.length > 0) {\n        this.currentWaveFilter = waveOptions[0];\n        console.log(`✅ Filtering by: ${this.currentWaveFilter}`);\n      }\n    } else {\n      const currentIndex = waveOptions.indexOf(this.currentWaveFilter);\n      if (currentIndex >= 0 && currentIndex < waveOptions.length - 1) {\n        this.currentWaveFilter = waveOptions[currentIndex + 1];\n        console.log(`✅ Filtering by: ${this.currentWaveFilter}`);\n      } else {\n        this.currentWaveFilter = 'all';\n        console.log('✅ Showing all waves');\n      }\n    }\n    \n    // this.renderAppsOverviewTable();\n  },\n\n  sortApplicationsByOrder() {\n    console.log('🔢 Sort by Order Activated');\n    // Toggle sort direction\n    if (!this.appOrderSort) {\n      this.appOrderSort = 'asc';\n    } else {\n      this.appOrderSort = this.appOrderSort === 'asc' ? 'desc' : 'asc';\n    }\n    \n    console.log(`📈 Applications sorted by Order (${this.appOrderSort})`);\n    // this.renderAppsOverviewTable();\n  },\n\n  filterAppsOverviewBySearch(searchTerm) {\n    console.log('🔎 Search Filter:', searchTerm);\n    this.currentOverviewSearch = searchTerm.toLowerCase();\n  },\n\n  getFilteredApps() {\n    const buses = Dashboard.StorageManager.getBUs();\n    let apps = [];\n    \n    buses.forEach(bu => {\n      const buApps = Dashboard.StorageManager.getAppsByBU(bu.id);\n      buApps.forEach(app => {\n        apps.push({\n          ...app,\n          buId: bu.id,\n          buName: bu.name\n        });\n      });\n    });\n    \n    // Apply wave filter\n    if (this.currentWaveFilter && this.currentWaveFilter !== 'all') {\n      apps = apps.filter(app => app.wave === this.currentWaveFilter);\n    }\n    \n    // Apply search filter\n    if (this.currentOverviewSearch) {\n      apps = apps.filter(app => \n        (app.name && app.name.toLowerCase().includes(this.currentOverviewSearch)) ||\n        (app.id && app.id.toString().toLowerCase().includes(this.currentOverviewSearch)) ||\n        (app.buName && app.buName.toLowerCase().includes(this.currentOverviewSearch))\n      );\n    }\n    \n    // Apply sort by order if needed\n    if (this.appOrderSort === 'asc' || this.appOrderSort === 'desc') {\n      apps.sort((a, b) => {\n        const orderA = parseInt(a.order) || 0;\n        const orderB = parseInt(b.order) || 0;\n        return this.appOrderSort === 'asc' ? (orderA - orderB) : (orderB - orderA);\n      });\n    }\n    \n    return apps;\n  },",
+  "newCode": "  // Applications Overview filtering delegated to AppsOverviewWorldClass module",
+  "validation": {
+    "beforeExecute": {
+      "checks": [
+        "Dead methods found in AdminController around line 8428-8525",
+        "AppsOverviewWorldClass handles all filtering (refresh, bindEvents)",
+        "No external calls to these AdminController methods"
+      ]
+    },
+    "afterExecute": {
+      "checks": [
+        "All 4 dead methods removed from AdminController",
+        "AppsOverviewWorldClass module still intact",
+        "No console errors about undefined methods",
+        "Applications Overview tab still functions"
+      ]
+    }
+  },
+  "rollback": {
+    "enabled": true,
+    "keepBackup": true
+  },
+  "testing": {
+    "manualTests": {
+      "required": true,
+      "steps": [
+        "1. Open DevTools Console",
+        "2. Navigate to Applications Overview tab",
+        "3. Verify no errors about undefined methods",
+        "4. Click status filter pills - should work",
+        "5. Click sort button - should work",
+        "6. Search in input - should filter",
+        "7. Verify all filtering works correctly"
+      ]
+    }
+  },
+  "notes": "Phase 4 of refactoring: Complete cleanup of dead code. All Applications Overview functionality now consolidated in AppsOverviewWorldClass."
+}

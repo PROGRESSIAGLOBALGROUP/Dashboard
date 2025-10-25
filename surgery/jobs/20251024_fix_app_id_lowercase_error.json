@@ -1,0 +1,76 @@
+{
+  "metadata": {
+    "timestamp": "2025-10-24T00:00:00Z",
+    "version": "1.0",
+    "author": "GitHub Copilot",
+    "project": "Dashboard Enhanced",
+    "severity": "CRITICAL",
+    "errorType": "TypeError: app.id.toLowerCase is not a function",
+    "status": "APPLIED",
+    "appliedAt": "2025-10-24T00:00:00Z",
+    "appliedBy": "GitHub Copilot"
+  },
+  "file": "dist/dashboard_enhanced.html",
+  "operation": "replace",
+  "description": "Fix TypeError when searching by app ID in Applications Overview. app.id is numeric and cannot call .toLowerCase() directly.",
+  "rationale": "The search filter in AppsOverviewWorldClass.refresh() attempts to call .toLowerCase() on app.id which is a number. This causes a runtime error blocking the entire search functionality in the Applications Overview tab.",
+  "impact": "Fixes the search functionality in Applications Overview tab, allowing users to search by app ID without errors.",
+  "riskLevel": "Low",
+  "originalCode": "            // Filter data - WORLD CLASS with Wave + Status + Search\n            let filtered = apps.filter(app => {\n                const matchesStatus = this.activeStatusFilter === 'all' || app.status === this.activeStatusFilter;\n                const matchesSearch = !this.currentSearchQuery || \n                    app.name.toLowerCase().includes(this.currentSearchQuery) ||\n                    app.id.toLowerCase().includes(this.currentSearchQuery);\n                const matchesWave = this.activeWaveFilter === 'all' || app.wave === this.activeWaveFilter;\n                return matchesStatus && matchesSearch && matchesWave;\n            });",
+  "newCode": "            // Filter data - WORLD CLASS with Wave + Status + Search\n            let filtered = apps.filter(app => {\n                const matchesStatus = this.activeStatusFilter === 'all' || app.status === this.activeStatusFilter;\n                const matchesSearch = !this.currentSearchQuery || \n                    app.name.toLowerCase().includes(this.currentSearchQuery) ||\n                    app.id.toString().toLowerCase().includes(this.currentSearchQuery);\n                const matchesWave = this.activeWaveFilter === 'all' || app.wave === this.activeWaveFilter;\n                return matchesStatus && matchesSearch && matchesWave;\n            });",
+  "validation": {
+    "beforeExecute": {
+      "checks": [
+        "File exists: dist/dashboard_enhanced.html",
+        "Original code found at AppsOverviewWorldClass.refresh() method",
+        "File syntax valid"
+      ]
+    },
+    "afterExecute": {
+      "checks": [
+        "New code with app.id.toString() is in place",
+        "File syntax still valid",
+        "Applications Overview search functionality working without errors"
+      ]
+    },
+    "rollbackCondition": "If any check fails"
+  },
+  "rollback": {
+    "enabled": true,
+    "keepBackup": true,
+    "backupName": "dashboard_enhanced_20251024_app_id_fix_backup.html",
+    "maxBackups": 5
+  },
+  "testing": {
+    "unitTests": {
+      "required": false,
+      "tests": []
+    },
+    "integrationTests": {
+      "required": false,
+      "tests": []
+    },
+    "manualTests": {
+      "required": true,
+      "steps": [
+        "1. Open dashboard in browser",
+        "2. Navigate to Project Administration modal",
+        "3. Click on 'Applications Overview' tab",
+        "4. Type a number in the search box (e.g., search for app ID)",
+        "5. Verify no 'TypeError' in console",
+        "6. Verify results are filtered correctly",
+        "7. Search by app name to verify string search still works",
+        "8. Check console shows no errors"
+      ]
+    }
+  },
+  "approval": {
+    "requiresReview": false,
+    "reviewers": [],
+    "testCoverage": "Manual testing sufficient for this fix"
+  },
+  "documentation": {
+    "updated": false,
+    "files": []
+  }
+}

@@ -1,0 +1,79 @@
+{
+  "metadata": {
+    "timestamp": "2025-10-24T00:00:00Z",
+    "version": "1.0",
+    "author": "GitHub Copilot",
+    "project": "Dashboard Enhanced",
+    "severity": "CRITICAL",
+    "errorType": "TypeError: this.sortAppsOverview is not a function",
+    "status": "APPLIED",
+    "appliedAt": "2025-10-24T00:00:00Z",
+    "appliedBy": "GitHub Copilot"
+  },
+  "file": "dist/dashboard_enhanced.html",
+  "operation": "delete",
+  "description": "Remove dead code that calls non-existent method this.sortAppsOverview() in AdminController. This method was never implemented; sorting is handled by AppsOverviewWorldClass.cycleSortOrder() instead.",
+  "rationale": "The AdminController.openModal() method contains event listeners that call this.sortAppsOverview(columnName, index) but this method does not exist. This is residual code from an earlier implementation. Applications Overview now uses AppsOverviewWorldClass module with dedicated sorting functionality via cycleSortOrder(). Clicking table headers should not trigger a non-existent method.",
+  "impact": "Removes dead code preventing TypeError when clicking table column headers. Sorting is properly handled by AppsOverviewWorldClass module which has dedicated UI buttons for sort control.",
+  "riskLevel": "Low",
+  "originalCode": "    // Setup column sorting event listeners for apps overview\n    setTimeout(() => {\n      const headers = document.querySelectorAll('#appsOverviewTable th');\n      headers.forEach((header, index) => {\n        header.addEventListener('click', () => {\n          const columnName = header.textContent.trim();\n          this.sortAppsOverview(columnName, index);\n        });\n      });\n    }, 100);",
+  "newCode": "",
+  "validation": {
+    "beforeExecute": {
+      "checks": [
+        "File exists: dist/dashboard_enhanced.html",
+        "Original code found in AdminController.openModal() method",
+        "Verify AppsOverviewWorldClass.cycleSortOrder() exists and is functional",
+        "File syntax valid"
+      ]
+    },
+    "afterExecute": {
+      "checks": [
+        "Dead code removed completely",
+        "AppsOverviewWorldClass module still intact and functional",
+        "No orphaned references to sortAppsOverview remain",
+        "File syntax still valid",
+        "Applications Overview sorting buttons still work via cycleSortOrder()"
+      ]
+    },
+    "rollbackCondition": "If any check fails"
+  },
+  "rollback": {
+    "enabled": true,
+    "keepBackup": true,
+    "backupName": "dashboard_enhanced_20251024_dead_code_removal_backup.html",
+    "maxBackups": 5
+  },
+  "testing": {
+    "unitTests": {
+      "required": false,
+      "tests": []
+    },
+    "integrationTests": {
+      "required": false,
+      "tests": []
+    },
+    "manualTests": {
+      "required": true,
+      "steps": [
+        "1. Open dashboard in browser",
+        "2. Navigate to Project Administration modal",
+        "3. Click on 'Applications Overview' tab",
+        "4. Click on table column headers - should NOT trigger errors",
+        "5. Use the dedicated 'Sort by Order' button at top of table",
+        "6. Verify sorting cycles through: none → ascending ▲ → descending ▼",
+        "7. Check console for no 'TypeError: this.sortAppsOverview is not a function' errors",
+        "8. Verify table data sorts correctly when using the sort button"
+      ]
+    }
+  },
+  "approval": {
+    "requiresReview": false,
+    "reviewers": [],
+    "testCoverage": "Manual testing sufficient for verification"
+  },
+  "documentation": {
+    "updated": false,
+    "files": []
+  }
+}
