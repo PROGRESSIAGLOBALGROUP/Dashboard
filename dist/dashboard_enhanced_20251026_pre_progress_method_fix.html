@@ -6119,45 +6119,17 @@ const ProgressCalculator = {
     
     if (activeApps.length === 0) return 0;
     
-    // Get the progress calculation method from saved configuration
-    const config = Dashboard.StorageManager.loadConfig();
-    const progressMethod = config?.formulaSettings?.progressMethod || 'weighted';
+    const weightedSum = activeApps.reduce((sum, app) => {
+      const weight = this.calculateAppWeight(app); // Use automatic weight
+      const progress = app.progress || 0;
+      return sum + (progress * weight);
+    }, 0);
     
-    console.log(`📊 [calculateBUProgress] Using method: ${progressMethod} for BU ${buId}`);
+    const totalWeight = activeApps.reduce((sum, app) => {
+      return sum + this.calculateAppWeight(app); // Use automatic weight
+    }, 0);
     
-    // Apply the selected calculation method
-    switch (progressMethod) {
-      case 'simple':
-        // Simple Average: all apps have equal weight
-        const simpleSum = activeApps.reduce((sum, app) => {
-          const progress = app.progress || 0;
-          return sum + progress;
-        }, 0);
-        return activeApps.length > 0 ? Math.round((simpleSum / activeApps.length) * 100) / 100 : 0;
-      
-      case 'minimum':
-        // Minimum Progress: bottleneck approach (lowest app progress is the limit)
-        const minProgress = activeApps.reduce((min, app) => {
-          const progress = app.progress || 0;
-          return Math.min(min, progress);
-        }, 100);
-        return Math.round(minProgress * 100) / 100;
-      
-      case 'weighted':
-      default:
-        // Weighted Average: use automatic weights from business factors
-        const weightedSum = activeApps.reduce((sum, app) => {
-          const weight = this.calculateAppWeight(app); // Use automatic weight
-          const progress = app.progress || 0;
-          return sum + (progress * weight);
-        }, 0);
-        
-        const totalWeight = activeApps.reduce((sum, app) => {
-          return sum + this.calculateAppWeight(app); // Use automatic weight
-        }, 0);
-        
-        return totalWeight > 0 ? Math.round((weightedSum / totalWeight) * 100) / 100 : 0;
-    }
+    return totalWeight > 0 ? Math.round((weightedSum / totalWeight) * 100) / 100 : 0;
   },
   
   recalculateAllBUsProgress() {
@@ -6697,29 +6669,10 @@ const UIController = {
     }
     
     const items = this.filtered();
-    // Calculate global progress using the selected global method
-    const config = Dashboard.StorageManager.loadConfig();
-    const globalMethod = config?.formulaSettings?.globalMethod || 'weighted';
+    const avgGlobal = DATA.length > 0 
+      ? DATA.reduce((s, d) => s + (d.progress || 0), 0) / DATA.length 
+      : 0;
     
-    let avgGlobal = 0;
-    if (DATA.length > 0) {
-      if (globalMethod === 'simple') {
-        // Simple BU Average: all BUs have equal weight
-        avgGlobal = DATA.reduce((s, d) => s + (d.progress || 0), 0) / DATA.length;
-      } else {
-        // Weighted by BU Size: larger BUs have more influence
-        const totalApps = DATA.reduce((sum, d) => sum + (d.appCount || 0), 0);
-        if (totalApps > 0) {
-          avgGlobal = DATA.reduce((sum, d) => {
-            const appCount = d.appCount || 0;
-            const progress = d.progress || 0;
-            return sum + (progress * appCount / totalApps);
-          }, 0);
-        }
-      }
-    }
-    
-    console.log(`📊 [GLOBAL] Using global method: ${globalMethod}, Progress: ${avgGlobal}%`);
     console.log('📊 [CALCULO] Progreso global:', avgGlobal, 'Items filtrados:', items.length);
     
     let heroValue = avgGlobal;
