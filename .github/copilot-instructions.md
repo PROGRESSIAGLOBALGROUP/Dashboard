@@ -26,6 +26,46 @@
 2. **STRICT PATH COMPLIANCE** - Always use established directory structure  
 3. **PURPOSE-DRIVEN CREATION** - Every file must solve a specific user need
 
+## 🧪 MANDATORY TESTING RULE (CRITICAL - Oct 26, 2025)
+
+**EVERY code modification to production files MUST follow this sequence:**
+
+```
+1️⃣ CREATE/UPDATE test script BEFORE making changes
+   └─ tests/unit/ or tests/integration/
+   └─ Specify what will be tested
+   
+2️⃣ APPLY the code change
+   └─ Document in code_surgeon job
+   └─ Create backup file
+   
+3️⃣ RUN UNIT TESTS immediately after change
+   └─ Must pass with real code and data
+   
+4️⃣ RUN INTEGRATION TESTS
+   └─ Verify no side effects on other modules
+   
+5️⃣ VERIFY RESULTS & DOCUMENT
+   └─ Pass/fail status
+   └─ Test output and metrics
+```
+
+**VIOLATION**: Skipping tests before commit = automatic rejection
+
+**Example Commands:**
+```bash
+# Unit tests
+python tests/unit/test_status_inclusion_rules.py
+
+# Integration tests
+python tests/integration/test_status_inclusion_integration.py
+
+# Verification
+python scripts/verify_status_inclusion_fix.py
+```
+
+See `CODE_MODIFICATION_PROTOCOL.md` for complete testing requirements.
+
 ---
 
 ---
