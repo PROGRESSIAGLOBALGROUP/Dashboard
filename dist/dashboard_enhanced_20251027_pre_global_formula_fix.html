@@ -6882,7 +6882,7 @@ const AdminController = {
         const formulaConfig = {
           timestamp: new Date().toISOString(),
           progressMethod: document.querySelector('input[name="progress-method"]:checked')?.value || 'weighted',
-          globalMethod: document.querySelector('input[name="global-method"]:checked')?.value || 'weighted',
+          globalMethod: document.getElementById('formula-global-method')?.value || 'weighted',
           statusInclusions: {
             tbs: document.getElementById('include-tbs')?.checked || false,
             wip: document.getElementById('include-wip')?.checked || true,
@@ -6920,9 +6920,7 @@ const AdminController = {
     
     // Formula dropdown change events
     document.getElementById('formula-progress-method')?.addEventListener('change', () => this.updateFormulaLabels());
-    document.querySelectorAll('input[name="global-method"]').forEach(radio => {
-      radio.addEventListener('change', () => this.updateFormulaLabels());
-    });
+    document.getElementById('formula-global-method')?.addEventListener('change', () => this.updateFormulaLabels());
     
     // BU Editor Modal (click outside to close)
     document.getElementById('buEditorModal').addEventListener('click', (e) => {
@@ -8863,9 +8861,7 @@ const AdminController = {
     
     // Reset form values
     document.getElementById('formula-progress-method').value = defaultConfig.progressMethod;
-    // Set global method radio button
-    const globalMethodRadio = document.querySelector(`input[name="global-method"][value="${defaultConfig.globalMethod}"]`);
-    if (globalMethodRadio) globalMethodRadio.checked = true;
+    document.getElementById('formula-global-method').value = defaultConfig.globalMethod;
     document.getElementById('include-status-tbs').checked = defaultConfig.statusInclusion.TBS;
     document.getElementById('include-status-wip').checked = defaultConfig.statusInclusion.WIP;
     document.getElementById('include-status-clo').checked = defaultConfig.statusInclusion.CLO;
@@ -8892,7 +8888,7 @@ const AdminController = {
     // Get current configuration from form
     const formulaConfig = {
       progressMethod: document.getElementById('formula-progress-method').value,
-      globalMethod: document.querySelector('input[name="global-method"]:checked')?.value || 'weighted',
+      globalMethod: document.getElementById('formula-global-method').value,
       statusInclusion: {
         TBS: document.getElementById('include-status-tbs').checked,
         WIP: document.getElementById('include-status-wip').checked,
@@ -9032,9 +9028,7 @@ const AdminController = {
       
       // Apply to form inputs
       document.getElementById('formula-progress-method').value = config.progressMethod || 'weighted';
-      // Set global method radio button
-      const globalMethodRadioLoad = document.querySelector(`input[name="global-method"][value="${config.globalMethod || 'weighted'}"]`);
-      if (globalMethodRadioLoad) globalMethodRadioLoad.checked = true;
+      document.getElementById('formula-global-method').value = config.globalMethod || 'weighted';
       
       // Status inclusion
       if (config.statusInclusion) {
@@ -9073,8 +9067,7 @@ const AdminController = {
     
     // Set form to empty state (NOT defaults)
     document.getElementById('formula-progress-method').value = 'weighted';
-    // Set global method to weighted by default
-    document.getElementById('global-weighted').checked = true;
+    document.getElementById('formula-global-method').value = 'weighted';
     document.getElementById('include-status-tbs').checked = false;
     document.getElementById('include-status-wip').checked = true;
     document.getElementById('include-status-clo').checked = true;
@@ -9092,7 +9085,7 @@ const AdminController = {
   updateFormulaLabels() {
     // Show/hide appropriate formula labels based on selected method
     const progressMethod = document.getElementById('formula-progress-method').value;
-    const globalMethod = document.querySelector('input[name="global-method"]:checked')?.value || 'weighted';
+    const globalMethod = document.getElementById('formula-global-method').value;
     
     // Update progress method formula labels
     document.querySelectorAll('.math-formula.weighted, .math-formula.simple, .math-formula.minimum').forEach(el => {
