@@ -1,0 +1,96 @@
+{
+  "metadata": {
+    "timestamp": "2025-10-26T00:00:00Z",
+    "version": "1.0",
+    "author": "GitHub Copilot",
+    "project": "Dashboard Enhanced - Status Inclusion Rules Verification"
+  },
+  "file": "dist/dashboard_enhanced.html",
+  "operation": "investigation_report",
+  "description": "Verify if Status Inclusion Rules (TBS/WIP/CLO checkboxes) are actually being used in progress calculations",
+  "rationale": "User reported that Status Inclusion Rules UI exists but questioned if they're actually functioning. Need to verify if the checkboxes (include-tbs, include-wip, include-clo) are being applied to progress calculations.",
+  "impact": "This is a VERIFICATION ONLY job - no changes applied. Documents the current implementation status.",
+  "riskLevel": "None - Information gathering only",
+  "findings": [
+    {
+      "finding": "Status Inclusion Checkboxes Exist",
+      "location": "Lines 4521-4540 in HTML",
+      "status": "✅ CONFIRMED",
+      "details": "Three checkboxes exist: include-tbs (default unchecked), include-wip (default checked), include-clo (default checked)"
+    },
+    {
+      "finding": "Configuration Read from Checkboxes",
+      "location": "Lines 8735-8737",
+      "status": "✅ CONFIRMED",
+      "details": "Code reads checkbox values and stores in statusInclusionConfig object",
+      "code": "const includesTBS = document.getElementById('include-tbs')?.checked || false; const includesWIP = document.getElementById('include-wip')?.checked || true; const includesCLO = document.getElementById('include-clo')?.checked || true;"
+    },
+    {
+      "finding": "Configuration Applied in Calculations",
+      "location": "Lines 6103-6121 (calculateBUProgress function)",
+      "status": "❌ NOT CONFIRMED - ISSUE FOUND",
+      "details": "Function filters apps with HARDCODED logic: app.status !== 'TBS' - does NOT use statusInclusionConfig",
+      "current_code": "const activeApps = apps.filter(app => app.status !== 'TBS');",
+      "problem": "Always excludes TBS regardless of include-tbs checkbox state"
+    },
+    {
+      "finding": "statusInclusionConfig Variable Usage",
+      "location": "Searched entire file",
+      "status": "❌ UNUSED",
+      "details": "statusInclusionConfig is defined (line 8742) but NEVER referenced or used anywhere in calculations",
+      "impact": "The configuration is being stored but completely ignored in progress calculations"
+    }
+  ],
+  "root_cause_analysis": {
+    "issue": "Status Inclusion Rules UI is a facade - configuration is collected but never applied",
+    "components_involved": [
+      "UI Layer: Checkboxes collect user preferences",
+      "Storage Layer: Configuration stored in statusInclusionConfig",
+      "Calculation Layer: calculateBUProgress() ignores configuration and uses hardcoded filtering"
+    ],
+    "why_it_happened": "UI was built for Status Inclusion Rules, configuration storage was implemented, but the ProgressCalculator module was not updated to USE the configuration",
+    "affected_functionality": [
+      "BU Progress calculations are always: Exclude TBS + Include WIP + Include CLO",
+      "User cannot change this behavior via UI",
+      "Global progress inherits this behavior",
+      "KPI metrics may not reflect user-selected inclusion rules"
+    ]
+  },
+  "recommended_fix": {
+    "action": "Implement Dynamic Status Filtering",
+    "scope": "Modify calculateBUProgress() to read and apply statusInclusionConfig",
+    "implementation_steps": [
+      "Add parameter or access statusInclusionConfig in calculateBUProgress()",
+      "Replace hardcoded filter with dynamic filter based on config",
+      "Update filter logic to include/exclude TBS, WIP, CLO based on checkbox states",
+      "Test that changing checkboxes immediately affects progress calculations",
+      "Verify KPI counts reflect the inclusion rules"
+    ],
+    "severity": "MEDIUM - Feature is broken but UI exists (misleading to users)"
+  },
+  "testing_recommendations": {
+    "manual_tests": [
+      "Check TBS checkbox - verify TBS apps are now included in progress calculation",
+      "Uncheck WIP checkbox - verify WIP apps are excluded from calculation",
+      "Uncheck CLO checkbox - verify CLO apps are excluded from calculation",
+      "Verify BU progress changes when checkboxes are toggled",
+      "Verify Global progress changes accordingly",
+      "Check KPI metrics update to reflect inclusion rules"
+    ],
+    "expected_behavior": "Progress calculations should immediately update when user changes any inclusion checkbox"
+  },
+  "verification_commands": {
+    "search_for_statusInclusionConfig": "grep 'statusInclusionConfig' dist/dashboard_enhanced.html | wc -l",
+    "expected_result": "Should see references in BOTH definition (line ~8742) AND in usage locations (calculateBUProgress, filter logic)",
+    "current_result": "Only sees 1 match - definition but no usage"
+  },
+  "documentation": {
+    "updated": false,
+    "files": []
+  },
+  "jobType": "verification_and_diagnostics",
+  "complexity": "high",
+  "estimatedTimeToImplement": "0 minutes (verification only - no changes applied)",
+  "status": "COMPLETED",
+  "conclusion": "❌ STATUS INCLUSION RULES ARE NOT ACTUALLY IMPLEMENTED - They appear to work but are ignored in calculations. This is a HIGH PRIORITY issue that should be fixed to align UI promises with actual functionality."
+}

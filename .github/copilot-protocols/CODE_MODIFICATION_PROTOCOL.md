@@ -39,7 +39,60 @@
 
 ## 🔴 MANDATORY code_surgeon WORKFLOW
 
-### Step 1: ANALYZE TARGET FILE
+### 🚨 CRITICAL TESTING MANDATE (NEW REQUIREMENT)
+
+**EVERY code modification must follow this sequence:**
+
+```
+1️⃣ CREATE/UPDATE test script BEFORE making changes
+   └─ Specify what will be tested
+   └─ Define acceptance criteria
+   
+2️⃣ APPLY the code change
+   └─ Document in code_surgeon job
+   └─ Create backup file
+   
+3️⃣ RUN UNIT TESTS immediately after change
+   └─ Verify modified function works correctly
+   └─ Use real test data (not mocks)
+   
+4️⃣ RUN INTEGRATION TESTS
+   └─ Verify no side effects on other modules
+   └─ Test complete event chains
+   └─ Validate UI/calculation consistency
+   
+5️⃣ DOCUMENT results
+   └─ Pass/fail status
+   └─ Test output and metrics
+   └─ Any regressions detected
+```
+
+**VIOLATION**: Skipping tests before commit = automatic rejection
+
+---
+
+### Step 1: CREATE/UPDATE TEST SCRIPT
+
+**BEFORE making ANY changes**, create or update the test script that will validate the change:
+
+- Location: `tests/unit/` or `tests/integration/`
+- Language: Python (pytest) or JavaScript (Jest)
+- Content: Test cases that verify the exact change being made
+- Execution: Must pass after change is applied
+
+**Example Test Script Creation:**
+```bash
+# Create test file for the feature being modified
+# Include:
+# - Test case 1: Verify primary functionality
+# - Test case 2: Verify secondary effects
+# - Test case 3: Verify no regressions
+# - Test case 4: Edge cases and error handling
+```
+
+---
+
+### Step 2: ANALYZE TARGET FILE
 
 **Required Information:**
 ```
@@ -346,6 +399,75 @@ if (!findInFile(newCode, targetFile)) {
 }
 
 // 2. Syntax Check
+if (!isValidHTML(modifiedFile)) {
+    rollback(backupName);
+    throw new Error('Modification introduced syntax errors');
+}
+
+// 3. Context Preservation
+if (!verifyContext(targetFile, contextMarkers)) {
+    rollback(backupName);
+    throw new Error('Surrounding code was corrupted');
+}
+
+// 4. File Integrity
+if (!verifyFileIntegrity(targetFile)) {
+    rollback(backupName);
+    throw new Error('File integrity compromised');
+}
+
+// 5. Test Execution (CRITICAL)
+if (!runUnitTests()) {
+    rollback(backupName);
+    throw new Error('Unit tests failed after modification');
+}
+
+// 6. Integration Test Execution (CRITICAL)
+if (!runIntegrationTests()) {
+    rollback(backupName);
+    throw new Error('Integration tests failed after modification');
+}
+
+// 7. Real Data Validation
+if (!verifyWithRealData()) {
+    rollback(backupName);
+    throw new Error('Modification fails with real dashboard data');
+}
+```
+
+### Test Execution Requirements (MANDATORY)
+
+**Unit Tests** must verify:
+- ✅ The modified function works correctly in isolation
+- ✅ Input/output contracts are satisfied
+- ✅ Edge cases and error conditions handled
+- ✅ Real test data (not mocks) used for verification
+
+**Integration Tests** must verify:
+- ✅ No side effects on dependent modules
+- ✅ Complete event chains work end-to-end
+- ✅ Data flow across module boundaries is intact
+- ✅ UI updates reflect calculation changes
+- ✅ Persistence layer correctly stores/retrieves data
+
+**Example Test Commands:**
+```bash
+# Unit tests for specific functionality
+pytest tests/unit/test_status_inclusion.py -v
+
+# Integration tests for the complete feature
+pytest tests/integration/test_status_inclusion_flow.py -v
+
+# All tests to verify no regressions
+pytest tests/ -v --tb=short
+
+# Coverage report to ensure tested code
+pytest tests/ --cov=src/ --cov-report=html
+```
+
+---
+
+## 🛡️ VALIDATION GATES// 2. Syntax Check
 if (!isValidHTML(modifiedFile)) {
     rollback(backupName);
     throw new Error('Modification introduced syntax errors');

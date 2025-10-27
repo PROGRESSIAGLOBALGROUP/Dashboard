@@ -6104,19 +6104,8 @@ const ProgressCalculator = {
     const apps = Dashboard.StorageManager.getAppsByBU(buId);
     if (apps.length === 0) return 0;
     
-    // Get status inclusion configuration from checkboxes
-    const includesTBS = document.getElementById('include-tbs')?.checked || false;
-    const includesWIP = document.getElementById('include-wip')?.checked || true;
-    const includesCLO = document.getElementById('include-clo')?.checked || true;
-    
-    // Filter apps based on status inclusion rules (DYNAMIC - not hardcoded)
-    const activeApps = apps.filter(app => {
-      if (app.status === 'TBS') return includesTBS;
-      if (app.status === 'WIP') return includesWIP;
-      if (app.status === 'CLO') return includesCLO;
-      return true; // Include any other status by default
-    });
-    
+    // Filter out TBS apps (not started yet)
+    const activeApps = apps.filter(app => app.status !== 'TBS');
     if (activeApps.length === 0) return 0;
     
     const weightedSum = activeApps.reduce((sum, app) => {
@@ -8755,10 +8744,6 @@ const AdminController = {
       WIP: includesWIP,
       CLO: includesCLO
     };
-    
-    // CRITICAL: Trigger recalculation with new status inclusion rules
-    console.log('🔄 Recalculating BU progress with new status inclusion rules...');
-    Dashboard.UIController.apply();
   },
   
   saveFormulaConfig() {
