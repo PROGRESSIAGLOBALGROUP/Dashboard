@@ -1,0 +1,79 @@
+{
+  "metadata": {
+    "timestamp": "2025-10-27T00:00:00Z",
+    "version": "1.0",
+    "author": "GitHub Copilot",
+    "project": "Dashboard Enhanced",
+    "purpose": "Fix formula update listener for progress-method radio buttons"
+  },
+  "file": "dist/dashboard_enhanced.html",
+  "operation": "replace",
+  "description": "Fix: Progress method radio buttons don't trigger formula update - event listener is looking for non-existent #formula-progress-method element instead of input[name='progress-method'] radio buttons",
+  "rationale": "The event listener was attached to a non-existent DOM element #formula-progress-method. The actual radio buttons use name='progress-method'. This prevented the formula from updating when users changed the selection.",
+  "impact": "When users select different Progress Calculation Methods (Weighted/Simple/Minimum), the formula display will now update correctly.",
+  "riskLevel": "Low",
+  "originalCode": "    // Formula dropdown change events\n    document.getElementById('formula-progress-method')?.addEventListener('change', () => this.updateFormulaLabels());\n    document.querySelectorAll('input[name=\"global-method\"]').forEach(radio => {\n      radio.addEventListener('change', () => this.updateFormulaLabels());\n    });",
+  "newCode": "    // Formula dropdown change events\n    document.querySelectorAll('input[name=\"progress-method\"]').forEach(radio => {\n      radio.addEventListener('change', () => this.updateFormulaLabels());\n    });\n    document.querySelectorAll('input[name=\"global-method\"]').forEach(radio => {\n      radio.addEventListener('change', () => this.updateFormulaLabels());\n    });",
+  "validation": {
+    "beforeExecute": {
+      "checks": [
+        "File exists: dist/dashboard_enhanced.html",
+        "Original code found at expected location",
+        "File syntax valid (balanced braces)"
+      ]
+    },
+    "afterExecute": {
+      "checks": [
+        "New code is in place with correct querySelectorAll",
+        "File syntax still valid",
+        "Both progress-method and global-method listeners configured",
+        "No orphaned event listeners"
+      ]
+    },
+    "rollbackCondition": "If any validation check fails, automatic rollback"
+  },
+  "rollback": {
+    "enabled": true,
+    "keepBackup": true,
+    "backupName": "dashboard_enhanced_20251027_pre_formula_listener_fix.html",
+    "maxBackups": 5
+  },
+  "testing": {
+    "unitTests": {
+      "required": true,
+      "tests": [
+        "test_formula_update_on_progress_method_change",
+        "test_formula_update_on_global_method_change",
+        "test_all_radio_buttons_have_listeners"
+      ]
+    },
+    "integrationTests": {
+      "required": true,
+      "tests": [
+        "test_formula_display_updates_with_ui",
+        "test_calculation_formulas_tab_functionality"
+      ]
+    },
+    "manualTests": {
+      "required": true,
+      "steps": [
+        "Open Calculation Formulas tab",
+        "Change Progress Calculation Method to 'Simple'",
+        "Verify the top formula updates to show Simple method",
+        "Change Progress Calculation Method to 'Minimum'",
+        "Verify the top formula updates to show Minimum method",
+        "Change Global Progress Formula to 'Simple'",
+        "Verify the formulas update correctly"
+      ]
+    }
+  },
+  "approval": {
+    "requiresReview": true,
+    "reviewers": ["developer"],
+    "testCoverage": "Minimum 100% of modified code"
+  },
+  "documentation": {
+    "updated": false,
+    "files": []
+  }
+}

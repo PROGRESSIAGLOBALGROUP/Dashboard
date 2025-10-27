@@ -1,0 +1,80 @@
+{
+  "metadata": {
+    "timestamp": "2025-10-27T00:00:00Z",
+    "version": "1.0",
+    "author": "GitHub Copilot",
+    "project": "Dashboard Enhanced",
+    "purpose": "Fix formula value retrieval in updateFormulaLabels method"
+  },
+  "file": "dist/dashboard_enhanced.html",
+  "operation": "replace",
+  "description": "Fix: updateFormulaLabels() tries to read value from non-existent #formula-progress-method element instead of querying the checked radio button",
+  "rationale": "The method was attempting to get the value from a non-existent dropdown element. The actual progress method is stored in radio buttons with name='progress-method'. This caused the formula display to fail silently.",
+  "impact": "The formula display now correctly reads which Progress Calculation Method is selected and displays the appropriate formula.",
+  "riskLevel": "Low",
+  "originalCode": "  updateFormulaLabels() {\n    // Show/hide appropriate formula labels based on selected method\n    const progressMethod = document.getElementById('formula-progress-method').value;\n    const globalMethod = document.querySelector('input[name=\"global-method\"]:checked')?.value || 'weighted';",
+  "newCode": "  updateFormulaLabels() {\n    // Show/hide appropriate formula labels based on selected method\n    const progressMethod = document.querySelector('input[name=\"progress-method\"]:checked')?.value || 'weighted';\n    const globalMethod = document.querySelector('input[name=\"global-method\"]:checked')?.value || 'weighted';",
+  "validation": {
+    "beforeExecute": {
+      "checks": [
+        "File exists: dist/dashboard_enhanced.html",
+        "Original code found in updateFormulaLabels method",
+        "File syntax valid"
+      ]
+    },
+    "afterExecute": {
+      "checks": [
+        "New code correctly uses querySelector for radio buttons",
+        "Fallback value 'weighted' is present for safety",
+        "File syntax still valid",
+        "updateCoreAlgorithmDisplay is called with correct values"
+      ]
+    },
+    "rollbackCondition": "If formula display does not update after radio button change"
+  },
+  "rollback": {
+    "enabled": true,
+    "keepBackup": true,
+    "backupName": "dashboard_enhanced_20251027_pre_formula_value_fix.html",
+    "maxBackups": 5
+  },
+  "testing": {
+    "unitTests": {
+      "required": true,
+      "tests": [
+        "test_updateFormulaLabels_reads_correct_method",
+        "test_progressMethod_defaults_to_weighted",
+        "test_globalMethod_defaults_to_weighted",
+        "test_formula_display_elements_updated"
+      ]
+    },
+    "integrationTests": {
+      "required": true,
+      "tests": [
+        "test_formula_updates_on_radio_change_integration",
+        "test_calculation_formulas_tab_full_flow"
+      ]
+    },
+    "manualTests": {
+      "required": true,
+      "steps": [
+        "Open admin modal → Calculation Formulas tab",
+        "Verify current method is detected correctly",
+        "Click 'Simple' radio button",
+        "Verify top formula updates immediately",
+        "Click 'Minimum' radio button",
+        "Verify top formula updates immediately",
+        "Check console for errors (F12)"
+      ]
+    }
+  },
+  "approval": {
+    "requiresReview": true,
+    "reviewers": ["developer"],
+    "testCoverage": "Minimum 100% of modified code"
+  },
+  "documentation": {
+    "updated": false,
+    "files": []
+  }
+}

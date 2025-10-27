@@ -6919,7 +6919,9 @@ const AdminController = {
     document.getElementById('test-formula-config')?.addEventListener('click', () => this.testFormulaConfig());
     
     // Formula dropdown change events
-    document.getElementById('formula-progress-method')?.addEventListener('change', () => this.updateFormulaLabels());
+    document.querySelectorAll('input[name="progress-method"]').forEach(radio => {
+      radio.addEventListener('change', () => this.updateFormulaLabels());
+    });
     document.querySelectorAll('input[name="global-method"]').forEach(radio => {
       radio.addEventListener('change', () => this.updateFormulaLabels());
     });
@@ -9091,7 +9093,7 @@ const AdminController = {
   
   updateFormulaLabels() {
     // Show/hide appropriate formula labels based on selected method
-    const progressMethod = document.getElementById('formula-progress-method').value;
+    const progressMethod = document.querySelector('input[name="progress-method"]:checked')?.value || 'weighted';
     const globalMethod = document.querySelector('input[name="global-method"]:checked')?.value || 'weighted';
     
     // Update progress method formula labels
