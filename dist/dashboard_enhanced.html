@@ -4496,7 +4496,7 @@ body.cinematic .exit-cinema{display:inline-flex}
                   Core Algorithm
                   <span class="factor-info-trigger" data-tooltip-id="factor27-tooltip">ℹ️</span>
                 </div>
-                <div class="formula-equation">
+                <div class="formula-equation" id="core-algorithm-formula">
                   Weight = [<span class="highlight">(Criticality × Business Impact × Priority)</span> ÷ 27 ] × 3
                 </div>
                 <div class="formula-range">Range: 0.11 → 3.00 | Precision: 0.01</div>
@@ -9105,6 +9105,41 @@ const AdminController = {
       el.style.display = 'none';
     });
     document.querySelector('.math-formula.global-' + globalMethod).style.display = 'block';
+    
+    // Update core algorithm formula based on selected method
+    this.updateCoreAlgorithmDisplay(progressMethod, globalMethod);
+  },
+  
+  updateCoreAlgorithmDisplay(progressMethod, globalMethod) {
+    const coreFormulaEl = document.getElementById('core-algorithm-formula');
+    if (!coreFormulaEl) return;
+    
+    const formulaMap = {
+      weighted: 'Weight = [<span class="highlight">(Criticality × Business Impact × Priority)</span> ÷ 27 ] × 3',
+      simple: 'Weight = [<span class="highlight">(Criticality × Business Impact × Priority)</span> ÷ 27 ] × 3',
+      minimum: 'Weight = [<span class="highlight">(Criticality × Business Impact × Priority)</span> ÷ 27 ] × 3'
+    };
+    
+    // Note: Core algorithm (weight calculation) is always the same
+    // But we can show context about how it's used based on method selection
+    const methodContext = {
+      weighted: `Using Weighted BU Method${globalMethod === 'weighted' ? ' × Weighted Global Formula' : ' (Global: Simple Average)'}`,
+      simple: `Using Simple BU Average${globalMethod === 'weighted' ? ' (Global: Weighted by Size)' : ' × Simple Global Average'}`,
+      minimum: `Using Minimum Progress (Bottleneck)${globalMethod === 'weighted' ? ' (Global: Weighted by Size)' : ' (Global: Simple Average)'}`
+    };
+    
+    // Update the formula
+    coreFormulaEl.innerHTML = formulaMap[progressMethod] || formulaMap.weighted;
+    
+    // Add context subtitle
+    let contextEl = document.getElementById('core-algorithm-context');
+    if (!contextEl) {
+      contextEl = document.createElement('div');
+      contextEl.id = 'core-algorithm-context';
+      contextEl.style.cssText = 'font-size: 12px; color: var(--text); margin-top: 8px; opacity: 0.8; font-style: italic;';
+      coreFormulaEl.parentNode.appendChild(contextEl);
+    }
+    contextEl.textContent = '→ ' + methodContext[progressMethod];
   },
 
   renderApplicationsImpactMatrix() {
