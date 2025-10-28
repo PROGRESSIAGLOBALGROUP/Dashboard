@@ -4494,7 +4494,7 @@ body.cinematic .exit-cinema{display:inline-flex}
               <div class="formula-box">
                 <div class="formula-label">
                   Core Algorithm
-                  <span class="factor-info-trigger" data-tooltip-id="factor27-tooltip">ℹ️</span>
+                  <span class="factor-info-trigger" data-tooltip-id="factor27-tooltip">💡</span>
                 </div>
                 <div class="formula-equation" id="core-algorithm-formula">
                   Weight = [<span class="highlight">(Criticality × Business Impact × Priority)</span> ÷ 27 ] × 3
@@ -6058,7 +6058,8 @@ function rebuildDATAFromStorage() {
     DATA.push({
       key: bus.key,
       name: bus.name,
-      progress: progress
+      progress: progress,
+      appCount: apps.length
     });
   });
   
@@ -7177,7 +7178,6 @@ const AdminController = {
       // Initialize the new enterprise formula calculator
       setTimeout(() => {
         this.initializeFormulaCalculator();
-        this.renderApplicationsImpactMatrix();
       }, 100);
       // Load formula configuration
       this.loadFormulaConfig();
@@ -8864,7 +8864,9 @@ const AdminController = {
     };
     
     // Reset form values
-    document.getElementById('formula-progress-method').value = defaultConfig.progressMethod;
+    // Set progress method radio button (corrected from getElementById which doesn't exist)
+    const progressMethodRadio = document.querySelector(`input[name="progress-method"][value="${defaultConfig.progressMethod}"]`);
+    if (progressMethodRadio) progressMethodRadio.checked = true;
     // Set global method radio button
     const globalMethodRadio = document.querySelector(`input[name="global-method"][value="${defaultConfig.globalMethod}"]`);
     if (globalMethodRadio) globalMethodRadio.checked = true;
@@ -8893,7 +8895,7 @@ const AdminController = {
     
     // Get current configuration from form
     const formulaConfig = {
-      progressMethod: document.getElementById('formula-progress-method').value,
+      progressMethod: document.querySelector('input[name="progress-method"]:checked')?.value || 'weighted',
       globalMethod: document.querySelector('input[name="global-method"]:checked')?.value || 'weighted',
       statusInclusion: {
         TBS: document.getElementById('include-status-tbs').checked,
@@ -9033,30 +9035,41 @@ const AdminController = {
       const config = JSON.parse(savedConfigStr);
       
       // Apply to form inputs
-      document.getElementById('formula-progress-method').value = config.progressMethod || 'weighted';
+      // Set progress method radio button (corrected from getElementById which doesn't exist)
+      const progressMethodRadio = document.querySelector(`input[name="progress-method"][value="${config.progressMethod || 'weighted'}"]`);
+      if (progressMethodRadio) progressMethodRadio.checked = true;
       // Set global method radio button
       const globalMethodRadioLoad = document.querySelector(`input[name="global-method"][value="${config.globalMethod || 'weighted'}"]`);
       if (globalMethodRadioLoad) globalMethodRadioLoad.checked = true;
       
-      // Status inclusion
+      // Status inclusion (with null-safety for missing elements)
       if (config.statusInclusion) {
-        document.getElementById('include-status-tbs').checked = config.statusInclusion.TBS || false;
-        document.getElementById('include-status-wip').checked = config.statusInclusion.WIP !== undefined ? config.statusInclusion.WIP : true;
-        document.getElementById('include-status-clo').checked = config.statusInclusion.CLO !== undefined ? config.statusInclusion.CLO : true;
+        const elTBS = document.getElementById('include-status-tbs') || document.getElementById('include-tbs');
+        const elWIP = document.getElementById('include-status-wip') || document.getElementById('include-wip');
+        const elCLO = document.getElementById('include-status-clo') || document.getElementById('include-clo');
+        if (elTBS) elTBS.checked = config.statusInclusion.TBS || false;
+        if (elWIP) elWIP.checked = config.statusInclusion.WIP !== undefined ? config.statusInclusion.WIP : true;
+        if (elCLO) elCLO.checked = config.statusInclusion.CLO !== undefined ? config.statusInclusion.CLO : true;
       }
       
-      // Weights
+      // Weights (with null-safety for missing elements)
       if (config.weights) {
-        document.getElementById('weight-min').value = config.weights.min || 0.5;
-        document.getElementById('weight-max').value = config.weights.max || 3.0;
-        document.getElementById('weight-default').value = config.weights.default || 1.0;
+        const elMin = document.getElementById('weight-min');
+        const elMax = document.getElementById('weight-max');
+        const elDefault = document.getElementById('weight-default');
+        if (elMin) elMin.value = config.weights.min || 0.5;
+        if (elMax) elMax.value = config.weights.max || 3.0;
+        if (elDefault) elDefault.value = config.weights.default || 1.0;
       }
       
-      // Criticality multipliers
+      // Criticality multipliers (with null-safety for missing elements)
       if (config.criticalityMultipliers) {
-        document.getElementById('crit-low').value = config.criticalityMultipliers.low || 1.0;
-        document.getElementById('crit-medium').value = config.criticalityMultipliers.medium || 1.0;
-        document.getElementById('crit-high').value = config.criticalityMultipliers.high || 1.2;
+        const elLow = document.getElementById('crit-low');
+        const elMedium = document.getElementById('crit-medium');
+        const elHigh = document.getElementById('crit-high');
+        if (elLow) elLow.value = config.criticalityMultipliers.low || 1.0;
+        if (elMedium) elMedium.value = config.criticalityMultipliers.medium || 1.0;
+        if (elHigh) elHigh.value = config.criticalityMultipliers.high || 1.2;
       }
       
       // Update formula displays
@@ -9074,39 +9087,81 @@ const AdminController = {
     console.log('Initializing empty formula form');
     
     // Set form to empty state (NOT defaults)
-    document.getElementById('formula-progress-method').value = 'weighted';
-    // Set global method to weighted by default
-    document.getElementById('global-weighted').checked = true;
-    document.getElementById('include-status-tbs').checked = false;
-    document.getElementById('include-status-wip').checked = true;
-    document.getElementById('include-status-clo').checked = true;
-    document.getElementById('weight-min').value = '0.5';
-    document.getElementById('weight-max').value = '3.0';
-    document.getElementById('weight-default').value = '1.0';
-    document.getElementById('crit-low').value = '1.0';
-    document.getElementById('crit-medium').value = '1.0';
-    document.getElementById('crit-high').value = '1.2';
+    // Set progress method to weighted (corrected from getElementById which doesn't exist)
+    const progressMethodRadio = document.querySelector('input[name="progress-method"][value="weighted"]');
+    if (progressMethodRadio) progressMethodRadio.checked = true;
+    // Set global method to weighted by default (with null-safety)
+    const globalWeightedRadio = document.getElementById('global-weighted');
+    if (globalWeightedRadio) globalWeightedRadio.checked = true;
+    // Status inclusion checkboxes (with null-safety for missing elements)
+    const elTBS = document.getElementById('include-status-tbs') || document.getElementById('include-tbs');
+    const elWIP = document.getElementById('include-status-wip') || document.getElementById('include-wip');
+    const elCLO = document.getElementById('include-status-clo') || document.getElementById('include-clo');
+    if (elTBS) elTBS.checked = false;
+    if (elWIP) elWIP.checked = true;
+    if (elCLO) elCLO.checked = true;
+    // Weight inputs (with null-safety for missing elements)
+    const elMin = document.getElementById('weight-min');
+    const elMax = document.getElementById('weight-max');
+    const elDefault = document.getElementById('weight-default');
+    if (elMin) elMin.value = '0.5';
+    if (elMax) elMax.value = '3.0';
+    if (elDefault) elDefault.value = '1.0';
+    // Criticality inputs (with null-safety for missing elements)
+    const elLow = document.getElementById('crit-low');
+    const elMedium = document.getElementById('crit-medium');
+    const elHigh = document.getElementById('crit-high');
+    if (elLow) elLow.value = '1.0';
+    if (elMedium) elMedium.value = '1.0';
+    if (elHigh) elHigh.value = '1.2';
     
     // Update labels
     this.updateFormulaLabels();
   },
   
   updateFormulaLabels() {
+    console.log('🔄 updateFormulaLabels() called');
     // Show/hide appropriate formula labels based on selected method
     const progressMethod = document.querySelector('input[name="progress-method"]:checked')?.value || 'weighted';
     const globalMethod = document.querySelector('input[name="global-method"]:checked')?.value || 'weighted';
     
-    // Update progress method formula labels
-    document.querySelectorAll('.math-formula.weighted, .math-formula.simple, .math-formula.minimum').forEach(el => {
-      el.style.display = 'none';
+    // Update progress method - show only selected method's formula
+    // Hide all method formulas first
+    document.querySelectorAll('input[name="progress-method"]').forEach(radio => {
+      const label = radio.closest('label');
+      const methodName = label?.querySelector('.method-name');
+      const methodDesc = label?.querySelector('.method-desc');
+      const methodFormula = label?.querySelector('.method-formula');
+      
+      if (radio.value === progressMethod) {
+        // Show selected method
+        if (methodName) methodName.style.display = 'block';
+        if (methodDesc) methodDesc.style.display = 'block';
+        if (methodFormula) methodFormula.style.display = 'block';
+      } else {
+        // Hide non-selected methods
+        if (methodName) methodName.style.display = 'none';
+        if (methodDesc) methodDesc.style.display = 'none';
+        if (methodFormula) methodFormula.style.display = 'none';
+      }
     });
-    document.querySelector('.math-formula.' + progressMethod).style.display = 'block';
     
-    // Update global method formula labels
-    document.querySelectorAll('.math-formula.global-weighted, .math-formula.global-simple').forEach(el => {
-      el.style.display = 'none';
+    // Update global method - show only selected method's formula
+    document.querySelectorAll('input[name="global-method"]').forEach(radio => {
+      const label = radio.closest('label');
+      const globalName = label?.querySelector('.global-name');
+      const globalFormula = label?.querySelector('.global-formula');
+      
+      if (radio.value === globalMethod) {
+        // Show selected method
+        if (globalName) globalName.style.display = 'block';
+        if (globalFormula) globalFormula.style.display = 'block';
+      } else {
+        // Hide non-selected methods
+        if (globalName) globalName.style.display = 'none';
+        if (globalFormula) globalFormula.style.display = 'none';
+      }
     });
-    document.querySelector('.math-formula.global-' + globalMethod).style.display = 'block';
     
     // Update core algorithm formula based on selected method
     this.updateCoreAlgorithmDisplay(progressMethod, globalMethod);
@@ -9133,7 +9188,7 @@ const AdminController = {
     // Update the formula
     coreFormulaEl.innerHTML = formulaMap[progressMethod] || formulaMap.weighted;
     
-    // Add context subtitle
+    // Add context subtitle with BOTH progress and global methods
     let contextEl = document.getElementById('core-algorithm-context');
     if (!contextEl) {
       contextEl = document.createElement('div');
@@ -9141,7 +9196,22 @@ const AdminController = {
       contextEl.style.cssText = 'font-size: 12px; color: var(--text); margin-top: 8px; opacity: 0.8; font-style: italic;';
       coreFormulaEl.parentNode.appendChild(contextEl);
     }
-    contextEl.textContent = '→ ' + methodContext[progressMethod];
+    
+    // Build labels for both methods
+    const methodLabels = {
+      weighted: 'Weighted BU Method',
+      simple: 'Simple BU Average',
+      minimum: 'Minimum Progress (Bottleneck)'
+    };
+    const globalLabels = {
+      weighted: 'Weighted Global Formula',
+      simple: 'Simple Global Average'
+    };
+    
+    const methodLabel = methodLabels[progressMethod] || 'Weighted BU Method';
+    const globalLabel = globalLabels[globalMethod] || 'Weighted Global Formula';
+    
+    contextEl.textContent = `→ Using ${methodLabel} × ${globalLabel}`;
   },
 
   renderApplicationsImpactMatrix() {
