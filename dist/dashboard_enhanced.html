@@ -6933,7 +6933,7 @@ const AdminController = {
           progressMethod: document.querySelector('input[name="progress-method"]:checked')?.value || 'weighted',
           globalMethod: document.querySelector('input[name="global-method"]:checked')?.value || 'weighted',
           statusInclusions: {
-            tbs: document.getElementById('include-tbs')?.checked || false,
+            tbs: document.getElementById('include-tbs')?.checked || true,
             wip: document.getElementById('include-wip')?.checked || true,
             clo: document.getElementById('include-clo')?.checked || true
           }
@@ -8665,7 +8665,7 @@ const AdminController = {
       progressMethod: document.querySelector('input[name="progress-method"]:checked')?.value || 'weighted',
       globalMethod: document.querySelector('input[name="global-method"]:checked')?.value || 'weighted',
       statusInclusions: {
-        tbs: document.getElementById('include-tbs')?.checked || false,
+        tbs: document.getElementById('include-tbs')?.checked || true,
         wip: document.getElementById('include-wip')?.checked || true,
         clo: document.getElementById('include-clo')?.checked || true
       }
@@ -8903,7 +8903,7 @@ const AdminController = {
       progressMethod: document.querySelector('#tab-formulas input[name="progress-method"]:checked')?.value || 'weighted',
       globalMethod: document.querySelector('#tab-formulas input[name="global-method"]:checked')?.value || 'weighted',
       statusInclusion: {
-        TBS: document.getElementById('include-tbs')?.checked || false,
+        TBS: document.getElementById('include-tbs')?.checked || true,
         WIP: document.getElementById('include-wip')?.checked || true,
         CLO: document.getElementById('include-clo')?.checked || true
       },
