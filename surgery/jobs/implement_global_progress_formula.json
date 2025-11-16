@@ -1,0 +1,90 @@
+{
+  "metadata": {
+    "timestamp": "2025-11-15T00:00:00Z",
+    "version": "1.0",
+    "author": "GitHub Copilot",
+    "project": "Dashboard Enhanced",
+    "title": "Implement Global Progress Formula Calculation"
+  },
+  "file": "dist/dashboard_enhanced.html",
+  "operation": "insert",
+  "description": "Add calculateGlobalProgress() method to ProgressCalculator to enable Global Progress Formula functionality with two methods: Weighted by BU Size and Simple BU Average",
+  "rationale": "User provided UI image showing Global Progress Formula with two calculation methods. The UI elements exist but the calculation logic is missing. This implementation enables end-to-end functionality for global progress calculation.",
+  "impact": "Users can now select between two global progress calculation methods via radio buttons in the Settings tab",
+  "riskLevel": "Low",
+  "targetInsertionPoint": "after recalculateAllBUsProgress() method, before getEnhancedDATA()",
+  "searchBefore": "  recalculateAllBUsProgress() {\n    const buses = Dashboard.StorageManager.getBUs();\n    const updated = buses.map(bu => ({\n      ...bu,\n      computedProgress: this.calculateBUProgress(bu.id)\n    }));\n    return updated;\n  },",
+  "searchAfter": "  getEnhancedDATA() {\n    // Devuelve DATA actualizado con progreso computado desde storage\n    const buses = this.recalculateAllBUsProgress();",
+  "newCode": "  calculateGlobalProgress(globalMethod) {\n    // Get the global calculation method from saved configuration OR use parameter if provided\n    const config = Dashboard.StorageManager.loadConfig();\n    const method = globalMethod || config?.formulaSettings?.globalMethod || 'weighted';\n    \n    console.log(`🌐 [calculateGlobalProgress] Using method: ${method}`);\n    \n    // Get all Business Units and their progress\n    const buses = Dashboard.StorageManager.getBUs();\n    if (buses.length === 0) {\n      console.log('🌐 [calculateGlobalProgress] No Business Units found');\n      return 0;\n    }\n    \n    // Calculate BU progress and app counts\n    const buProgressData = buses.map(bu => {\n      const buProgress = this.calculateBUProgress(bu.id);\n      const appCount = Dashboard.StorageManager.getAppsByBU(bu.id).length;\n      return {\n        buId: bu.id,\n        buName: bu.name,\n        progress: buProgress,\n        appCount: appCount\n      };\n    });\n    \n    // Apply the selected calculation method\n    switch (method) {\n      case 'simple':\n        // Simple BU Average: all BUs have equal weight\n        // Formula: Global = Σ(BU Progress) / Count(BUs)\n        const simpleSum = buProgressData.reduce((sum, bu) => sum + bu.progress, 0);\n        const globalProgress_simple = buProgressData.length > 0 ? \n          Math.round((simpleSum / buProgressData.length) * 100) / 100 : 0;\n        \n        console.log(`🌐 [calculateGlobalProgress] Simple Average: ${globalProgress_simple}%`);\n        return globalProgress_simple;\n      \n      case 'weighted':\n      default:\n        // Weighted by BU Size: BUs with more apps have more influence\n        // Formula: Global = Σ(BU Progress × BU App Count) / Σ(App Count)\n        const totalApps = buProgressData.reduce((sum, bu) => sum + bu.appCount, 0);\n        const weightedSum = buProgressData.reduce((sum, bu) => {\n          return sum + (bu.progress * bu.appCount);\n        }, 0);\n        const globalProgress_weighted = totalApps > 0 ? \n          Math.round((weightedSum / totalApps) * 100) / 100 : 0;\n        \n        console.log(`🌐 [calculateGlobalProgress] Weighted by BU Size: ${globalProgress_weighted}%`);\n        return globalProgress_weighted;\n    }\n  },\n  ",
+  "validation": {
+    "beforeExecute": {
+      "checks": [
+        "File exists: dist/dashboard_enhanced.html",
+        "recalculateAllBUsProgress() method exists",
+        "getEnhancedDATA() method exists",
+        "ProgressCalculator object is properly defined"
+      ]
+    },
+    "afterExecute": {
+      "checks": [
+        "calculateGlobalProgress() method exists in ProgressCalculator",
+        "Method handles both 'weighted' and 'simple' cases",
+        "Method reads globalMethod from config",
+        "Method returns value between 0-100",
+        "File syntax is valid",
+        "ProgressCalculator.calculateGlobalProgress is accessible"
+      ]
+    },
+    "rollbackCondition": "If any post-execution check fails"
+  },
+  "rollback": {
+    "enabled": true,
+    "keepBackup": true,
+    "backupName": "dashboard_enhanced_pre_global_progress_impl.html",
+    "maxBackups": 5
+  },
+  "testing": {
+    "unitTests": {
+      "required": true,
+      "tests": [
+        "test_11_calculate_overall_progress_exists",
+        "test_12_reads_global_method",
+        "test_13_weighted_calculation_logic",
+        "test_14_simple_calculation_logic",
+        "test_15_method_switching",
+        "test_16_both_methods_distinct"
+      ]
+    },
+    "integrationTests": {
+      "required": true,
+      "tests": [
+        "test_20_config_structure",
+        "test_21_applies_to_hero",
+        "test_22_applies_to_dashboard",
+        "test_23_complete_ui_to_calc_path"
+      ]
+    },
+    "manualTests": {
+      "required": true,
+      "steps": [
+        "Open dist/dashboard_enhanced.html in browser",
+        "Open DevTools console",
+        "Run: Dashboard.ProgressCalculator.calculateGlobalProgress('weighted')",
+        "Verify it returns a number between 0-100",
+        "Run: Dashboard.ProgressCalculator.calculateGlobalProgress('simple')",
+        "Verify it returns a number between 0-100",
+        "Open admin modal Settings tab",
+        "Verify 'Global Progress Formula' section exists",
+        "Select 'Weighted by BU Size' radio button",
+        "Click 'Save Formula Changes' button",
+        "Verify global progress updates on hero section"
+      ]
+    }
+  },
+  "documentation": {
+    "updated": true,
+    "files": [
+      "tests/unit/test_global_progress_formula_e2e.py"
+    ]
+  }
+}

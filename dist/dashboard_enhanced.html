@@ -33,7 +33,7 @@
   max-width:90% !important;
   width:90% !important;
   min-width:320px;
-  height:auto;
+  height:100%;
   min-height:400px;
   max-height:90vh;
   overflow:hidden;
@@ -80,7 +80,7 @@
 }
 @media (max-width: 768px) {
   .modal-content{width:98%;margin:0;border-radius:var(--radius)}
-  .modal-tabpanel.active{padding:20px 16px}
+  .modal-tabpanel.active{padding:20px 16px;height:100%;overflow-y:auto}
   .modal-header{padding:18px 20px}
 }
 @keyframes popIn{from{opacity:0;transform:scale(0.8)}to{opacity:1;transform:scale(1)}}
@@ -227,15 +227,22 @@
 .modal-tabpanel.active{
   display:block;
   padding:32px;
+  height:100%;
+  overflow-y:auto;
 }
 @media (max-width: 1024px) {
   .modal-tabpanel.active{
     padding:24px;
+    height:100%;
+    overflow-y:auto;
   }
 }
 @media (max-width: 768px) {
   .modal-tabpanel.active{
+    display:block;
     padding:16px;
+    height:100%;
+    overflow-y:auto;
   }
 }
 
@@ -453,8 +460,7 @@
 /* Modal Scroll Container */
 .modal-scroll-container{
   flex:1;
-  overflow-y:auto;
-  overflow-x:hidden;
+  overflow:hidden;
   scrollbar-width:thin;
   scrollbar-color:rgba(91,157,255,0.3) rgba(0,0,0,0.1);
   padding-bottom:20px;
@@ -6205,6 +6211,60 @@ const ProgressCalculator = {
     return updated;
   },
   
+  calculateGlobalProgress(globalMethod) {
+    // Get the global calculation method from saved configuration OR use parameter if provided
+    const config = Dashboard.StorageManager.loadConfig();
+    const method = globalMethod || config?.formulaSettings?.globalMethod || 'weighted';
+    
+    console.log(`🌐 [calculateGlobalProgress] Using method: ${method}`);
+    
+    // Get all Business Units and their progress
+    const buses = Dashboard.StorageManager.getBUs();
+    if (buses.length === 0) {
+      console.log('🌐 [calculateGlobalProgress] No Business Units found');
+      return 0;
+    }
+    
+    // Calculate BU progress and app counts
+    const buProgressData = buses.map(bu => {
+      const buProgress = this.calculateBUProgress(bu.id);
+      const appCount = Dashboard.StorageManager.getAppsByBU(bu.id).length;
+      return {
+        buId: bu.id,
+        buName: bu.name,
+        progress: buProgress,
+        appCount: appCount
+      };
+    });
+    
+    // Apply the selected calculation method
+    switch (method) {
+      case 'simple':
+        // Simple BU Average: all BUs have equal weight
+        // Formula: Global = Σ(BU Progress) / Count(BUs)
+        const simpleSum = buProgressData.reduce((sum, bu) => sum + bu.progress, 0);
+        const globalProgress_simple = buProgressData.length > 0 ? 
+          Math.round((simpleSum / buProgressData.length) * 100) / 100 : 0;
+        
+        console.log(`🌐 [calculateGlobalProgress] Simple Average: ${globalProgress_simple}%`);
+        return globalProgress_simple;
+      
+      case 'weighted':
+      default:
+        // Weighted by BU Size: BUs with more apps have more influence
+        // Formula: Global = Σ(BU Progress × BU App Count) / Σ(App Count)
+        const totalApps = buProgressData.reduce((sum, bu) => sum + bu.appCount, 0);
+        const weightedSum = buProgressData.reduce((sum, bu) => {
+          return sum + (bu.progress * bu.appCount);
+        }, 0);
+        const globalProgress_weighted = totalApps > 0 ? 
+          Math.round((weightedSum / totalApps) * 100) / 100 : 0;
+        
+        console.log(`🌐 [calculateGlobalProgress] Weighted by BU Size: ${globalProgress_weighted}%`);
+        return globalProgress_weighted;
+    }
+  },
+  
   getEnhancedDATA() {
     // Devuelve DATA actualizado con progreso computado desde storage
     const buses = this.recalculateAllBUsProgress();
@@ -6734,29 +6794,8 @@ const UIController = {
       const items = this.filtered();
       console.log('📋 filtered() returned:', items.length, 'items');
       
-      // Calculate global progress using the selected global method
-      const config = Dashboard.StorageManager.loadConfig();
-      const globalMethod = config?.formulaSettings?.globalMethod || 'weighted';
-      
-      let avgGlobal = 0;
-      if (DATA.length > 0) {
-        if (globalMethod === 'simple') {
-          // Simple BU Average: all BUs have equal weight
-          avgGlobal = DATA.reduce((s, d) => s + (d.progress || 0), 0) / DATA.length;
-        } else {
-          // Weighted by BU Size: larger BUs have more influence
-          const totalApps = DATA.reduce((sum, d) => sum + (d.appCount || 0), 0);
-          if (totalApps > 0) {
-            avgGlobal = DATA.reduce((sum, d) => {
-              const appCount = d.appCount || 0;
-              const progress = d.progress || 0;
-              return sum + (progress * appCount / totalApps);
-            }, 0);
-          }
-        }
-      }
-      
-      console.log(`📊 [GLOBAL] Using global method: ${globalMethod}, Progress: ${avgGlobal}%`);
+      // Calculate global progress using the ProgressCalculator with the selected global method
+      const avgGlobal = Dashboard.ProgressCalculator.calculateGlobalProgress();
       console.log('📊 [CALCULO] Progreso global:', avgGlobal, 'Items filtrados:', items.length);
       
       let heroValue = avgGlobal;
