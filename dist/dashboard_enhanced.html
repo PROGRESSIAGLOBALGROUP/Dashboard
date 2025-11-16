@@ -9130,7 +9130,7 @@ const AdminController = {
         const elTBS = document.getElementById('include-status-tbs') || document.getElementById('include-tbs');
         const elWIP = document.getElementById('include-status-wip') || document.getElementById('include-wip');
         const elCLO = document.getElementById('include-status-clo') || document.getElementById('include-clo');
-        if (elTBS) elTBS.checked = config.statusInclusion.TBS || false;
+        if (elTBS) elTBS.checked = config.statusInclusion.TBS !== undefined ? config.statusInclusion.TBS : true;
         if (elWIP) elWIP.checked = config.statusInclusion.WIP !== undefined ? config.statusInclusion.WIP : true;
         if (elCLO) elCLO.checked = config.statusInclusion.CLO !== undefined ? config.statusInclusion.CLO : true;
       }
