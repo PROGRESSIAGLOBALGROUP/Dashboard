@@ -4518,7 +4518,7 @@ body.cinematic .exit-cinema{display:inline-flex}
               <div class="inclusion-grid">
                 <div class="inclusion-item">
                   <div class="inclusion-header">
-                    <input type="checkbox" id="include-tbs" class="inclusion-checkbox">
+                    <input type="checkbox" id="include-tbs" class="inclusion-checkbox" checked>
                     <label for="include-tbs" class="status-badge danger">TBS</label>
                     <span class="inclusion-name">To Be Started</span>
                   </div>
@@ -6053,7 +6053,7 @@ function rebuildDATAFromStorage() {
   const buses = Dashboard.StorageManager.getBUs();
   
   // Get status inclusion configuration from checkboxes (respect user selections)
-  const includesTBS = document.getElementById('include-tbs')?.checked || false;
+  const includesTBS = document.getElementById('include-tbs')?.checked || true;
   const includesWIP = document.getElementById('include-wip')?.checked || true;
   const includesCLO = document.getElementById('include-clo')?.checked || true;
   
@@ -6141,7 +6141,7 @@ const ProgressCalculator = {
     if (apps.length === 0) return 0;
     
     // Get status inclusion configuration from checkboxes
-    const includesTBS = document.getElementById('include-tbs')?.checked || false;
+    const includesTBS = document.getElementById('include-tbs')?.checked || true;
     const includesWIP = document.getElementById('include-wip')?.checked || true;
     const includesCLO = document.getElementById('include-clo')?.checked || true;
     
@@ -8877,7 +8877,7 @@ const AdminController = {
   
   updateStatusInclusion() {
     // Get current status inclusion settings
-    const includesTBS = document.getElementById('include-tbs')?.checked || false;
+    const includesTBS = document.getElementById('include-tbs')?.checked || true;
     const includesWIP = document.getElementById('include-wip')?.checked || true;
     const includesCLO = document.getElementById('include-clo')?.checked || true;
     
