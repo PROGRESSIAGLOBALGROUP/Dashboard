@@ -6019,6 +6019,13 @@ const StorageManager = {
 if (!window.Dashboard) window.Dashboard = {};
 window.Dashboard.StorageManager = StorageManager;
 
+/* ========== Progress Calculator Module ========== */
+// REPLACEMENT FOR HARDCODED DATA ARRAY
+// This is now DYNAMICALLY built from StorageManager, not hardcoded
+// The old const DATA = [...] is REMOVED entirely
+// CRITICAL: Declare DATA BEFORE any function that uses it
+const DATA = [];  // Empty by default, populated from StorageManager
+
 // Load initial data from DataLoader (now that both are registered)
 // BUT: Respect if user manually cleared data
 const MANUAL_CLEAR_FLAG = 'dashboard_user_manually_cleared_v1';
@@ -6039,13 +6046,6 @@ if (wasManuallyCleared) {
 } else {
   console.warn('⚠️ [DataLoader] DataLoader not available');
 }
-
-/* ========== Progress Calculator Module ========== */
-// REPLACEMENT FOR HARDCODED DATA ARRAY
-// This is now DYNAMICALLY built from StorageManager, not hardcoded
-// The old const DATA = [...] is REMOVED entirely
-
-const DATA = [];  // Empty by default, populated from StorageManager
 
 // Function to rebuild DATA from storage (single source of truth)
 function rebuildDATAFromStorage() {
