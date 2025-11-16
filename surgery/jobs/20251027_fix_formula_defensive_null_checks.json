@@ -1,0 +1,51 @@
+{
+  "metadata": {
+    "timestamp": "2025-10-27T00:00:00Z",
+    "version": "1.0",
+    "author": "GitHub Copilot",
+    "project": "Dashboard Enhanced",
+    "purpose": "Make loadFormulaConfig() and initializeEmptyFormulaForm() defensive against missing form elements"
+  },
+  "file": "dist/dashboard_enhanced.html",
+  "operation": "replace",
+  "changes": [
+    {
+      "changeId": 5,
+      "description": "Add null-safety checks to loadFormulaConfig() form element access - lines 9045-9063",
+      "originalCode": "      // Status inclusion\n      if (config.statusInclusion) {\n        document.getElementById('include-status-tbs').checked = config.statusInclusion.TBS || false;\n        document.getElementById('include-status-wip').checked = config.statusInclusion.WIP !== undefined ? config.statusInclusion.WIP : true;\n        document.getElementById('include-status-clo').checked = config.statusInclusion.CLO !== undefined ? config.statusInclusion.CLO : true;\n      }\n      \n      // Weights\n      if (config.weights) {\n        document.getElementById('weight-min').value = config.weights.min || 0.5;\n        document.getElementById('weight-max').value = config.weights.max || 3.0;\n        document.getElementById('weight-default').value = config.weights.default || 1.0;\n      }\n      \n      // Criticality multipliers\n      if (config.criticalityMultipliers) {\n        document.getElementById('crit-low').value = config.criticalityMultipliers.low || 1.0;\n        document.getElementById('crit-medium').value = config.criticalityMultipliers.medium || 1.0;\n        document.getElementById('crit-high').value = config.criticalityMultipliers.high || 1.2;\n      }",
+      "newCode": "      // Status inclusion (with null-safety for missing elements)\n      if (config.statusInclusion) {\n        const elTBS = document.getElementById('include-status-tbs') || document.getElementById('include-tbs');\n        const elWIP = document.getElementById('include-status-wip') || document.getElementById('include-wip');\n        const elCLO = document.getElementById('include-status-clo') || document.getElementById('include-clo');\n        if (elTBS) elTBS.checked = config.statusInclusion.TBS || false;\n        if (elWIP) elWIP.checked = config.statusInclusion.WIP !== undefined ? config.statusInclusion.WIP : true;\n        if (elCLO) elCLO.checked = config.statusInclusion.CLO !== undefined ? config.statusInclusion.CLO : true;\n      }\n      \n      // Weights (with null-safety for missing elements)\n      if (config.weights) {\n        const elMin = document.getElementById('weight-min');\n        const elMax = document.getElementById('weight-max');\n        const elDefault = document.getElementById('weight-default');\n        if (elMin) elMin.value = config.weights.min || 0.5;\n        if (elMax) elMax.value = config.weights.max || 3.0;\n        if (elDefault) elDefault.value = config.weights.default || 1.0;\n      }\n      \n      // Criticality multipliers (with null-safety for missing elements)\n      if (config.criticalityMultipliers) {\n        const elLow = document.getElementById('crit-low');\n        const elMedium = document.getElementById('crit-medium');\n        const elHigh = document.getElementById('crit-high');\n        if (elLow) elLow.value = config.criticalityMultipliers.low || 1.0;\n        if (elMedium) elMedium.value = config.criticalityMultipliers.medium || 1.0;\n        if (elHigh) elHigh.value = config.criticalityMultipliers.high || 1.2;\n      }"
+    },
+    {
+      "changeId": 6,
+      "description": "Add null-safety checks to initializeEmptyFormulaForm() form element access - lines 9084-9096",
+      "originalCode": "    // Set form to empty state (NOT defaults)\n    // Set progress method to weighted (corrected from getElementById which doesn't exist)\n    const progressMethodRadio = document.querySelector('input[name=\"progress-method\"][value=\"weighted\"]');\n    if (progressMethodRadio) progressMethodRadio.checked = true;\n    // Set global method to weighted by default\n    document.getElementById('global-weighted').checked = true;\n    document.getElementById('include-status-tbs').checked = false;\n    document.getElementById('include-status-wip').checked = true;\n    document.getElementById('include-status-clo').checked = true;\n    document.getElementById('weight-min').value = '0.5';\n    document.getElementById('weight-max').value = '3.0';\n    document.getElementById('weight-default').value = '1.0';\n    document.getElementById('crit-low').value = '1.0';\n    document.getElementById('crit-medium').value = '1.0';\n    document.getElementById('crit-high').value = '1.2';",
+      "newCode": "    // Set form to empty state (NOT defaults)\n    // Set progress method to weighted (corrected from getElementById which doesn't exist)\n    const progressMethodRadio = document.querySelector('input[name=\"progress-method\"][value=\"weighted\"]');\n    if (progressMethodRadio) progressMethodRadio.checked = true;\n    // Set global method to weighted by default (with null-safety)\n    const globalWeightedRadio = document.getElementById('global-weighted');\n    if (globalWeightedRadio) globalWeightedRadio.checked = true;\n    // Status inclusion checkboxes (with null-safety for missing elements)\n    const elTBS = document.getElementById('include-status-tbs') || document.getElementById('include-tbs');\n    const elWIP = document.getElementById('include-status-wip') || document.getElementById('include-wip');\n    const elCLO = document.getElementById('include-status-clo') || document.getElementById('include-clo');\n    if (elTBS) elTBS.checked = false;\n    if (elWIP) elWIP.checked = true;\n    if (elCLO) elCLO.checked = true;\n    // Weight inputs (with null-safety for missing elements)\n    const elMin = document.getElementById('weight-min');\n    const elMax = document.getElementById('weight-max');\n    const elDefault = document.getElementById('weight-default');\n    if (elMin) elMin.value = '0.5';\n    if (elMax) elMax.value = '3.0';\n    if (elDefault) elDefault.value = '1.0';\n    // Criticality inputs (with null-safety for missing elements)\n    const elLow = document.getElementById('crit-low');\n    const elMedium = document.getElementById('crit-medium');\n    const elHigh = document.getElementById('crit-high');\n    if (elLow) elLow.value = '1.0';\n    if (elMedium) elMedium.value = '1.0';\n    if (elHigh) elHigh.value = '1.2';"
+    }
+  ],
+  "validation": {
+    "beforeExecute": {
+      "checks": [
+        "File exists: dist/dashboard_enhanced.html",
+        "Line 9047: includes 'include-status-tbs'.checked without null check",
+        "Line 9085: includes 'global-weighted'.checked without null check",
+        "No null-safety checks currently present"
+      ]
+    },
+    "afterExecute": {
+      "checks": [
+        "Lines 9047-9063: All getElementById calls have null-safety",
+        "Lines 9084-9105: All getElementById calls have null-safety",
+        "Fallback logic added (e.g., 'include-status-tbs' || 'include-tbs')",
+        "All 'if (element)' checks in place before .checked or .value access",
+        "No TypeErrors will occur on page load or formula initialization"
+      ]
+    }
+  },
+  "rollback": {
+    "enabled": true,
+    "keepBackup": true,
+    "backupName": "dashboard_enhanced_20251027_formula_defensive_backup.html",
+    "maxBackups": 5
+  },
+  "impact": "Prevents ALL TypeErrors related to missing form elements. Formula display and initialization will work regardless of which element IDs exist in the current HTML structure."
+}

@@ -1,0 +1,105 @@
+{
+  "metadata": {
+    "timestamp": "2025-10-28T00:00:00Z",
+    "version": "1.0",
+    "author": "GitHub Copilot (Triple PhD)",
+    "project": "Dashboard Enhanced",
+    "justification": "Fix inconsistency between Hero progress (respects globalMethod) and KPI Total Avg (ignores globalMethod). Sync both to use same avgGlobal calculation"
+  },
+  
+  "file": "dist/dashboard_enhanced.html",
+  
+  "operations": [
+    {
+      "id": "op1_updatekpis_signature",
+      "description": "Modify updateKPIs() to accept avgGlobal parameter",
+      "type": "replace",
+      "searchAfter": "    if (this.state.pinned) requestAnimationFrame(step);\n    });\n  },",
+      "searchBefore": "  renderTiles(items) {",
+      
+      "originalCode": "  updateKPIs(items) {\n    console.log('🔍 [updateKPIs] Actualizando KPIs con', items.length, 'items');\n    \n    const done = items.filter(d => d.progress === 100).length;\n    const wip = items.filter(d => d.progress > 0 && d.progress < 100).length;\n    const todo = items.filter(d => d.progress === 0).length;\n    \n    console.log('📊 [KPI] Conteo:', { done, wip, todo });\n    \n    const avg = Dashboard.DATA.length > 0 \n      ? Dashboard.DATA.reduce((s, d) => s + (d.progress || 0), 0) / Dashboard.DATA.length \n      : 0;\n      \n    console.log('📊 [KPI] Promedio calculado:', avg);\n    \n    document.querySelector('#kpiDone').textContent = done;\n    document.querySelector('#kpiWip').textContent = wip;\n    document.querySelector('#kpiTodo').textContent = todo;\n    document.querySelector('#kpiAvg').textContent = avg.toFixed(2) + '%';\n  },",
+      
+      "newCode": "  updateKPIs(items, avgGlobal = 0) {\n    console.log('🔍 [updateKPIs] Actualizando KPIs con', items.length, 'items, avgGlobal:', avgGlobal);\n    \n    const done = items.filter(d => d.progress === 100).length;\n    const wip = items.filter(d => d.progress > 0 && d.progress < 100).length;\n    const todo = items.filter(d => d.progress === 0).length;\n    \n    console.log('📊 [KPI] Conteo:', { done, wip, todo });\n    \n    console.log('📊 [KPI] Usando avgGlobal:', avgGlobal);\n    \n    document.querySelector('#kpiDone').textContent = done;\n    document.querySelector('#kpiWip').textContent = wip;\n    document.querySelector('#kpiTodo').textContent = todo;\n    document.querySelector('#kpiAvg').textContent = avgGlobal.toFixed(2) + '%';\n  },"
+    },
+    
+    {
+      "id": "op2_apply_call_updatekpis",
+      "description": "Update call to updateKPIs() in apply() to pass avgGlobal parameter",
+      "type": "replace",
+      "searchAfter": "    this.renderTiles(items);\n    this.drawBars(items);",
+      "searchBefore": "    this.updateWaveDistributionChart();  // ✅ Update wave chart titles dynamically",
+      
+      "originalCode": "    this.renderTiles(items);\n    this.drawBars(items);\n    this.updateKPIs(items);",
+      
+      "newCode": "    this.renderTiles(items);\n    this.drawBars(items);\n    this.updateKPIs(items, avgGlobal);"
+    },
+    
+    {
+      "id": "op3_empty_dashboard_call",
+      "description": "Update call to updateKPIs() in empty dashboard case to pass 0",
+      "type": "replace",
+      "searchAfter": "      document.querySelector('#heroCaption').textContent = 'Empty';\n      this.renderTiles(items);\n      this.drawBars(items);",
+      "searchBefore": "      return;",
+      
+      "originalCode": "      document.querySelector('#heroCaption').textContent = 'Empty';\n      this.renderTiles(items);\n      this.drawBars(items);\n      this.updateKPIs(items);",
+      
+      "newCode": "      document.querySelector('#heroCaption').textContent = 'Empty';\n      this.renderTiles(items);\n      this.drawBars(items);\n      this.updateKPIs(items, 0);"
+    }
+  ],
+  
+  "validation": {
+    "beforeExecute": [
+      "File exists: dist/dashboard_enhanced.html",
+      "Original code block 1 found: updateKPIs(items) with incorrect avg calculation",
+      "Original code block 2 found: this.updateKPIs(items) call in apply()",
+      "Original code block 3 found: this.updateKPIs(items) call in empty case",
+      "File syntax is valid HTML/JavaScript"
+    ],
+    "afterExecute": [
+      "New code block 1: updateKPIs(items, avgGlobal = 0) signature updated",
+      "New code block 1: avgGlobal used for #kpiAvg instead of recalculating",
+      "New code block 2: this.updateKPIs(items, avgGlobal) call updated",
+      "New code block 3: this.updateKPIs(items, 0) call updated",
+      "File syntax remains valid",
+      "No surrounding code corrupted"
+    ]
+  },
+  
+  "rollback": {
+    "enabled": true,
+    "keepBackup": true,
+    "backupName": "dashboard_enhanced_20251028_kpi_avg_backup.html",
+    "maxBackups": 5
+  },
+  
+  "testing": {
+    "required": true,
+    "unitTests": [
+      "test_kpi_avg_matches_hero_weighted",
+      "test_kpi_avg_matches_hero_simple",
+      "test_kpi_avg_zero_when_empty"
+    ],
+    "integrationTests": [
+      "test_configuration_change_updates_both_hero_and_kpi",
+      "test_data_refresh_maintains_consistency"
+    ],
+    "manualTests": [
+      "1. Open dashboard with test data",
+      "2. Switch to Weighted method → Verify Hero and KPI Total Avg show same value",
+      "3. Switch to Simple method → Verify Hero and KPI Total Avg show same value",
+      "4. Add/remove applications → Verify both values update together",
+      "5. Save & Close → Verify KPI values persist correctly"
+    ]
+  },
+  
+  "documentation": {
+    "updated": true,
+    "relatedFiles": [
+      "docs/fixes/KPI_GLOBAL_SYNC_FIX.md"
+    ],
+    "changeDescription": "Modified UIController.updateKPIs() to accept avgGlobal parameter instead of recalculating independently. This ensures KPI Total Avg shows the same value as Hero Progress, respecting the globalMethod configuration (weighted vs simple). Fixed inconsistency where Hero calculated correctly but KPI ignored config."
+  },
+  
+  "riskLevel": "LOW",
+  "impact": "UI/Display Only - No data structure changes, no storage modifications, pure display sync"
+}

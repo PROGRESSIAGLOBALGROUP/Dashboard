@@ -1,0 +1,64 @@
+{
+  "metadata": {
+    "timestamp": "2025-10-27T00:00:00Z",
+    "version": "1.0",
+    "author": "GitHub Copilot",
+    "project": "Dashboard Enhanced",
+    "purpose": "Fix resetFormulaConfig() and testFormulaConfig() attempting to set .value on non-existent element"
+  },
+  "file": "dist/dashboard_enhanced.html",
+  "operation": "replace",
+  "changes": [
+    {
+      "changeId": 3,
+      "description": "Fix resetFormulaConfig() - line 8867 attempts to set .value on getElementById('formula-progress-method')",
+      "originalCode": "    // Reset form values\n    document.getElementById('formula-progress-method').value = defaultConfig.progressMethod;\n    // Set global method radio button\n    const globalMethodRadio = document.querySelector(`input[name=\"global-method\"][value=\"${defaultConfig.globalMethod}\"]`);\n    if (globalMethodRadio) globalMethodRadio.checked = true;",
+      "newCode": "    // Reset form values\n    // Set progress method radio button (corrected from getElementById which doesn't exist)\n    const progressMethodRadio = document.querySelector(`input[name=\"progress-method\"][value=\"${defaultConfig.progressMethod}\"]`);\n    if (progressMethodRadio) progressMethodRadio.checked = true;\n    // Set global method radio button\n    const globalMethodRadio = document.querySelector(`input[name=\"global-method\"][value=\"${defaultConfig.globalMethod}\"]`);\n    if (globalMethodRadio) globalMethodRadio.checked = true;",
+      "rationale": "Same issue as previous fixes - element with id 'formula-progress-method' doesn't exist. Must use querySelector with radio button selector.",
+      "impact": "Prevents TypeError and allows formula configuration to be reset properly"
+    },
+    {
+      "changeId": 4,
+      "description": "Fix testFormulaConfig() - line 8896 attempts to read .value from getElementById('formula-progress-method')",
+      "originalCode": "  testFormulaConfig() {\n    console.log('Testing formula configuration');\n    \n    // Get current configuration from form\n    const formulaConfig = {\n      progressMethod: document.getElementById('formula-progress-method').value,\n      globalMethod: document.querySelector('input[name=\"global-method\"]:checked')?.value || 'weighted',",
+      "newCode": "  testFormulaConfig() {\n    console.log('Testing formula configuration');\n    \n    // Get current configuration from form\n    const formulaConfig = {\n      progressMethod: document.querySelector('input[name=\"progress-method\"]:checked')?.value || 'weighted',\n      globalMethod: document.querySelector('input[name=\"global-method\"]:checked')?.value || 'weighted',",
+      "rationale": "Same selector issue - must use querySelector(':checked') to get the selected radio button value.",
+      "impact": "Prevents TypeError and allows formula test to read current settings correctly"
+    }
+  ],
+  "validation": {
+    "beforeExecute": {
+      "checks": [
+        "File exists: dist/dashboard_enhanced.html",
+        "Line 8867 contains: document.getElementById('formula-progress-method').value",
+        "Line 8896 contains: document.getElementById('formula-progress-method').value",
+        "Radio buttons exist: input[name='progress-method']"
+      ]
+    },
+    "afterExecute": {
+      "checks": [
+        "Line 8867-8871: Uses querySelector with name='progress-method' selector",
+        "Line 8896: Uses querySelector(':checked') for progress method",
+        "Both changes preserve all safety checks (if statements)",
+        "No syntax errors in modified sections"
+      ]
+    }
+  },
+  "rollback": {
+    "enabled": true,
+    "keepBackup": true,
+    "backupName": "dashboard_enhanced_20251027_formula_reset_test_backup.html",
+    "maxBackups": 5
+  },
+  "testing": {
+    "unitTests": {
+      "required": true,
+      "tests": [
+        "Test resetFormulaConfig() with default values",
+        "Test testFormulaConfig() reading current values",
+        "Verify no TypeErrors on formula reset",
+        "Verify no TypeErrors on formula test"
+      ]
+    }
+  }
+}

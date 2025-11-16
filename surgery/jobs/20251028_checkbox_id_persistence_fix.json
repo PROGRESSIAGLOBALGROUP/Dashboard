@@ -1,0 +1,110 @@
+{
+  "metadata": {
+    "timestamp": "2025-10-28T00:00:00Z",
+    "version": "1.0",
+    "author": "GitHub Copilot (Triple PhD)",
+    "project": "Dashboard Enhanced",
+    "justification": "Fix ID mismatch bug: saveAndClose() and getEnhancedDATA() read non-existent checkbox 'include-done' instead of 'include-clo'. This causes configuration changes to not persist correctly in localStorage, resulting in values reverting on page refresh."
+  },
+  
+  "file": "dist/dashboard_enhanced.html",
+  
+  "operations": [
+    {
+      "id": "op1_getenhanceddata_fix",
+      "description": "Fix getEnhancedDATA() to use correct checkbox ID 'include-clo' instead of 'include-done'",
+      "type": "replace",
+      "targetLine": 6912,
+      
+      "searchBefore": "  getEnhancedDATA() {\n    // Devuelve DATA actualizado con progreso computado desde storage\n    const buses = this.recalculateAllBUsProgress();\n    return buses.map(bu => ({\n      key: bu.key,\n      name: bu.name,\n      progress: bu.computedProgress || 0\n    }));\n  }",
+      
+      "originalCode": "            tbs: document.getElementById('include-tbs')?.checked || false,\n            wip: document.getElementById('include-wip')?.checked || true,\n            done: document.getElementById('include-done')?.checked || true",
+      
+      "newCode": "            tbs: document.getElementById('include-tbs')?.checked || false,\n            wip: document.getElementById('include-wip')?.checked || true,\n            clo: document.getElementById('include-clo')?.checked || true"
+    },
+    
+    {
+      "id": "op2_saveandclose_fix",
+      "description": "Fix saveAndClose() to use correct checkbox ID 'include-clo' instead of 'include-done'",
+      "type": "replace",
+      "targetLine": 8644,
+      
+      "searchBefore": "  saveAndClose() {\n    // CRITICAL: Save formula settings if user modified them\n    const formulaConfig = {\n      timestamp: new Date().toISOString(),\n      progressMethod: document.querySelector('input[name=\"progress-method\"]:checked')?.value || 'weighted',\n      globalMethod: document.querySelector('input[name=\"global-method\"]:checked')?.value || 'weighted',\n      statusInclusions: {",
+      
+      "originalCode": "        tbs: document.getElementById('include-tbs')?.checked || false,\n        wip: document.getElementById('include-wip')?.checked || true,\n        done: document.getElementById('include-done')?.checked || true",
+      
+      "newCode": "        tbs: document.getElementById('include-tbs')?.checked || false,\n        wip: document.getElementById('include-wip')?.checked || true,\n        clo: document.getElementById('include-clo')?.checked || true"
+    }
+  ],
+  
+  "validation": {
+    "beforeExecute": [
+      "File exists: dist/dashboard_enhanced.html",
+      "Checkbox HTML element 'include-clo' exists in form (line 4539)",
+      "Current code reads 'include-done' which does NOT exist (incorrect)",
+      "Two locations use include-done: line 6912 and line 8644",
+      "File syntax is valid"
+    ],
+    "afterExecute": [
+      "Line 6912 now reads 'include-clo' (not 'include-done')",
+      "Line 8644 now reads 'include-clo' (not 'include-done')",
+      "Both match the actual HTML checkbox ID",
+      "Object property is now 'clo' (not 'done')",
+      "File syntax remains valid",
+      "localStorage will now correctly persist checkbox states"
+    ]
+  },
+  
+  "rollback": {
+    "enabled": true,
+    "keepBackup": true,
+    "backupName": "dashboard_enhanced_20251028_checkbox_id_backup.html",
+    "maxBackups": 5
+  },
+  
+  "testing": {
+    "required": true,
+    "unitTests": [
+      "test_checkbox_ids_exist",
+      "test_saveandclose_reads_correct_checkboxes",
+      "test_config_persists_to_localstorage"
+    ],
+    "integrationTests": [
+      "test_status_inclusion_changes_persist_after_refresh",
+      "test_save_without_changes_preserves_kpi",
+      "test_global_method_changes_persist"
+    ],
+    "manualTests": [
+      "1. Open Project Administration → Calculation Formulas",
+      "2. Verify current KPI value (e.g., 63%)",
+      "3. Click 'Save & Close' without changing anything",
+      "4. ✅ KPI should remain 63% (not change to 44%)",
+      "5. Refresh page (F5)",
+      "6. ✅ KPI should still be 63% (values persist in localStorage)",
+      "7. Now uncheck 'Include TBS'",
+      "8. Click 'Save & Close'",
+      "9. ✅ KPI should update based on new filter",
+      "10. Refresh page (F5)",
+      "11. ✅ KPI should persist new value (localStorage working)"
+    ]
+  },
+  
+  "documentation": {
+    "updated": true,
+    "relatedFiles": [
+      "docs/fixes/CHECKBOX_ID_PERSISTENCE_FIX.md"
+    ],
+    "changeDescription": "Fixed checkbox ID mismatch that caused configuration changes to not persist in localStorage. The code was reading 'include-done' which does not exist in the HTML form. The actual checkbox is 'include-clo'. This inconsistency caused saveAndClose() to fail reading the Closed status checkbox, resulting in: 1) Configuration not being saved correctly, 2) KPI values appearing to change without user action, 3) Values reverting on page refresh. Now correctly reads the existing 'include-clo' checkbox and persists configuration to localStorage."
+  },
+  
+  "riskLevel": "LOW",
+  "impact": "Configuration Persistence - Fixes localStorage save/load cycle for Status Inclusion Rules",
+  
+  "notes": [
+    "CRITICAL: The HTML form uses 'include-clo' (line 4539), not 'include-done'",
+    "Both getEnhancedDATA() and saveAndClose() had this error",
+    "Property name changed from 'done' to 'clo' to match semantic meaning",
+    "This fix ensures user selections in Status Inclusion Rules persist correctly",
+    "Related to Issue: KPI changes value without user action, reverts on F5"
+  ]
+}

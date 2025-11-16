@@ -1,0 +1,83 @@
+{
+  "metadata": {
+    "timestamp": "2025-10-27T00:00:00Z",
+    "version": "1.0",
+    "author": "GitHub Copilot",
+    "project": "Dashboard Enhanced",
+    "purpose": "Fix formula initialization attempting to set value on non-existent element"
+  },
+  "file": "dist/dashboard_enhanced.html",
+  "operation": "replace",
+  "targetContext": {
+    "description": "loadFormulaConfig() attempting getElementById on non-existent 'formula-progress-method' element"
+  },
+  "changes": [
+    {
+      "changeId": 1,
+      "description": "Fix loadFormulaConfig() - line 9038 attempts to set .value on getElementById('formula-progress-method') which doesn't exist",
+      "originalCode": "      // Apply to form inputs\n      document.getElementById('formula-progress-method').value = config.progressMethod || 'weighted';\n      // Set global method radio button\n      const globalMethodRadioLoad = document.querySelector(`input[name=\"global-method\"][value=\"${config.globalMethod || 'weighted'}\"]`);\n      if (globalMethodRadioLoad) globalMethodRadioLoad.checked = true;",
+      "newCode": "      // Apply to form inputs\n      // Set progress method radio button (corrected from getElementById which doesn't exist)\n      const progressMethodRadio = document.querySelector(`input[name=\"progress-method\"][value=\"${config.progressMethod || 'weighted'}\"]`);\n      if (progressMethodRadio) progressMethodRadio.checked = true;\n      // Set global method radio button\n      const globalMethodRadioLoad = document.querySelector(`input[name=\"global-method\"][value=\"${config.globalMethod || 'weighted'}\"]`);\n      if (globalMethodRadioLoad) globalMethodRadioLoad.checked = true;",
+      "rationale": "The original code tries to set .value on element with id 'formula-progress-method', but this element doesn't exist in the DOM. The progress method is implemented as radio buttons with name='progress-method', not as a select/input element with an id.",
+      "impact": "Prevents TypeError and allows formula config to load and update displays correctly on page initialization"
+    },
+    {
+      "changeId": 2,
+      "description": "Fix initializeEmptyFormulaForm() - line 9077 attempts to set .value on getElementById('formula-progress-method') which doesn't exist",
+      "originalCode": "  initializeEmptyFormulaForm() {\n    console.log('Initializing empty formula form');\n    \n    // Set form to empty state (NOT defaults)\n    document.getElementById('formula-progress-method').value = 'weighted';\n    // Set global method to weighted by default\n    document.getElementById('global-weighted').checked = true;",
+      "newCode": "  initializeEmptyFormulaForm() {\n    console.log('Initializing empty formula form');\n    \n    // Set form to empty state (NOT defaults)\n    // Set progress method to weighted (corrected from getElementById which doesn't exist)\n    const progressMethodRadio = document.querySelector('input[name=\"progress-method\"][value=\"weighted\"]');\n    if (progressMethodRadio) progressMethodRadio.checked = true;\n    // Set global method to weighted by default\n    document.getElementById('global-weighted').checked = true;",
+      "rationale": "Same issue as changeId 1 - attempting to access non-existent element. Must use querySelector to find and check the weighted radio button.",
+      "impact": "Prevents TypeError and allows formula form to initialize correctly when no saved config exists"
+    }
+  ],
+  "validation": {
+    "beforeExecute": {
+      "checks": [
+        "File exists: dist/dashboard_enhanced.html",
+        "Line 9038 contains: document.getElementById('formula-progress-method')",
+        "Line 9077 contains: document.getElementById('formula-progress-method')",
+        "Radio buttons exist: input[name='progress-method'] with values weighted/simple/minimum"
+      ]
+    },
+    "afterExecute": {
+      "checks": [
+        "Line 9038-9041: Uses querySelector with name='progress-method' selector",
+        "Line 9080-9082: Uses querySelector with name='progress-method' selector",
+        "Both changes preserve all error handling (if checks)",
+        "No syntax errors in modified sections",
+        "File remains valid HTML"
+      ]
+    }
+  },
+  "rollback": {
+    "enabled": true,
+    "keepBackup": true,
+    "backupName": "dashboard_enhanced_20251027_formula_init_backup.html",
+    "maxBackups": 5
+  },
+  "testing": {
+    "unitTests": {
+      "required": true,
+      "tests": [
+        "Test loadFormulaConfig() with valid saved config",
+        "Test loadFormulaConfig() with no saved config (calls initializeEmptyFormulaForm)",
+        "Test initializeEmptyFormulaForm() directly",
+        "Verify updateFormulaLabels() called after initialization",
+        "Verify no TypeErrors in console on page load"
+      ]
+    },
+    "manualTests": {
+      "required": true,
+      "steps": [
+        "Clear localStorage completely",
+        "Reload page - should show 'Initializing empty formula form' log",
+        "Verify no TypeError in console",
+        "Change radio buttons - formulas should update",
+        "Verify localStorage contains progressMethod and globalMethod after changes"
+      ]
+    }
+  },
+  "approval": {
+    "requiresReview": true,
+    "testCoverage": "Minimum 100% on initialization paths"
+  }
+}

@@ -1,0 +1,89 @@
+{
+  "metadata": {
+    "timestamp": "2025-10-28T00:00:00Z",
+    "version": "1.0",
+    "author": "GitHub Copilot (Triple PhD)",
+    "project": "Dashboard Enhanced",
+    "justification": "Fix Status Inclusion Rules not affecting KPI. rebuildDATAFromStorage() must filter apps by status inclusion checkboxes before calculating BU progress, same as calculateBUProgress() does"
+  },
+  
+  "file": "dist/dashboard_enhanced.html",
+  
+  "operation": "replace",
+  
+  "description": "Modify rebuildDATAFromStorage() to respect Status Inclusion Rules (TBS/WIP/CLO checkboxes) when calculating BU progress. This ensures Status Inclusion changes trigger recalculation and update KPI values.",
+  
+  "originalCode": "function rebuildDATAFromStorage() {\n  DATA.length = 0;  // Clear array\n  const buses = Dashboard.StorageManager.getBUs();\n  \n  buses.forEach(bus => {\n    const apps = Dashboard.StorageManager.getAppsByBU(bus.id);\n    let progress = 0;\n    \n    if (apps.length > 0) {\n      const totalWeight = apps.reduce((sum, app) => sum + (app.weight || 1), 0);\n      const weightedSum = apps.reduce((sum, app) => {\n        return sum + ((app.progress || 0) * (app.weight || 1));\n      }, 0);\n      progress = totalWeight > 0 ? Math.round((weightedSum / totalWeight) * 100) / 100 : 0;\n    }\n    \n    DATA.push({\n      key: bus.key,\n      name: bus.name,\n      progress: progress,\n      appCount: apps.length\n    });\n  });\n  \n  console.log('🔄 [DATA] Rebuilt from storage:', JSON.stringify(DATA));\n  return DATA;\n}",
+  
+  "newCode": "function rebuildDATAFromStorage() {\n  DATA.length = 0;  // Clear array\n  const buses = Dashboard.StorageManager.getBUs();\n  \n  // Get status inclusion configuration from checkboxes (respect user selections)\n  const includesTBS = document.getElementById('include-tbs')?.checked || false;\n  const includesWIP = document.getElementById('include-wip')?.checked || true;\n  const includesCLO = document.getElementById('include-clo')?.checked || true;\n  \n  console.log('🔍 [rebuildDATAFromStorage] Status Inclusion:', { includesTBS, includesWIP, includesCLO });\n  \n  buses.forEach(bus => {\n    const apps = Dashboard.StorageManager.getAppsByBU(bus.id);\n    let progress = 0;\n    \n    if (apps.length > 0) {\n      // Filter apps based on status inclusion rules (CRITICAL FIX)\n      const filteredApps = apps.filter(app => {\n        if (app.status === 'TBS') return includesTBS;\n        if (app.status === 'WIP') return includesWIP;\n        if (app.status === 'CLO') return includesCLO;\n        return true; // Include any other status by default\n      });\n      \n      // Only calculate progress if there are apps after filtering\n      if (filteredApps.length > 0) {\n        const totalWeight = filteredApps.reduce((sum, app) => sum + (app.weight || 1), 0);\n        const weightedSum = filteredApps.reduce((sum, app) => {\n          return sum + ((app.progress || 0) * (app.weight || 1));\n        }, 0);\n        progress = totalWeight > 0 ? Math.round((weightedSum / totalWeight) * 100) / 100 : 0;\n      }\n    }\n    \n    // IMPORTANT: appCount now reflects filtered apps (for weighted global calculation)\n    const filteredCount = apps.filter(app => {\n      if (app.status === 'TBS') return includesTBS;\n      if (app.status === 'WIP') return includesWIP;\n      if (app.status === 'CLO') return includesCLO;\n      return true;\n    }).length;\n    \n    DATA.push({\n      key: bus.key,\n      name: bus.name,\n      progress: progress,\n      appCount: filteredCount\n    });\n  });\n  \n  console.log('🔄 [DATA] Rebuilt from storage (status-filtered):', JSON.stringify(DATA));\n  return DATA;\n}",
+  
+  "searchContext": {
+    "before": "// REPLACEMENT FOR HARDCODED DATA ARRAY\n// This is now DYNAMICALLY built from StorageManager, not hardcoded\n// The old const DATA = [...] is REMOVED entirely\n\nconst DATA = [];  // Empty by default, populated from StorageManager\n\n// Function to rebuild DATA from storage (single source of truth)",
+    "after": "const ProgressCalculator = {"
+  },
+  
+  "validation": {
+    "beforeExecute": [
+      "File exists: dist/dashboard_enhanced.html",
+      "Original rebuildDATAFromStorage() found with correct signature",
+      "Code does NOT currently filter by statusInclusion",
+      "File syntax is valid"
+    ],
+    "afterExecute": [
+      "New code reads statusInclusion from checkboxes",
+      "Apps filtered by status before calculating progress",
+      "appCount reflects filtered apps (not total apps)",
+      "console.log statements show status inclusion values",
+      "File syntax remains valid",
+      "No surrounding code corrupted"
+    ]
+  },
+  
+  "rollback": {
+    "enabled": true,
+    "keepBackup": true,
+    "backupName": "dashboard_enhanced_20251028_status_filter_backup.html",
+    "maxBackups": 5
+  },
+  
+  "testing": {
+    "required": true,
+    "unitTests": [
+      "test_status_inclusion_filters_apps",
+      "test_filteredcount_reflects_status_rules",
+      "test_progress_recalculates_with_status_change"
+    ],
+    "integrationTests": [
+      "test_status_inclusion_checkbox_affects_kpi",
+      "test_disabling_tbs_reduces_progress",
+      "test_disabling_wip_affects_global_avg",
+      "test_disabling_clo_eliminates_completed_apps"
+    ],
+    "manualTests": [
+      "1. Open dashboard with test data",
+      "2. Verify initial KPI value matches configuration",
+      "3. Uncheck 'Include TBS' → Verify KPI Total Avg updates (decreases or increases)",
+      "4. Uncheck 'Include WIP' → Verify KPI Total Avg updates",
+      "5. Uncheck 'Include CLO' → Verify KPI Total Avg updates",
+      "6. Re-check boxes → Verify KPI returns to original value",
+      "7. Verify Hero Progress and KPI Total Avg remain synchronized after each change"
+    ]
+  },
+  
+  "documentation": {
+    "updated": true,
+    "relatedFiles": [
+      "docs/fixes/STATUS_INCLUSION_KPI_FIX.md"
+    ],
+    "changeDescription": "Modified rebuildDATAFromStorage() to read and apply Status Inclusion Rules (TBS/WIP/CLO checkboxes) when filtering applications before calculating Business Unit progress. This ensures that changes to Status Inclusion checkboxes immediately affect KPI calculations. Previously, Status Inclusion Rules only affected the test display, not actual KPI calculations."
+  },
+  
+  "riskLevel": "MEDIUM",
+  "impact": "Core Calculation - Status Inclusion Rules now properly affect KPI, Hero, and all progress calculations",
+  
+  "notes": [
+    "CRITICAL: appCount now reflects filtered count, not total count. This is correct for weighted global calculations.",
+    "If no apps pass status filter, progress = 0 (correct behavior for filtered-out BU)",
+    "Checkboxes must exist in DOM for this to work - handled gracefully with || defaults"
+  ]
+}

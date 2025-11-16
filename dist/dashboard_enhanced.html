@@ -6020,7 +6020,16 @@ if (!window.Dashboard) window.Dashboard = {};
 window.Dashboard.StorageManager = StorageManager;
 
 // Load initial data from DataLoader (now that both are registered)
-if (window.Dashboard && window.Dashboard.DataLoader) {
+// BUT: Respect if user manually cleared data
+const MANUAL_CLEAR_FLAG = 'dashboard_user_manually_cleared_v1';
+const wasManuallyCleared = localStorage.getItem(MANUAL_CLEAR_FLAG) !== null;
+
+if (wasManuallyCleared) {
+  console.log('🚫 [Initialization] User manually cleared data - skipping DataLoader.loadData()');
+  console.log('📊 [Initialization] Dashboard will remain empty as per user request');
+  rebuildDATAFromStorage(); // Rebuild from empty localStorage
+} else if (window.Dashboard && window.Dashboard.DataLoader) {
+  console.log('✅ [Initialization] No manual clear flag - loading embedded data');
   window.Dashboard.DataLoader.loadData().then(result => {
     console.log('✅ [DataLoader] Data loaded and persisted to localStorage');
     rebuildDATAFromStorage();
@@ -6043,27 +6052,53 @@ function rebuildDATAFromStorage() {
   DATA.length = 0;  // Clear array
   const buses = Dashboard.StorageManager.getBUs();
   
+  // Get status inclusion configuration from checkboxes (respect user selections)
+  const includesTBS = document.getElementById('include-tbs')?.checked || false;
+  const includesWIP = document.getElementById('include-wip')?.checked || true;
+  const includesCLO = document.getElementById('include-clo')?.checked || true;
+  
+  console.log('🔍 [rebuildDATAFromStorage] Status Inclusion:', { includesTBS, includesWIP, includesCLO });
+  
   buses.forEach(bus => {
     const apps = Dashboard.StorageManager.getAppsByBU(bus.id);
     let progress = 0;
     
     if (apps.length > 0) {
-      const totalWeight = apps.reduce((sum, app) => sum + (app.weight || 1), 0);
-      const weightedSum = apps.reduce((sum, app) => {
-        return sum + ((app.progress || 0) * (app.weight || 1));
-      }, 0);
-      progress = totalWeight > 0 ? Math.round((weightedSum / totalWeight) * 100) / 100 : 0;
+      // Filter apps based on status inclusion rules (CRITICAL FIX)
+      const filteredApps = apps.filter(app => {
+        if (app.status === 'TBS') return includesTBS;
+        if (app.status === 'WIP') return includesWIP;
+        if (app.status === 'CLO') return includesCLO;
+        return true; // Include any other status by default
+      });
+      
+      // Only calculate progress if there are apps after filtering
+      if (filteredApps.length > 0) {
+        const totalWeight = filteredApps.reduce((sum, app) => sum + (app.weight || 1), 0);
+        const weightedSum = filteredApps.reduce((sum, app) => {
+          return sum + ((app.progress || 0) * (app.weight || 1));
+        }, 0);
+        progress = totalWeight > 0 ? Math.round((weightedSum / totalWeight) * 100) / 100 : 0;
+      }
     }
+    
+    // IMPORTANT: appCount now reflects filtered apps (for weighted global calculation)
+    const filteredCount = apps.filter(app => {
+      if (app.status === 'TBS') return includesTBS;
+      if (app.status === 'WIP') return includesWIP;
+      if (app.status === 'CLO') return includesCLO;
+      return true;
+    }).length;
     
     DATA.push({
       key: bus.key,
       name: bus.name,
       progress: progress,
-      appCount: apps.length
+      appCount: filteredCount
     });
   });
   
-  console.log('🔄 [DATA] Rebuilt from storage:', JSON.stringify(DATA));
+  console.log('🔄 [DATA] Rebuilt from storage (status-filtered):', JSON.stringify(DATA));
   return DATA;
 }
 
@@ -6624,8 +6659,8 @@ const UIController = {
     });
   },
 
-  updateKPIs(items) {
-    console.log('🔍 [updateKPIs] Actualizando KPIs con', items.length, 'items');
+  updateKPIs(items, avgGlobal = 0) {
+    console.log('🔍 [updateKPIs] Actualizando KPIs con', items.length, 'items, avgGlobal:', avgGlobal);
     
     const done = items.filter(d => d.progress === 100).length;
     const wip = items.filter(d => d.progress > 0 && d.progress < 100).length;
@@ -6633,16 +6668,12 @@ const UIController = {
     
     console.log('📊 [KPI] Conteo:', { done, wip, todo });
     
-    const avg = Dashboard.DATA.length > 0 
-      ? Dashboard.DATA.reduce((s, d) => s + (d.progress || 0), 0) / Dashboard.DATA.length 
-      : 0;
-      
-    console.log('📊 [KPI] Promedio calculado:', avg);
+    console.log('📊 [KPI] Usando avgGlobal:', avgGlobal);
     
     document.querySelector('#kpiDone').textContent = done;
     document.querySelector('#kpiWip').textContent = wip;
     document.querySelector('#kpiTodo').textContent = todo;
-    document.querySelector('#kpiAvg').textContent = avg.toFixed(2) + '%';
+    document.querySelector('#kpiAvg').textContent = avgGlobal.toFixed(2) + '%';
   },
 
   renderTiles(items) {
@@ -6673,73 +6704,90 @@ const UIController = {
   },
 
   apply() {
-    console.log('🔍 [UIController.apply] Iniciando actualización de UI');
-    
-    // CRITICAL: Rebuild DATA from storage first (single source of truth)
-    rebuildDATAFromStorage();
-    console.log('📊 [APPLY] DATA after rebuild:', JSON.stringify(DATA));
-    
-    // Get data from StorageManager (the single source of truth)
-    const busesFromStorage = Dashboard.StorageManager.getBUs();
-    console.log('📊 [STORAGE] BUs in storage:', JSON.stringify(busesFromStorage));
-    console.log('🧹 [CLEARED] Flag state:', sessionStorage.getItem(Dashboard.StorageManager.CLEARED_FLAG));
-    
-    // If storage is empty (user cleared data), use empty items
-    if (busesFromStorage.length === 0) {
-      console.log('✅ [APPLY] Storage is empty - showing empty dashboard');
-      const items = [];
-      this.drawHero(0);
-      document.querySelector('#heroPct').textContent = '0';
-      document.querySelector('#heroCaption').textContent = 'Empty';
-      this.renderTiles(items);
-      this.drawBars(items);
-      this.updateKPIs(items);
-      return;
-    }
-    
-    const items = this.filtered();
-    // Calculate global progress using the selected global method
-    const config = Dashboard.StorageManager.loadConfig();
-    const globalMethod = config?.formulaSettings?.globalMethod || 'weighted';
-    
-    let avgGlobal = 0;
-    if (DATA.length > 0) {
-      if (globalMethod === 'simple') {
-        // Simple BU Average: all BUs have equal weight
-        avgGlobal = DATA.reduce((s, d) => s + (d.progress || 0), 0) / DATA.length;
-      } else {
-        // Weighted by BU Size: larger BUs have more influence
-        const totalApps = DATA.reduce((sum, d) => sum + (d.appCount || 0), 0);
-        if (totalApps > 0) {
-          avgGlobal = DATA.reduce((sum, d) => {
-            const appCount = d.appCount || 0;
-            const progress = d.progress || 0;
-            return sum + (progress * appCount / totalApps);
-          }, 0);
+    try {
+      console.log('🔍 [UIController.apply] Iniciando actualización de UI');
+      
+      // CRITICAL: Rebuild DATA from storage first (single source of truth)
+      console.log('🔄 Calling rebuildDATAFromStorage...');
+      rebuildDATAFromStorage();
+      console.log('📊 [APPLY] DATA after rebuild:', JSON.stringify(DATA));
+      
+      // Get data from StorageManager (the single source of truth)
+      const busesFromStorage = Dashboard.StorageManager.getBUs();
+      console.log('📊 [STORAGE] BUs in storage:', JSON.stringify(busesFromStorage));
+      console.log('🧹 [CLEARED] Flag state:', sessionStorage.getItem(Dashboard.StorageManager.CLEARED_FLAG));
+      
+      // If storage is empty (user cleared data), use empty items
+      if (busesFromStorage.length === 0) {
+        console.log('✅ [APPLY] Storage is empty - showing empty dashboard');
+        const items = [];
+        this.drawHero(0);
+        document.querySelector('#heroPct').textContent = '0';
+        document.querySelector('#heroCaption').textContent = 'Empty';
+        this.renderTiles(items);
+        this.drawBars(items);
+        this.updateKPIs(items, 0);
+        return;
+      }
+      
+      console.log('📋 Calling filtered()...');
+      const items = this.filtered();
+      console.log('📋 filtered() returned:', items.length, 'items');
+      
+      // Calculate global progress using the selected global method
+      const config = Dashboard.StorageManager.loadConfig();
+      const globalMethod = config?.formulaSettings?.globalMethod || 'weighted';
+      
+      let avgGlobal = 0;
+      if (DATA.length > 0) {
+        if (globalMethod === 'simple') {
+          // Simple BU Average: all BUs have equal weight
+          avgGlobal = DATA.reduce((s, d) => s + (d.progress || 0), 0) / DATA.length;
+        } else {
+          // Weighted by BU Size: larger BUs have more influence
+          const totalApps = DATA.reduce((sum, d) => sum + (d.appCount || 0), 0);
+          if (totalApps > 0) {
+            avgGlobal = DATA.reduce((sum, d) => {
+              const appCount = d.appCount || 0;
+              const progress = d.progress || 0;
+              return sum + (progress * appCount / totalApps);
+            }, 0);
+          }
         }
       }
-    }
-    
-    console.log(`📊 [GLOBAL] Using global method: ${globalMethod}, Progress: ${avgGlobal}%`);
-    console.log('📊 [CALCULO] Progreso global:', avgGlobal, 'Items filtrados:', items.length);
-    
-    let heroValue = avgGlobal;
-    let heroText = 'Avg';
-    if (this.state.pinned) {
-      const sel = Dashboard.DATA.find(d => d.name === this.state.pinned);
-      if (sel) {
-        heroValue = sel.progress;
-        heroText = sel.name;
+      
+      console.log(`📊 [GLOBAL] Using global method: ${globalMethod}, Progress: ${avgGlobal}%`);
+      console.log('📊 [CALCULO] Progreso global:', avgGlobal, 'Items filtrados:', items.length);
+      
+      let heroValue = avgGlobal;
+      let heroText = 'Avg';
+      if (this.state.pinned) {
+        const sel = Dashboard.DATA.find(d => d.name === this.state.pinned);
+        if (sel) {
+          heroValue = sel.progress;
+          heroText = sel.name;
+        }
       }
-    }
-    this.drawHero(heroValue);
-    document.querySelector('#heroPct').textContent = this.fmt(heroValue);
-    document.querySelector('#heroCaption').textContent = heroText;
+      
+      console.log('🎨 Drawing hero...');
+      this.drawHero(heroValue);
+      document.querySelector('#heroPct').textContent = this.fmt(heroValue);
+      document.querySelector('#heroCaption').textContent = heroText;
 
-    this.renderTiles(items);
-    this.drawBars(items);
-    this.updateKPIs(items);
-    this.updateWaveDistributionChart();  // ✅ Update wave chart titles dynamically
+      console.log('🎨 Rendering tiles...');
+      this.renderTiles(items);
+      console.log('🎨 Drawing bars...');
+      this.drawBars(items);
+      console.log('🎨 Updating KPIs...');
+      this.updateKPIs(items, avgGlobal);
+      console.log('🎨 Updating wave chart...');
+      this.updateWaveDistributionChart();
+      
+      console.log('✅ [APPLY] Complete - UI updated successfully');
+    } catch (error) {
+      console.error('❌ [APPLY] ERROR:', error.message);
+      console.error('❌ Stack trace:', error.stack);
+    }
   },
 
   download(filename, text, type = 'text/plain') {
@@ -6887,7 +6935,7 @@ const AdminController = {
           statusInclusions: {
             tbs: document.getElementById('include-tbs')?.checked || false,
             wip: document.getElementById('include-wip')?.checked || true,
-            done: document.getElementById('include-done')?.checked || true
+            clo: document.getElementById('include-clo')?.checked || true
           }
         };
         
@@ -6895,6 +6943,11 @@ const AdminController = {
         const config = Dashboard.StorageManager.loadConfig();
         config.formulaSettings = formulaConfig;
         Dashboard.StorageManager.saveConfig(config);
+        
+        // CRITICAL: Recalculate and update UI with new formula settings
+        console.log('🔄 Recalculating with new formula settings...');
+        Dashboard.ProgressCalculator.recalculateAllBUsProgress();
+        Dashboard.UIController.apply();
         
         // Visual feedback
         saveFFormulasBtn.style.background = 'linear-gradient(135deg,#32e685,#28c26e)';
@@ -6905,7 +6958,7 @@ const AdminController = {
           saveFFormulasBtn.innerHTML = '<span class="btn-icon">💾</span><span class="btn-text">Save Formula Changes</span>';
         }, 2000);
         
-        console.log('✅ Formula settings saved:', formulaConfig);
+        console.log('✅ Formula settings saved and UI updated:', formulaConfig);
       });
     }
     
@@ -8606,6 +8659,26 @@ const AdminController = {
   },
   
   saveAndClose() {
+    // CRITICAL: Save formula settings if user modified them
+    const formulaConfig = {
+      timestamp: new Date().toISOString(),
+      progressMethod: document.querySelector('input[name="progress-method"]:checked')?.value || 'weighted',
+      globalMethod: document.querySelector('input[name="global-method"]:checked')?.value || 'weighted',
+      statusInclusions: {
+        tbs: document.getElementById('include-tbs')?.checked || false,
+        wip: document.getElementById('include-wip')?.checked || true,
+        clo: document.getElementById('include-clo')?.checked || true
+      }
+    };
+    
+    const config = Dashboard.StorageManager.loadConfig();
+    config.formulaSettings = formulaConfig;
+    Dashboard.StorageManager.saveConfig(config);
+    console.log('💾 Formula settings saved via saveAndClose()');
+    
+    // Recalculate with new settings
+    Dashboard.ProgressCalculator.recalculateAllBUsProgress();
+    
     this.closeModal();
     Dashboard.UIController.apply();
     alert('✅ Changes saved');
@@ -8639,20 +8712,30 @@ const AdminController = {
         sessionStorage_CLEARED_FLAG: sessionStorage.getItem(Dashboard.StorageManager.CLEARED_FLAG)
       });
       
-      // 1. Mark as cleared BEFORE deletion - CRITICAL STEP
-      Dashboard.StorageManager.markAsCleared();
+      // 1. CRITICAL: Set persistent flag BEFORE clearing localStorage
+      // This flag persists so DataLoader knows NOT to reload embedded data
+      const MANUAL_CLEAR_FLAG = 'dashboard_user_manually_cleared_v1';
+      localStorage.setItem(MANUAL_CLEAR_FLAG, JSON.stringify({
+        cleared: true,
+        timestamp: new Date().toISOString(),
+        reason: 'User executed Clear All Data action'
+      }));
+      console.log('🚩 [clearAllData] Set manual clear flag');
       
-      // 2. Clear localStorage completely
-      localStorage.clear(); // Borrar TODO, no solo la clave específica
+      // 2. Clear localStorage completely (except our flag)
+      const flagValue = localStorage.getItem(MANUAL_CLEAR_FLAG);
+      localStorage.clear();
+      localStorage.setItem(MANUAL_CLEAR_FLAG, flagValue); // Restore flag
       
-      // 3. Verificación múltiple
+      // 3. Verification
       const verification1 = localStorage.getItem(Dashboard.StorageManager.STORAGE_KEY);
       const verification2 = Object.keys(localStorage).length;
+      const flagCheck = localStorage.getItem(MANUAL_CLEAR_FLAG);
       
       console.log('📊 [VERIFICACIÓN POST-BORRADO]:', { 
         configDataExists: verification1 !== null, 
         remainingStorageItems: verification2,
-        clearedFlag: sessionStorage.getItem(Dashboard.StorageManager.CLEARED_FLAG)
+        manualClearFlagPresent: flagCheck !== null
       });
       
       if (verification1 !== null) {
@@ -11127,6 +11210,35 @@ const AdvancedSettingsManager = {
 
 // Initialize Advanced Settings when the admin modal is opened
 document.addEventListener('DOMContentLoaded', () => {
+  // ✅ CRITICAL: Initialize core modules FIRST
+  console.log('📌 [DOMContentLoaded] Starting initialization...');
+  try {
+    if (Dashboard.StorageManager && Dashboard.StorageManager.init) {
+      console.log('📌 [DOMContentLoaded] Initializing StorageManager...');
+      Dashboard.StorageManager.init();
+    }
+  } catch (e) {
+    console.error('❌ Error initializing StorageManager:', e);
+  }
+  
+  try {
+    if (Dashboard.AdminController && Dashboard.AdminController.init) {
+      console.log('📌 [DOMContentLoaded] Initializing AdminController...');
+      Dashboard.AdminController.init();
+    }
+  } catch (e) {
+    console.error('❌ Error initializing AdminController:', e);
+  }
+  
+  try {
+    if (Dashboard.UIController && Dashboard.UIController.init) {
+      console.log('📌 [DOMContentLoaded] Initializing UIController...');
+      Dashboard.UIController.init();
+    }
+  } catch (e) {
+    console.error('❌ Error initializing UIController:', e);
+  }
+  
   const initAdvancedSettings = () => {
     if (window.Dashboard && window.Dashboard.AdminController) {
       const originalSwitchTab = Dashboard.AdminController.switchTab;
@@ -11204,6 +11316,11 @@ document.addEventListener('DOMContentLoaded', () => {
   };
   
   initAdvancedSettings();
+  
+  // ✅ CRITICAL: Apply initial rendering with calculated data
+  // This must be called AFTER all modules are initialized
+  console.log('🚀 [DOMContentLoaded] Calling initial apply() to render dashboard');
+  Dashboard.UIController.apply();
 });
 
 const notificationStyles = document.createElement('style');
@@ -11730,21 +11847,6 @@ document.head.appendChild(notificationStyles);
     window.Dashboard.AppsOverviewWorldClass = AppsOverviewWorldClass;
 
 })();
-
-/* Main entry point - AFTER all modules are defined */
-document.addEventListener('DOMContentLoaded', function() {
-    // Initialize StorageManager FIRST to detect cleared state
-    Dashboard.StorageManager.init();
-    
-    // Initialize other modules in the correct order
-    Dashboard.AdminController.init();
-    Dashboard.UIController.init();
-    
-    // Initialize Applications Overview World-Class module
-    if (typeof Dashboard.AppsOverviewWorldClass !== 'undefined') {
-        Dashboard.AppsOverviewWorldClass.init();
-    }
-});
 </script>
 </body>
 </html>
